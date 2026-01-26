@@ -1,8 +1,8 @@
 import React from 'react';
-import { Scissors, Settings, ArrowLeftRight, Play } from 'lucide-react';
+import { Scissors, Settings, Play } from 'lucide-react';
 import { ThemeToggle, type Theme } from '../ThemeToggle';
 
-export type View = 'snippets' | 'try-it-out' | 'settings' | 'import-export';
+export type View = 'snippets' | 'try-it-out' | 'settings';
 
 interface TopNavProps {
   currentView: View;
@@ -42,11 +42,6 @@ export function TopNav({
       id: 'settings',
       label: 'Settings',
       icon: <Settings size={16} />,
-    },
-    {
-      id: 'import-export',
-      label: 'Import/Export',
-      icon: <ArrowLeftRight size={16} />,
     },
   ];
 

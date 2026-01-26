@@ -40,3 +40,7 @@ export type {
   TabStopDefinition,
   InputDialogResult,
 } from './placeholder';
+
+// Settings types
+export type { AppSettings } from './settings';
+export { DEFAULT_SETTINGS } from './settings';

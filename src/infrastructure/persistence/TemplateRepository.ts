@@ -1,4 +1,4 @@
-import type { ITemplateRepository } from '@domain/repositories';
+import type { ITemplateRepository, TriggerQueryOptions } from '@domain/repositories';
 import { Template, type TemplateProps } from '@domain/entities';
 import { STORAGE_KEYS } from '@shared/constants';
 import { ChromeStorageAdapter } from '../chrome/storage/ChromeStorageAdapter';
@@ -30,9 +30,17 @@ export class TemplateRepository implements ITemplateRepository {
     return props ? Template.fromProps(props) : null;
   }
 
-  async findByTrigger(trigger: string): Promise<Template | null> {
+  async findByTrigger(trigger: string, options?: TriggerQueryOptions): Promise<Template | null> {
     const templates = await this.getAllProps();
-    const props = templates.find((t) => t.trigger === trigger);
+    const caseSensitive = options?.caseSensitive ?? true;
+
+    const props = templates.find((t) => {
+      if (caseSensitive) {
+        return t.trigger === trigger;
+      }
+      return t.trigger.toLowerCase() === trigger.toLowerCase();
+    });
+
     return props ? Template.fromProps(props) : null;
   }
 

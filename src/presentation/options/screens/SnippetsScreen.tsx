@@ -6,6 +6,7 @@ import { TemplateEditor } from '../components/TemplateEditor';
 import { GroupDialog } from '../components/GroupDialog';
 import { ConfirmDialog } from '@ui/index';
 import { Button } from '@ui/button';
+import type { AppSettings } from '@shared/types/settings';
 
 let newTemplateCounter = 1;
 
@@ -14,6 +15,7 @@ interface SnippetsScreenProps {
   groups: GroupDTO[];
   loading: boolean;
   error: string | null;
+  settings: AppSettings;
   onCreateTemplate: (data: CreateTemplateDTO) => Promise<TemplateDTO | null>;
   onUpdateTemplate: (data: UpdateTemplateDTO) => Promise<boolean>;
   onDeleteTemplate: (id: string) => Promise<boolean>;
@@ -21,6 +23,7 @@ interface SnippetsScreenProps {
   onUpdateGroup: (data: UpdateGroupDTO) => Promise<void>;
   onDeleteGroup: (id: string) => Promise<void>;
   onRefresh: () => void;
+  onUpdateSettings: (updates: Partial<AppSettings>) => void;
 }
 
 interface DeleteTarget {
@@ -33,6 +36,7 @@ export function SnippetsScreen({
   groups,
   loading,
   error,
+  settings,
   onCreateTemplate,
   onUpdateTemplate,
   onDeleteTemplate,
@@ -40,6 +44,7 @@ export function SnippetsScreen({
   onUpdateGroup,
   onDeleteGroup,
   onRefresh,
+  onUpdateSettings,
 }: SnippetsScreenProps): React.ReactElement {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -136,6 +141,13 @@ export function SnippetsScreen({
     [templates, onUpdateTemplate]
   );
 
+  const handleTreeWidthChange = useCallback(
+    (width: number) => {
+      onUpdateSettings({ treePanelWidth: width });
+    },
+    [onUpdateSettings]
+  );
+
   const handleSave = async (data: UpdateTemplateDTO) => {
     await onUpdateTemplate(data);
   };
@@ -212,6 +224,7 @@ export function SnippetsScreen({
           groups={groups}
           selectedId={selectedId}
           searchQuery={searchQuery}
+          width={settings.treePanelWidth}
           onSearchChange={setSearchQuery}
           onSelectTemplate={handleSelectTemplate}
           onNewTemplate={handleNewTemplate}
@@ -221,6 +234,7 @@ export function SnippetsScreen({
           onDeleteTemplate={handleDeleteTemplate}
           onDuplicateTemplate={handleDuplicateTemplate}
           onMoveTemplate={handleMoveTemplate}
+          onWidthChange={handleTreeWidthChange}
         />
 
         {/* Editor panel */}

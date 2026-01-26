@@ -3,9 +3,9 @@ import { AppShell, type View } from './components/layout';
 import { SnippetsScreen } from './screens/SnippetsScreen';
 import { TryItOutScreen } from './screens/TryItOutScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
-import { ImportExportScreen } from './screens/ImportExportScreen';
 import { useTemplates } from './hooks/useTemplates';
 import { useGroups } from './hooks/useGroups';
+import { useSettings } from './hooks/useSettings';
 import { getInitialTheme, type Theme } from './components/ThemeToggle';
 import type { CreateGroupDTO, UpdateGroupDTO } from '@application/dto';
 
@@ -28,6 +28,12 @@ export function App(): React.ReactElement {
     updateGroup,
     deleteGroup,
   } = useGroups();
+
+  const {
+    settings,
+    loading: settingsLoading,
+    updateSettings,
+  } = useSettings();
 
   const [currentView, setCurrentView] = useState<View>('snippets');
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
@@ -62,7 +68,7 @@ export function App(): React.ReactElement {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [currentView]);
 
-  const loading = templatesLoading || groupsLoading;
+  const loading = templatesLoading || groupsLoading || settingsLoading;
   const error = templatesError || groupsError;
 
   const handleCreateGroup = useCallback(
@@ -95,6 +101,7 @@ export function App(): React.ReactElement {
             groups={groups}
             loading={loading}
             error={error}
+            settings={settings}
             onCreateTemplate={createTemplate}
             onUpdateTemplate={updateTemplate}
             onDeleteTemplate={deleteTemplate}
@@ -102,14 +109,20 @@ export function App(): React.ReactElement {
             onUpdateGroup={handleUpdateGroup}
             onDeleteGroup={handleDeleteGroup}
             onRefresh={refreshTemplates}
+            onUpdateSettings={updateSettings}
           />
         );
       case 'try-it-out':
         return <TryItOutScreen templates={templates} />;
       case 'settings':
-        return <SettingsScreen />;
-      case 'import-export':
-        return <ImportExportScreen templates={templates} groups={groups} />;
+        return (
+          <SettingsScreen
+            settings={settings}
+            templates={templates}
+            groups={groups}
+            onUpdateSettings={updateSettings}
+          />
+        );
       default:
         return null;
     }

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Search, Inbox, FolderPlus } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import type { TemplateDTO, GroupDTO } from '@application/dto';
@@ -6,11 +6,15 @@ import { TreeNode } from './TreeNode';
 import { DndTreeContext } from './DndTreeContext';
 import { Input } from '@ui/input';
 
+const MIN_PANEL_WIDTH = 200;
+const MAX_PANEL_WIDTH = 400;
+
 interface TemplateTreeProps {
   templates: TemplateDTO[];
   groups: GroupDTO[];
   selectedId: string | null;
   searchQuery: string;
+  width?: number;
   onSearchChange: (query: string) => void;
   onSelectTemplate: (id: string) => void;
   onNewTemplate: (groupId?: string) => void;
@@ -20,6 +24,7 @@ interface TemplateTreeProps {
   onDeleteTemplate: (template: TemplateDTO) => void;
   onDuplicateTemplate: (template: TemplateDTO) => void;
   onMoveTemplate?: (templateId: string, targetGroupId: string | null) => void;
+  onWidthChange?: (width: number) => void;
 }
 
 interface TreeGroup {
@@ -32,6 +37,7 @@ export function TemplateTree({
   groups,
   selectedId,
   searchQuery,
+  width = 256,
   onSearchChange,
   onSelectTemplate,
   onNewTemplate,
@@ -41,11 +47,47 @@ export function TemplateTree({
   onDeleteTemplate,
   onDuplicateTemplate,
   onMoveTemplate,
+  onWidthChange,
 }: TemplateTreeProps): React.ReactElement {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => {
     // Initially expand all groups
     return new Set(groups.map((g) => g.id));
   });
+
+  // Resize state
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
+
+  // Handle resize mouse events
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    resizeRef.current = { startX: e.clientX, startWidth: width };
+  }, [width]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!resizeRef.current) return;
+      const delta = e.clientX - resizeRef.current.startX;
+      const newWidth = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, resizeRef.current.startWidth + delta));
+      onWidthChange?.(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      resizeRef.current = null;
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, onWidthChange]);
 
   // Filter templates by search query
   const filteredTemplates = useMemo(() => {
@@ -90,7 +132,7 @@ export function TemplateTree({
   const isSearchEmpty = filteredTemplates.length === 0 && searchQuery.trim();
 
   return (
-    <div className="tree-panel">
+    <div className={`tree-panel ${isResizing ? 'tree-panel-resizing' : ''}`} style={{ width }}>
       {/* Search */}
       <div className="tree-search">
         <Search size={14} className="tree-search-icon" />
@@ -176,6 +218,15 @@ export function TemplateTree({
           <span>New Group</span>
         </button>
       </div>
+
+      {/* Resize handle */}
+      <div
+        className="tree-panel-resize-handle"
+        onMouseDown={handleResizeStart}
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize sidebar"
+      />
     </div>
   );
 }

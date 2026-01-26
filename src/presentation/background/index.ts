@@ -4,8 +4,10 @@
 import { MessageRouter } from '@infrastructure/chrome/messaging';
 import { contextMenuService } from '@infrastructure/chrome/context-menu';
 import { commandsService } from '@infrastructure/chrome/commands';
-import { MESSAGE_TYPES } from '@shared/constants';
+import { MESSAGE_TYPES, STORAGE_KEYS } from '@shared/constants';
 import type { MessageResponse } from '@shared/types';
+import type { AppSettings } from '@shared/types/settings';
+import { DEFAULT_SETTINGS } from '@shared/types/settings';
 import type { CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO, CreateCategoryDTO, UpdateCategoryDTO, CategoryDTO, CreateGroupDTO, UpdateGroupDTO, GroupDTO } from '@application/dto';
 import type { SearchResult } from '@application/use-cases/templates/SearchTemplatesUseCase';
 import {
@@ -30,6 +32,20 @@ import {
 
 // Initialize message router
 const router = new MessageRouter();
+
+/**
+ * Load settings from Chrome storage
+ */
+async function loadSettings(): Promise<AppSettings> {
+  try {
+    const result = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
+    const stored = result[STORAGE_KEYS.SETTINGS] as Partial<AppSettings> | undefined;
+    return { ...DEFAULT_SETTINGS, ...stored };
+  } catch (error) {
+    console.error('[SlashSnip BG] Failed to load settings:', error);
+    return DEFAULT_SETTINGS;
+  }
+}
 
 // Handle GET_TEMPLATES
 router.on<void, TemplateDTO[]>(
@@ -131,8 +147,11 @@ router.on<{ trigger: string }, TemplateDTO | null>(
   async (payload): Promise<MessageResponse<TemplateDTO | null>> => {
     console.log('[SlashSnip BG] GET_BY_TRIGGER received:', payload);
     try {
+      const settings = await loadSettings();
       const useCase = getGetTemplateByTriggerUseCase();
-      const template = await useCase.execute(payload.trigger);
+      const template = await useCase.execute(payload.trigger, {
+        caseSensitive: settings.caseSensitive,
+      });
       console.log('[SlashSnip BG] Template found:', template);
       return { success: true, data: template };
     } catch (error) {
