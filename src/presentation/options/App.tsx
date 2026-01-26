@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppShell, type View } from './components/layout';
 import { SnippetsScreen } from './screens/SnippetsScreen';
+import { TryItOutScreen } from './screens/TryItOutScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { ImportExportScreen } from './screens/ImportExportScreen';
 import { useTemplates } from './hooks/useTemplates';
@@ -103,6 +104,8 @@ export function App(): React.ReactElement {
             onRefresh={refreshTemplates}
           />
         );
+      case 'try-it-out':
+        return <TryItOutScreen templates={templates} />;
       case 'settings':
         return <SettingsScreen />;
       case 'import-export':

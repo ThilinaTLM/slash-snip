@@ -1,11 +1,14 @@
 import React from 'react';
-import { ChevronRight, FolderOpen, Folder, FileText, Pencil, Trash2, MoreHorizontal } from 'lucide-react';
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@ui/index';
+  ChevronRight,
+  FolderOpen,
+  Folder,
+  Trash2,
+  Plus,
+  GripVertical,
+  Copy,
+} from 'lucide-react';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 import type { TemplateDTO, GroupDTO } from '@application/dto';
 
 export interface TreeNodeProps {
@@ -15,10 +18,14 @@ export interface TreeNodeProps {
   isExpanded?: boolean;
   depth?: number;
   templateCount?: number;
+  isDraggable?: boolean;
+  isDropTarget?: boolean;
   onSelect?: () => void;
   onToggle?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onAddTemplate?: () => void;
+  onDuplicate?: () => void;
   children?: React.ReactNode;
 }
 
@@ -29,13 +36,34 @@ export function TreeNode({
   isExpanded = false,
   depth = 0,
   templateCount = 0,
+  isDraggable = false,
+  isDropTarget = false,
   onSelect,
   onToggle,
   onEdit,
   onDelete,
+  onAddTemplate,
+  onDuplicate,
   children,
 }: TreeNodeProps): React.ReactElement {
   const paddingLeft = depth * 16 + 8;
+
+  // Draggable for templates
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDraggableRef,
+    isDragging,
+  } = useDraggable({
+    id: data.id,
+    disabled: !isDraggable,
+  });
+
+  // Droppable for groups
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: isDropTarget ? `group-${data.id}` : 'disabled',
+    disabled: !isDropTarget,
+  });
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -48,7 +76,7 @@ export function TreeNode({
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (type === 'template' && onEdit) {
+    if (onEdit) {
       onEdit();
     }
   };
@@ -56,11 +84,12 @@ export function TreeNode({
   if (type === 'group') {
     const group = data as GroupDTO;
     return (
-      <div>
+      <div ref={setDroppableRef}>
         <div
-          className={`tree-node ${isSelected ? 'tree-node-selected' : ''}`}
+          className={`tree-node ${isSelected ? 'tree-node-selected' : ''} ${isOver ? 'tree-node-drop-target' : ''}`}
           style={{ paddingLeft }}
           onClick={handleClick}
+          onDoubleClick={handleDoubleClick}
         >
           <ChevronRight
             size={14}
@@ -71,9 +100,33 @@ export function TreeNode({
           ) : (
             <Folder size={14} className="tree-node-icon" />
           )}
-          <span className="tree-node-label">{group.name}</span>
-          <span className="tree-node-count">{templateCount}</span>
-          <TreeNodeMenu onEdit={onEdit} onDelete={onDelete} />
+          <span className="tree-node-label">{group.name} ({templateCount})</span>
+          <div className="tree-node-actions">
+            {onAddTemplate && (
+              <button
+                className="tree-node-action-btn"
+                title="Add template to group"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAddTemplate();
+                }}
+              >
+                <Plus size={14} />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                className="tree-node-action-btn tree-node-action-btn-danger"
+                title="Delete group"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+              >
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
         </div>
         {isExpanded && children && <div className="tree-children">{children}</div>}
       </div>
@@ -84,69 +137,55 @@ export function TreeNode({
   const template = data as TemplateDTO;
   return (
     <div
-      className={`tree-node ${isSelected ? 'tree-node-selected' : ''}`}
+      ref={setDraggableRef}
+      className={`tree-node ${isSelected ? 'tree-node-selected' : ''} ${isDragging ? 'tree-node-dragging' : ''}`}
       style={{ paddingLeft }}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
     >
-      <FileText
-        size={14}
-        className={`tree-node-icon ${isSelected ? 'tree-node-icon-accent' : ''}`}
-      />
-      <span className={`tree-node-trigger ${isSelected ? 'tree-node-trigger-selected' : ''}`}>
-        {template.trigger}
-      </span>
+      {isDraggable && (
+        <div
+          className="tree-node-drag-handle"
+          {...attributes}
+          {...listeners}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical size={12} />
+        </div>
+      )}
       <span className={`tree-node-name ${isSelected ? 'tree-node-name-selected' : ''}`}>
         {template.name}
       </span>
-      <TreeNodeMenu onEdit={onEdit} onDelete={onDelete} />
-    </div>
-  );
-}
-
-interface TreeNodeMenuProps {
-  onEdit?: () => void;
-  onDelete?: () => void;
-}
-
-function TreeNodeMenu({ onEdit, onDelete }: TreeNodeMenuProps): React.ReactElement {
-  if (!onEdit && !onDelete) {
-    return <></>;
-  }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className="tree-node-menu"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <MoreHorizontal size={14} className="text-muted" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        {onEdit && (
-          <DropdownMenuItem
+      <span className={`tree-node-trigger ${isSelected ? 'tree-node-trigger-selected' : ''}`}>
+        {template.trigger}
+      </span>
+      <div className="tree-node-actions">
+        {onDuplicate && (
+          <button
+            className="tree-node-action-btn"
+            title="Duplicate snippet"
             onClick={(e) => {
               e.stopPropagation();
-              onEdit();
+              onDuplicate();
             }}
           >
-            <Pencil size={12} />
-            Edit
-          </DropdownMenuItem>
+            <Copy size={14} />
+          </button>
         )}
         {onDelete && (
-          <DropdownMenuItem
-            destructive
+          <button
+            className="tree-node-action-btn tree-node-action-btn-danger"
+            title="Delete snippet"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
             }}
           >
-            <Trash2 size={12} />
-            Delete
-          </DropdownMenuItem>
+            <Trash2 size={14} />
+          </button>
         )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </div>
+    </div>
   );
 }
+

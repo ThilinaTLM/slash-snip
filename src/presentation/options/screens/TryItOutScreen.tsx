@@ -1,16 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, ChevronUp, Play, Clipboard, MousePointerClick } from 'lucide-react';
+import { Play, Clipboard, MousePointerClick } from 'lucide-react';
 import type { TemplateDTO } from '@application/dto';
 import { PlaceholderProcessor } from '@domain/services/PlaceholderProcessor';
 import { Input } from '@ui/input';
 import { Textarea } from '@ui/textarea';
 
-interface TryItOutProps {
+interface TryItOutScreenProps {
   templates: TemplateDTO[];
 }
 
-export function TryItOut({ templates }: TryItOutProps): React.ReactElement {
-  const [isExpanded, setIsExpanded] = useState(true);
+export function TryItOutScreen({ templates }: TryItOutScreenProps): React.ReactElement {
   const [input, setInput] = useState('');
   const [simulatedClipboard, setSimulatedClipboard] = useState('clipboard text');
   const [simulatedSelection, setSimulatedSelection] = useState('selected text');
@@ -55,31 +54,39 @@ export function TryItOut({ templates }: TryItOutProps): React.ReactElement {
   }, [input, templates, processor, simulatedClipboard, simulatedSelection]);
 
   return (
-    <div className="try-it-out">
-      {/* Header */}
-      <button
-        className="try-it-out-header"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        <div className="try-it-out-header-left">
-          <Play size={16} className="text-accent" />
-          <span className="try-it-out-title">Try It Out</span>
-          {matchedTemplate && (
-            <span className="try-it-out-match">Matched: {matchedTemplate.trigger}</span>
-          )}
+    <div className="try-it-out-screen">
+      <div className="try-it-out-container">
+        <div className="try-it-out-header-section">
+          <div className="try-it-out-icon-wrapper">
+            <Play size={20} />
+          </div>
+          <div>
+            <h1 className="try-it-out-page-title">Try It Out</h1>
+            <p className="try-it-out-page-subtitle">
+              Test your snippets by typing triggers below. See how placeholders expand in real-time.
+            </p>
+          </div>
         </div>
-        {isExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
-      </button>
 
-      {/* Content */}
-      {isExpanded && (
-        <div className="try-it-out-content">
-          {/* Simulated context inputs */}
-          <div className="try-it-out-context">
+        {/* Status indicator */}
+        {matchedTemplate && (
+          <div className="try-it-out-status">
+            Matched: <span className="try-it-out-status-trigger">{matchedTemplate.trigger}</span>
+            <span className="try-it-out-status-name">({matchedTemplate.name})</span>
+          </div>
+        )}
+
+        {/* Simulated context inputs */}
+        <div className="try-it-out-section">
+          <h2 className="try-it-out-section-title">Simulated Context</h2>
+          <p className="try-it-out-section-description">
+            Set values for placeholders like <code>{'<clipboard>'}</code> and <code>{'<selection>'}</code>
+          </p>
+          <div className="try-it-out-context-grid">
             <div className="try-it-out-context-field">
               <label className="try-it-out-context-label">
-                <Clipboard size={12} />
-                Simulated Clipboard
+                <Clipboard size={14} />
+                Clipboard
               </label>
               <Input
                 type="text"
@@ -90,8 +97,8 @@ export function TryItOut({ templates }: TryItOutProps): React.ReactElement {
             </div>
             <div className="try-it-out-context-field">
               <label className="try-it-out-context-label">
-                <MousePointerClick size={12} />
-                Simulated Selection
+                <MousePointerClick size={14} />
+                Selection
               </label>
               <Input
                 type="text"
@@ -101,34 +108,43 @@ export function TryItOut({ templates }: TryItOutProps): React.ReactElement {
               />
             </div>
           </div>
+        </div>
 
-          {/* Input and Output */}
-          <div className="try-it-out-row">
-            <div>
-              <label className="try-it-out-field-label">Type triggers here</label>
+        {/* Input and Output */}
+        <div className="try-it-out-section">
+          <h2 className="try-it-out-section-title">Test Area</h2>
+          <div className="try-it-out-test-grid">
+            <div className="try-it-out-test-field">
+              <label className="try-it-out-test-label">Input</label>
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={templates.length > 0 ? `Try typing "${templates[0].trigger} "...` : 'Create a template first...'}
-                style={{ height: '96px' }}
+                style={{ height: '160px' }}
                 mono
               />
             </div>
-            <div>
-              <label className="try-it-out-field-label">Preview (expansion result)</label>
-              <div className="try-it-out-preview">
-                {output || <span className="try-it-out-preview-placeholder">Output will appear here...</span>}
+            <div className="try-it-out-test-field">
+              <label className="try-it-out-test-label">Output (expansion result)</label>
+              <div className="try-it-out-output">
+                {output || <span className="try-it-out-output-placeholder">Output will appear here...</span>}
               </div>
             </div>
           </div>
-
-          {/* Hint */}
-          <p className="try-it-out-hint">
-            Type a trigger (like <code>{templates[0]?.trigger || '/hello'}</code>) followed by a space to see it expand.
-            Placeholders like <code>{'<clipboard>'}</code> will use the simulated values above.
-          </p>
         </div>
-      )}
+
+        {/* Help text */}
+        <div className="try-it-out-help">
+          <p>
+            Type a trigger (like <code>{templates[0]?.trigger || '/hello'}</code>) followed by a space to see it expand.
+          </p>
+          {templates.length === 0 && (
+            <p className="try-it-out-help-warning">
+              No snippets found. Create some snippets first to test them here.
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

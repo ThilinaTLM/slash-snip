@@ -1,89 +1,121 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Trash2, Copy } from 'lucide-react';
-import type { TemplateDTO, CreateTemplateDTO, UpdateTemplateDTO, GroupDTO } from '@application/dto';
-import { GroupSelector } from './GroupSelector';
+import { Check } from 'lucide-react';
+import type { TemplateDTO, UpdateTemplateDTO } from '@application/dto';
 import { PlaceholderToolbar } from './PlaceholderToolbar';
-import { Button } from '@ui/button';
 import { Input } from '@ui/input';
 import { Textarea } from '@ui/textarea';
 
 interface TemplateEditorProps {
-  template: TemplateDTO | null;
-  groups: GroupDTO[];
-  onSave: (data: CreateTemplateDTO | UpdateTemplateDTO) => void;
-  onCancel: () => void;
-  onDelete?: () => void;
-  onDuplicate?: () => void;
-  onCreateGroup?: () => void;
+  template: TemplateDTO;
+  onSave: (data: UpdateTemplateDTO) => void;
 }
 
 interface FormData {
   trigger: string;
   name: string;
   content: string;
-  description: string;
-  groupId: string | undefined;
   tags: string;
 }
 
-function getInitialFormData(template: TemplateDTO | null): FormData {
-  if (template) {
-    return {
-      trigger: template.trigger,
-      name: template.name,
-      content: template.content,
-      description: template.description ?? '',
-      groupId: template.categoryId,
-      tags: template.tags.join(', '),
-    };
-  }
+function getInitialFormData(template: TemplateDTO): FormData {
   return {
-    trigger: '',
-    name: '',
-    content: '',
-    description: '',
-    groupId: undefined,
-    tags: '',
+    trigger: template.trigger,
+    name: template.name,
+    content: template.content,
+    tags: template.tags.join(', '),
   };
 }
 
 export function TemplateEditor({
   template,
-  groups,
   onSave,
-  onCancel,
-  onDelete,
-  onDuplicate,
-  onCreateGroup,
 }: TemplateEditorProps): React.ReactElement {
-  const isEditMode = template !== null;
   const [formData, setFormData] = useState<FormData>(() =>
     getInitialFormData(template)
   );
   const [error, setError] = useState<string | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const contentRef = useRef<HTMLTextAreaElement>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const templateIdRef = useRef(template.id);
 
+  // Reset form when template changes
   useEffect(() => {
-    setFormData(getInitialFormData(template));
-    setError(null);
-    setHasChanges(false);
+    // Only reset if we switched to a different template
+    if (template.id !== templateIdRef.current) {
+      templateIdRef.current = template.id;
+      setFormData(getInitialFormData(template));
+      setError(null);
+      setSaveStatus('idle');
+    }
   }, [template]);
+
+  // Auto-save with debounce
+  const performSave = useCallback((data: FormData) => {
+    const trigger = data.trigger.trim();
+    const name = data.name.trim();
+
+    // Validate before saving
+    if (!trigger || trigger.length < 2 || trigger.length > 32 || /\s/.test(trigger)) {
+      return;
+    }
+    if (!name || name.length > 100) {
+      return;
+    }
+    if (data.content.length > 10000) {
+      return;
+    }
+
+    const tags = data.tags
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+
+    const updates: UpdateTemplateDTO = {
+      id: template.id,
+      trigger,
+      name,
+      content: data.content,
+      categoryId: template.categoryId,
+      tags,
+    };
+
+    setSaveStatus('saving');
+    onSave(updates);
+
+    // Show "Saved" status briefly
+    setTimeout(() => setSaveStatus('saved'), 100);
+    setTimeout(() => setSaveStatus('idle'), 2000);
+  }, [template.id, template.categoryId, onSave]);
+
+  const debouncedSave = useCallback((data: FormData) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      performSave(data);
+    }, 500);
+  }, [performSave]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleChange = useCallback(
     (field: keyof FormData) =>
       (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-        setHasChanges(true);
+        const newData = { ...formData, [field]: e.target.value };
+        setFormData(newData);
         setError(null);
+        debouncedSave(newData);
       },
-    []
+    [formData, debouncedSave]
   );
-
-  const handleGroupChange = useCallback((groupId: string | undefined) => {
-    setFormData((prev) => ({ ...prev, groupId }));
-    setHasChanges(true);
-  }, []);
 
   const handleInsertPlaceholder = useCallback((placeholder: string) => {
     const textarea = contentRef.current;
@@ -94,124 +126,33 @@ export function TemplateEditor({
     const content = formData.content;
 
     const newContent = content.slice(0, start) + placeholder + content.slice(end);
-    setFormData((prev) => ({ ...prev, content: newContent }));
-    setHasChanges(true);
+    const newData = { ...formData, content: newContent };
+    setFormData(newData);
+    debouncedSave(newData);
 
     requestAnimationFrame(() => {
       textarea.focus();
       const newPosition = start + placeholder.length;
       textarea.setSelectionRange(newPosition, newPosition);
     });
-  }, [formData.content]);
-
-  const validate = (): boolean => {
-    const trigger = formData.trigger.trim();
-    const name = formData.name.trim();
-
-    if (!trigger) {
-      setError('Trigger is required');
-      return false;
-    }
-
-    if (trigger.length < 2) {
-      setError('Trigger must be at least 2 characters');
-      return false;
-    }
-
-    if (trigger.length > 32) {
-      setError('Trigger must be 32 characters or less');
-      return false;
-    }
-
-    if (/\s/.test(trigger)) {
-      setError('Trigger cannot contain whitespace');
-      return false;
-    }
-
-    if (!name) {
-      setError('Name is required');
-      return false;
-    }
-
-    if (name.length > 100) {
-      setError('Name must be 100 characters or less');
-      return false;
-    }
-
-    if (formData.content.length > 10000) {
-      setError('Content must be 10,000 characters or less');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (!validate()) {
-      return;
-    }
-
-    const trigger = formData.trigger.trim();
-    const name = formData.name.trim();
-    const content = formData.content;
-    const description = formData.description.trim() || undefined;
-    const groupId = formData.groupId;
-    const tags = formData.tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-
-    if (isEditMode && template) {
-      const updates: UpdateTemplateDTO = {
-        id: template.id,
-        trigger,
-        name,
-        content,
-        description,
-        categoryId: groupId,
-        tags,
-      };
-      onSave(updates);
-    } else {
-      const data: CreateTemplateDTO = {
-        trigger,
-        name,
-        content,
-        description,
-        categoryId: groupId,
-        tags,
-      };
-      onSave(data);
-    }
-
-    setHasChanges(false);
-  };
-
-  const handleCancel = () => {
-    if (hasChanges) {
-      const confirmed = window.confirm(
-        'You have unsaved changes. Are you sure you want to cancel?'
-      );
-      if (!confirmed) {
-        return;
-      }
-    }
-    onCancel();
-  };
+  }, [formData, debouncedSave]);
 
   return (
-    <form className="editor-form" onSubmit={handleSubmit}>
+    <div className="editor-form">
       {/* Header */}
       <div className="editor-header">
-        <h2 className="editor-title">
-          {isEditMode ? 'Edit Snippet' : 'New Snippet'}
-        </h2>
-        {isEditMode && template && template.usageCount > 0 && (
-          <span className="editor-usage">Used {template.usageCount}x</span>
-        )}
+        <h2 className="editor-title">Edit Snippet</h2>
+        <div className="editor-header-right">
+          {saveStatus === 'saved' && (
+            <span className="editor-saved">
+              <Check size={14} />
+              Saved
+            </span>
+          )}
+          {template.usageCount > 0 && (
+            <span className="editor-usage">Used {template.usageCount}x</span>
+          )}
+        </div>
       </div>
 
       {error && <div className="editor-error">{error}</div>}
@@ -226,7 +167,6 @@ export function TemplateEditor({
             value={formData.trigger}
             onChange={handleChange('trigger')}
             placeholder="/hello"
-            autoFocus={!isEditMode}
           />
           <span className="editor-hint">Type + space to expand</span>
         </div>
@@ -244,7 +184,7 @@ export function TemplateEditor({
       </div>
 
       {/* Content */}
-      <div className="editor-field">
+      <div className="editor-field editor-field-grow">
         <label htmlFor="content" className="editor-label">Content</label>
         <PlaceholderToolbar onInsert={handleInsertPlaceholder} />
         <Textarea
@@ -253,73 +193,24 @@ export function TemplateEditor({
           value={formData.content}
           onChange={handleChange('content')}
           placeholder="Hello <input:Name>!&#10;Today is <date>."
-          rows={6}
+          rows={12}
           mono
+          className="editor-content-textarea"
         />
       </div>
 
-      {/* Group & Tags row */}
-      <div className="editor-row">
-        <div className="editor-field">
-          <label htmlFor="group" className="editor-label">Group</label>
-          <GroupSelector
-            groups={groups}
-            value={formData.groupId}
-            onChange={handleGroupChange}
-            onCreateNew={onCreateGroup}
-          />
-        </div>
-
-        <div className="editor-field">
-          <label htmlFor="tags" className="editor-label">Tags</label>
-          <Input
-            id="tags"
-            type="text"
-            value={formData.tags}
-            onChange={handleChange('tags')}
-            placeholder="greeting, email"
-          />
-          <span className="editor-hint">Comma-separated</span>
-        </div>
-      </div>
-
-      {/* Description */}
+      {/* Tags */}
       <div className="editor-field">
-        <label htmlFor="description" className="editor-label">Description</label>
+        <label htmlFor="tags" className="editor-label">Tags</label>
         <Input
-          id="description"
+          id="tags"
           type="text"
-          value={formData.description}
-          onChange={handleChange('description')}
-          placeholder="Optional description"
+          value={formData.tags}
+          onChange={handleChange('tags')}
+          placeholder="greeting, email"
         />
+        <span className="editor-hint">Comma-separated</span>
       </div>
-
-      {/* Actions */}
-      <div className="editor-actions">
-        <div className="editor-actions-left">
-          {isEditMode && onDelete && (
-            <Button type="button" variant="destructive" size="sm" onClick={onDelete}>
-              <Trash2 size={14} />
-              Delete
-            </Button>
-          )}
-          {isEditMode && onDuplicate && (
-            <Button type="button" variant="secondary" size="sm" onClick={onDuplicate}>
-              <Copy size={14} />
-              Duplicate
-            </Button>
-          )}
-        </div>
-        <div className="editor-actions-right">
-          <Button type="button" variant="secondary" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={!hasChanges && isEditMode}>
-            {isEditMode ? 'Save' : 'Create'}
-          </Button>
-        </div>
-      </div>
-    </form>
+    </div>
   );
 }

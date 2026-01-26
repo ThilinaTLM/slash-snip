@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, FolderPlus, Search, Inbox } from 'lucide-react';
+import { Search, Inbox, FolderPlus } from 'lucide-react';
+import { useDroppable } from '@dnd-kit/core';
 import type { TemplateDTO, GroupDTO } from '@application/dto';
 import { TreeNode } from './TreeNode';
-import { Button } from '@ui/button';
+import { DndTreeContext } from './DndTreeContext';
 import { Input } from '@ui/input';
 
 interface TemplateTreeProps {
@@ -12,11 +13,13 @@ interface TemplateTreeProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onSelectTemplate: (id: string) => void;
-  onNewTemplate: () => void;
+  onNewTemplate: (groupId?: string) => void;
   onNewGroup: () => void;
   onEditGroup: (group: GroupDTO) => void;
   onDeleteGroup: (group: GroupDTO) => void;
   onDeleteTemplate: (template: TemplateDTO) => void;
+  onDuplicateTemplate: (template: TemplateDTO) => void;
+  onMoveTemplate?: (templateId: string, targetGroupId: string | null) => void;
 }
 
 interface TreeGroup {
@@ -36,6 +39,8 @@ export function TemplateTree({
   onEditGroup,
   onDeleteGroup,
   onDeleteTemplate,
+  onDuplicateTemplate,
+  onMoveTemplate,
 }: TemplateTreeProps): React.ReactElement {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => {
     // Initially expand all groups
@@ -86,18 +91,6 @@ export function TemplateTree({
 
   return (
     <div className="tree-panel">
-      {/* Header with actions */}
-      <div className="tree-actions">
-        <Button size="sm" onClick={onNewTemplate} title="New Template">
-          <Plus size={14} />
-          <span>Template</span>
-        </Button>
-        <Button variant="secondary" size="sm" onClick={onNewGroup} title="New Group">
-          <FolderPlus size={14} />
-          <span>Group</span>
-        </Button>
-      </div>
-
       {/* Search */}
       <div className="tree-search">
         <Search size={14} className="tree-search-icon" />
@@ -124,60 +117,105 @@ export function TemplateTree({
             <p className="tree-empty-subtitle">No results for &ldquo;{searchQuery}&rdquo;</p>
           </div>
         ) : (
-          <div className="tree">
-            {/* Groups with templates */}
-            {groupedData.map(({ group, templates: groupTemplates }) => (
-              <TreeNode
-                key={group.id}
-                type="group"
-                data={group}
-                isExpanded={expandedGroups.has(group.id)}
-                templateCount={groupTemplates.length}
-                onToggle={() => toggleGroup(group.id)}
-                onEdit={() => onEditGroup(group)}
-                onDelete={() => onDeleteGroup(group)}
-              >
-                {groupTemplates.map((template) => (
-                  <TreeNode
-                    key={template.id}
-                    type="template"
-                    data={template}
-                    depth={1}
-                    isSelected={selectedId === template.id}
-                    onSelect={() => onSelectTemplate(template.id)}
-                    onDelete={() => onDeleteTemplate(template)}
-                  />
-                ))}
-              </TreeNode>
-            ))}
+          <DndTreeContext templates={templates} onMoveTemplate={onMoveTemplate}>
+            <div className="tree">
+              {/* Groups with templates */}
+              {groupedData.map(({ group, templates: groupTemplates }) => (
+                <TreeNode
+                  key={group.id}
+                  type="group"
+                  data={group}
+                  isExpanded={expandedGroups.has(group.id)}
+                  isDropTarget={true}
+                  templateCount={groupTemplates.length}
+                  onToggle={() => toggleGroup(group.id)}
+                  onEdit={() => onEditGroup(group)}
+                  onDelete={() => onDeleteGroup(group)}
+                  onAddTemplate={() => onNewTemplate(group.id)}
+                >
+                  {groupTemplates.map((template) => (
+                    <TreeNode
+                      key={template.id}
+                      type="template"
+                      data={template}
+                      depth={1}
+                      isSelected={selectedId === template.id}
+                      isDraggable={true}
+                      onSelect={() => onSelectTemplate(template.id)}
+                      onDuplicate={() => onDuplicateTemplate(template)}
+                      onDelete={() => onDeleteTemplate(template)}
+                    />
+                  ))}
+                </TreeNode>
+              ))}
 
-            {/* Ungrouped templates */}
-            {ungroupedTemplates.length > 0 && (
-              <>
-                {groups.length > 0 && (
-                  <div className="tree-section-label">Ungrouped</div>
-                )}
-                {ungroupedTemplates.map((template) => (
-                  <TreeNode
-                    key={template.id}
-                    type="template"
-                    data={template}
-                    isSelected={selectedId === template.id}
-                    onSelect={() => onSelectTemplate(template.id)}
-                    onDelete={() => onDeleteTemplate(template)}
-                  />
-                ))}
-              </>
-            )}
-          </div>
+              {/* Ungrouped templates */}
+              {ungroupedTemplates.length > 0 && (
+                <UngroupedSection
+                  templates={ungroupedTemplates}
+                  selectedId={selectedId}
+                  hasGroups={groups.length > 0}
+                  onSelectTemplate={onSelectTemplate}
+                  onDuplicateTemplate={onDuplicateTemplate}
+                  onDeleteTemplate={onDeleteTemplate}
+                />
+              )}
+            </div>
+          </DndTreeContext>
         )}
       </div>
 
-      {/* Footer with stats */}
+      {/* Footer with stats and new group button */}
       <div className="tree-footer">
-        <span>{templates.length} snippet{templates.length !== 1 ? 's' : ''}</span>
-        <span>{groups.length} group{groups.length !== 1 ? 's' : ''}</span>
+        <div className="tree-footer-stats">
+          <span>{templates.length} snippet{templates.length !== 1 ? 's' : ''}</span>
+          <span>{groups.length} group{groups.length !== 1 ? 's' : ''}</span>
+        </div>
+        <button className="tree-footer-add-group" onClick={onNewGroup}>
+          <FolderPlus size={14} />
+          <span>New Group</span>
+        </button>
       </div>
+    </div>
+  );
+}
+
+interface UngroupedSectionProps {
+  templates: TemplateDTO[];
+  selectedId: string | null;
+  hasGroups: boolean;
+  onSelectTemplate: (id: string) => void;
+  onDuplicateTemplate: (template: TemplateDTO) => void;
+  onDeleteTemplate: (template: TemplateDTO) => void;
+}
+
+function UngroupedSection({
+  templates,
+  selectedId,
+  hasGroups,
+  onSelectTemplate,
+  onDuplicateTemplate,
+  onDeleteTemplate,
+}: UngroupedSectionProps): React.ReactElement {
+  const { setNodeRef, isOver } = useDroppable({
+    id: 'ungrouped',
+  });
+
+  return (
+    <div ref={setNodeRef} className={isOver ? 'tree-section-drop-target' : ''}>
+      {hasGroups && <div className="tree-section-label">Ungrouped</div>}
+      {templates.map((template) => (
+        <TreeNode
+          key={template.id}
+          type="template"
+          data={template}
+          isSelected={selectedId === template.id}
+          isDraggable={true}
+          onSelect={() => onSelectTemplate(template.id)}
+          onDuplicate={() => onDuplicateTemplate(template)}
+          onDelete={() => onDeleteTemplate(template)}
+        />
+      ))}
     </div>
   );
 }

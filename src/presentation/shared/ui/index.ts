@@ -24,6 +24,7 @@ export {
   DropdownMenuSeparator,
 } from "./dropdown-menu";
 export { Switch } from "./switch";
+export { ConfirmDialog } from "./confirm-dialog";
 export {
   Card,
   CardHeader,

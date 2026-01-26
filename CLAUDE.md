@@ -76,6 +76,8 @@ Configured in both `tsconfig.json` and `vite.config.ts`:
 - `@presentation/*` → `src/presentation/*`
 - `@shared/*` → `src/shared/*`
 - `@di/*` → `src/di/*`
+- `@ui/*` → `src/presentation/shared/ui/*`
+- `@lib/*` → `src/presentation/shared/lib/*`
 
 ## Data Schemas
 
@@ -99,3 +101,11 @@ Tests use Vitest and are co-located with source files using `.test.ts` suffix.
 ## Development Status
 
 Project is currently in Phase 3 (Interactive Templates). See `docs/PHASES.md` for the full roadmap.
+
+### Phase Overview
+1. **Phase 1** ✓ - Foundation: Basic template expansion
+2. **Phase 2** ✓ - Placeholders: `<clipboard>`, `<date>`, `<cursor>`, undo support
+3. **Phase 3** (current) - Interactive: `<input:Label>`, `<select:...>`, tab stops, transforms
+4. **Phase 4** - Organization: Categories, tags, search, full options page
+5. **Phase 5** - Quick Access: Command palette, context menu, favorites
+6. **Phase 6** - Advanced: Import/export, site restrictions, settings
