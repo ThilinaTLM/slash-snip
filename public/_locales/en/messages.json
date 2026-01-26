@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "SlashSnip",
+    "description": "The name of the extension"
+  },
+  "extensionDescription": {
+    "message": "Text expansion with customizable triggers and templates",
+    "description": "The description of the extension"
+  },
+  "commandOpenPopup": {
+    "message": "Open SlashSnip popup",
+    "description": "Description for the keyboard shortcut to open the popup"
+  }
+}
