@@ -10,3 +10,10 @@ export {
   DEFAULT_TIME_FORMAT,
   DEFAULT_DATETIME_FORMAT,
 } from './date';
+
+// Text transformers
+export { applyTransform, isTransformModifier, TRANSFORM_MODIFIERS } from './transformers';
+
+// Fuzzy search
+export { fuzzyMatch, fuzzySearch } from './fuzzySearch';
+export type { FuzzyMatch, FuzzyResult } from './fuzzySearch';

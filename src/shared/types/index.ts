@@ -32,7 +32,11 @@ export interface MessageResponse<T = unknown> {
 // Placeholder types
 export type {
   PlaceholderType,
+  TransformModifier,
   ParsedPlaceholder,
   PlaceholderContext,
   ProcessedContent,
+  InputFieldDefinition,
+  TabStopDefinition,
+  InputDialogResult,
 } from './placeholder';

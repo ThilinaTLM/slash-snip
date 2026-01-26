@@ -23,7 +23,7 @@
       <li>Open DevTools (F12) to see debug logs</li>
     </ol>
 
-    <strong style="margin-top: 15px; display: block;">Placeholder Testing:</strong>
+    <strong style="margin-top: 15px; display: block;">Phase 2 - Placeholder Testing:</strong>
     <p>Create these test templates in the popup:</p>
     <ul>
       <li><code>/clip</code> &rarr; <code>Clipboard: &lt;clipboard&gt;</code></li>
@@ -39,6 +39,33 @@
       <li>Type <code>/time </code> - should show current time (HH:mm)</li>
       <li>Type <code>/sig </code> - cursor should be positioned after "Best regards,"</li>
       <li>Type <code>/full </code> - should show date, time, and clipboard content</li>
+    </ol>
+
+    <strong style="margin-top: 15px; display: block;">Phase 3 - Interactive Templates:</strong>
+    <p>Create these test templates for user input, tab stops, and transforms:</p>
+    <ul>
+      <li><code>/name</code> &rarr; <code>Hello &lt;input:Name&gt;!</code></li>
+      <li><code>/namedef</code> &rarr; <code>Hello &lt;input:Name:World&gt;!</code></li>
+      <li><code>/color</code> &rarr; <code>Color: &lt;select:Pick:red,green,blue&gt;</code></li>
+      <li><code>/form</code> &rarr; <code>Name: &lt;tab:1&gt;\nEmail: &lt;tab:2&gt;</code></li>
+      <li><code>/formdef</code> &rarr; <code>Status: &lt;tab:1:TODO&gt;</code></li>
+      <li><code>/upper</code> &rarr; <code>CLIPBOARD: &lt;clipboard:upper&gt;</code></li>
+      <li><code>/lower</code> &rarr; <code>clipboard: &lt;clipboard:lower&gt;</code></li>
+      <li><code>/title</code> &rarr; <code>Name: &lt;clipboard:title&gt;</code></li>
+      <li><code>/mixed</code> &rarr; <code>Dear &lt;input:Name&gt;,\n&lt;tab:1:message here&gt;\nDate: &lt;date&gt;</code></li>
+    </ul>
+    <p><strong>Test cases:</strong></p>
+    <ol>
+      <li><code>/name </code> - dialog should appear asking for Name, value gets inserted</li>
+      <li><code>/namedef </code> - dialog should have "World" pre-filled as default</li>
+      <li><code>/color </code> - dropdown dialog should appear with red, green, blue options</li>
+      <li>Press Escape in dialog - expansion should be cancelled, trigger text remains</li>
+      <li><code>/form </code> - after expansion, Tab key should navigate between positions</li>
+      <li><code>/formdef </code> - "TODO" should be selected, Tab/Shift+Tab to navigate</li>
+      <li>Copy "hello world" to clipboard, type <code>/upper </code> - should show "HELLO WORLD"</li>
+      <li>Copy "HELLO WORLD" to clipboard, type <code>/lower </code> - should show "hello world"</li>
+      <li>Copy "john doe" to clipboard, type <code>/title </code> - should show "John Doe"</li>
+      <li><code>/mixed </code> - combines input dialog with tab stops and date placeholder</li>
     </ol>
   </div>
 

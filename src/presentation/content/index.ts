@@ -7,6 +7,8 @@ import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES } from '@shared/constants';
 import { PlaceholderProcessor } from '@domain/services';
 import { ClipboardAdapter } from '@infrastructure/chrome/clipboard';
+import { inputDialog } from './InputDialog';
+import { tabStopManager } from './TabStopManager';
 import type { TemplateDTO } from '@application/dto';
 import type { PlaceholderContext } from '@shared/types';
 
@@ -47,15 +49,38 @@ async function handleInput(event: Event): Promise<void> {
     const template = await fetchTemplate(match.trigger);
     if (!template) return;
 
-    // Gather placeholder context and process
+    // Gather placeholder context
     const context = await gatherPlaceholderContext(target);
-    const processed = placeholderProcessor.process(template.content, context);
+
+    // Check for interactive placeholders that require user input
+    const interactiveFields = placeholderProcessor.analyzeInteractive(template.content);
+
+    let inputValues: Record<string, string> = {};
+
+    if (interactiveFields && interactiveFields.length > 0) {
+      const result = await inputDialog.show(interactiveFields);
+      if (result.cancelled) {
+        console.log('[SlashSnip] User cancelled input dialog');
+        return; // Abort expansion
+      }
+      inputValues = result.values;
+    }
+
+    // Process with context and any user inputs
+    const processed = interactiveFields
+      ? placeholderProcessor.processWithInputs(template.content, context, inputValues, interactiveFields)
+      : placeholderProcessor.process(template.content, context);
 
     console.log('[SlashSnip] Processed content:', processed);
 
     expander.expand(target, match, processed.text, {
       cursorOffset: processed.cursorOffset,
     });
+
+    // Activate tab stops if present
+    if (processed.tabStops && processed.tabStops.length > 0) {
+      tabStopManager.activate(target, processed.tabStops, match.startIndex);
+    }
   } else if (target instanceof HTMLElement && target.isContentEditable) {
     // Contenteditable handling
     const result = detector.detectTriggerInContenteditable(target);
@@ -76,15 +101,38 @@ async function handleInput(event: Event): Promise<void> {
     const template = await fetchTemplate(match.trigger);
     if (!template) return;
 
-    // Gather placeholder context and process
+    // Gather placeholder context
     const context = await gatherPlaceholderContext(target);
-    const processed = placeholderProcessor.process(template.content, context);
+
+    // Check for interactive placeholders that require user input
+    const interactiveFields = placeholderProcessor.analyzeInteractive(template.content);
+
+    let inputValues: Record<string, string> = {};
+
+    if (interactiveFields && interactiveFields.length > 0) {
+      const result = await inputDialog.show(interactiveFields);
+      if (result.cancelled) {
+        console.log('[SlashSnip] User cancelled input dialog');
+        return; // Abort expansion
+      }
+      inputValues = result.values;
+    }
+
+    // Process with context and any user inputs
+    const processed = interactiveFields
+      ? placeholderProcessor.processWithInputs(template.content, context, inputValues, interactiveFields)
+      : placeholderProcessor.process(template.content, context);
 
     console.log('[SlashSnip] Processed content:', processed);
 
     expander.expandContenteditable(target, match, processed.text, ctx, {
       cursorOffset: processed.cursorOffset,
     });
+
+    // Activate tab stops if present
+    if (processed.tabStops && processed.tabStops.length > 0) {
+      tabStopManager.activate(target, processed.tabStops, match.startIndex);
+    }
   }
 }
 

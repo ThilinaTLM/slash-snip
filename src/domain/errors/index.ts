@@ -45,3 +45,30 @@ export class InvalidTemplateError extends DomainError {
     super(message);
   }
 }
+
+/**
+ * Category not found in repository
+ */
+export class CategoryNotFoundError extends DomainError {
+  constructor(identifier: string) {
+    super(`Category not found: ${identifier}`);
+  }
+}
+
+/**
+ * Invalid category data
+ */
+export class InvalidCategoryError extends DomainError {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+/**
+ * Duplicate category name
+ */
+export class DuplicateCategoryNameError extends DomainError {
+  constructor(name: string) {
+    super(`Category name already exists: ${name}`);
+  }
+}

@@ -1,3 +1,5 @@
 // Category Use Cases
-// Export category management use cases here
-export {};
+export { CreateCategoryUseCase } from './CreateCategoryUseCase';
+export { UpdateCategoryUseCase } from './UpdateCategoryUseCase';
+export { DeleteCategoryUseCase } from './DeleteCategoryUseCase';
+export { GetAllCategoriesUseCase } from './GetAllCategoriesUseCase';

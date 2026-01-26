@@ -39,30 +39,41 @@ export const STORAGE_KEYS = {
  * Message types for Chrome messaging
  */
 export const MESSAGE_TYPES = {
+  // Template messages
   GET_TEMPLATES: 'GET_TEMPLATES',
   CREATE_TEMPLATE: 'CREATE_TEMPLATE',
   UPDATE_TEMPLATE: 'UPDATE_TEMPLATE',
   DELETE_TEMPLATE: 'DELETE_TEMPLATE',
   GET_BY_TRIGGER: 'GET_BY_TRIGGER',
   EXPAND_TEMPLATE: 'EXPAND_TEMPLATE',
+  // Category messages
+  GET_CATEGORIES: 'GET_CATEGORIES',
+  CREATE_CATEGORY: 'CREATE_CATEGORY',
+  UPDATE_CATEGORY: 'UPDATE_CATEGORY',
+  DELETE_CATEGORY: 'DELETE_CATEGORY',
 } as const;
 
 export type MessageType = (typeof MESSAGE_TYPES)[keyof typeof MESSAGE_TYPES];
 
 /**
  * Regex pattern to match placeholders in template content
- * Matches: <clipboard>, <cursor>, <selection>, <date>, <date:FORMAT>, <time>, <time:FORMAT>, <datetime:FORMAT>
+ * Matches: <clipboard>, <cursor>, <selection>, <date>, <time>, <datetime>, <input>, <select>, <tab>
+ * Also supports transform modifiers like <clipboard:upper>
  */
-export const PLACEHOLDER_PATTERN = /<(clipboard|cursor|selection|date|time|datetime)(?::([^>]+))?>/g;
+export const PLACEHOLDER_PATTERN =
+  /<(clipboard|cursor|selection|date|time|datetime|input|select|tab)(?::([^>]+))?>/g;
 
 /**
  * Individual placeholder patterns for validation
  */
 export const PLACEHOLDER_PATTERNS = {
-  CLIPBOARD: /<clipboard>/g,
+  CLIPBOARD: /<clipboard(?::([^>]+))?>/g,
   CURSOR: /<cursor>/g,
-  SELECTION: /<selection>/g,
+  SELECTION: /<selection(?::([^>]+))?>/g,
   DATE: /<date(?::([^>]+))?>/g,
   TIME: /<time(?::([^>]+))?>/g,
   DATETIME: /<datetime(?::([^>]+))?>/g,
+  INPUT: /<input:([^>]+)>/g,
+  SELECT: /<select:([^>]+)>/g,
+  TAB: /<tab:([^>]+)>/g,
 } as const;
