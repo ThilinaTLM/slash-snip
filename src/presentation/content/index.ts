@@ -1,3 +1,154 @@
 // Content Script Entry Point
 // Vanilla TypeScript for trigger detection and expansion
-export {};
+
+import { TriggerDetector } from './TriggerDetector';
+import { TextExpander } from './TextExpander';
+import { sendMessage } from '@infrastructure/chrome/messaging';
+import { MESSAGE_TYPES } from '@shared/constants';
+import type { TemplateDTO } from '@application/dto';
+
+// Initialize detector and expander
+const detector = new TriggerDetector();
+const expander = new TextExpander();
+
+/**
+ * Handle input events on text inputs, textareas, and contenteditable elements
+ */
+async function handleInput(event: Event): Promise<void> {
+  const target = event.target;
+
+  // Only handle text inputs, textareas, and contenteditable
+  if (!isTextInput(target)) {
+    return;
+  }
+
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+    // Standard input/textarea handling
+    const cursorPosition = target.selectionStart ?? target.value.length;
+    const match = detector.detectTriggerAtCursor(target.value, cursorPosition);
+
+    console.log('[SlashSnip] Input detected:', {
+      value: target.value,
+      cursorPosition,
+      match,
+    });
+
+    if (!match) {
+      return;
+    }
+
+    console.log('[SlashSnip] Trigger match found:', match.trigger);
+
+    const template = await fetchTemplate(match.trigger);
+    if (!template) return;
+
+    expander.expand(target, match, template.content);
+  } else if (target instanceof HTMLElement && target.isContentEditable) {
+    // Contenteditable handling
+    const result = detector.detectTriggerInContenteditable(target);
+
+    console.log('[SlashSnip] Contenteditable input detected:', {
+      text: result?.ctx?.text,
+      match: result?.match,
+    });
+
+    if (!result) {
+      return;
+    }
+
+    const { match, ctx } = result;
+
+    console.log('[SlashSnip] Trigger match found:', match.trigger);
+
+    const template = await fetchTemplate(match.trigger);
+    if (!template) return;
+
+    expander.expandContenteditable(target, match, template.content, ctx);
+  }
+}
+
+/**
+ * Fetch template from background script by trigger
+ */
+async function fetchTemplate(trigger: string): Promise<TemplateDTO | null> {
+  const response = await sendMessage<{ trigger: string }, TemplateDTO | null>(
+    MESSAGE_TYPES.GET_BY_TRIGGER,
+    { trigger }
+  );
+
+  console.log('[SlashSnip] Background response:', response);
+
+  if (!response.success || !response.data) {
+    console.log('[SlashSnip] No template found or error');
+    return null;
+  }
+
+  console.log('[SlashSnip] Expanding template:', response.data.content);
+  return response.data;
+}
+
+/**
+ * Handle keydown for undo support (Ctrl+Z / Cmd+Z)
+ */
+function handleKeydown(event: KeyboardEvent): void {
+  const target = event.target;
+
+  if (!isTextInput(target)) {
+    return;
+  }
+
+  // Check for Ctrl+Z or Cmd+Z
+  if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+    // Check if we have undo data
+    const hasUndoData = !!(target as HTMLElement & { __slashsnipUndo?: unknown }).__slashsnipUndo;
+
+    if (hasUndoData) {
+      event.preventDefault();
+      expander.undo(target as HTMLInputElement | HTMLTextAreaElement | HTMLElement);
+    }
+  }
+}
+
+/**
+ * Check if element is a valid text input (input, textarea, or contenteditable)
+ */
+function isTextInput(element: EventTarget | null): element is HTMLInputElement | HTMLTextAreaElement | HTMLElement {
+  if (!element || !(element instanceof HTMLElement)) {
+    return false;
+  }
+
+  if (element instanceof HTMLTextAreaElement) {
+    return true;
+  }
+
+  if (element instanceof HTMLInputElement) {
+    const type = element.type.toLowerCase();
+    // Include inputs without explicit type (defaults to text) and common text input types
+    return type === '' || type === 'text' || type === 'search' || type === 'url' || type === 'email';
+  }
+
+  // Support contenteditable elements (used by ChatGPT, Gemini, etc.)
+  if (element.isContentEditable) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Initialize content script
+ */
+function init(): void {
+  // Use event delegation on document for dynamic elements
+  document.addEventListener('input', handleInput);
+  document.addEventListener('keydown', handleKeydown);
+
+  console.log('SlashSnip content script initialized');
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}

@@ -1,3 +1,3 @@
 // Domain Entities
-// Export Template, Category entities here
-export {};
+export { Template } from './Template';
+export type { TemplateProps, CreateTemplateInput, UpdateTemplateInput } from './Template';

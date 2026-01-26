@@ -1,3 +1,2 @@
 // Domain Repository Interfaces
-// Export ITemplateRepository, ICategoryRepository, ISettingsRepository here
-export {};
+export type { ITemplateRepository } from './ITemplateRepository';

@@ -1,3 +1,3 @@
 // Chrome Runtime Messaging
-// Export message handlers and senders here
-export {};
+export { sendMessage, MessageRouter, messageRouter } from './MessageService';
+export type { MessageHandler } from './MessageService';

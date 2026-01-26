@@ -1,3 +1,3 @@
 // Data Transfer Objects
-// Export DTOs for use case inputs/outputs here
-export {};
+export type { CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO } from './template.dto';
+export { toTemplateDTO } from './template.dto';

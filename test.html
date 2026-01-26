@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SlashSnip Test Page</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+    label { display: block; margin-top: 20px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 10px; margin-top: 5px; font-size: 16px; }
+    textarea { height: 100px; }
+    .instructions { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>SlashSnip Test Page</h1>
+
+  <div class="instructions">
+    <strong>Instructions:</strong>
+    <ol>
+      <li>Open the SlashSnip popup and create a template with trigger <code>/hello</code></li>
+      <li>Type <code>/hello </code> (with a space at the end) in the inputs below</li>
+      <li>The trigger should expand to your template content</li>
+      <li>Open DevTools (F12) to see debug logs</li>
+    </ol>
+  </div>
+
+  <label for="text-input">Text Input:</label>
+  <input type="text" id="text-input" placeholder="Type /hello here...">
+
+  <label for="textarea">Textarea:</label>
+  <textarea id="textarea" placeholder="Type /hello here..."></textarea>
+
+  <label for="search-input">Search Input:</label>
+  <input type="search" id="search-input" placeholder="Type /hello here...">
+
+  <label for="no-type-input">Input (no type attribute):</label>
+  <input id="no-type-input" placeholder="Type /hello here...">
+
+  <label for="contenteditable-div">Contenteditable Div (like ChatGPT/Gemini):</label>
+  <div id="contenteditable-div" contenteditable="true" style="border: 1px solid #ccc; padding: 10px; min-height: 50px; border-radius: 4px;">Type /hello here...</div>
+
+  <label for="contenteditable-nested">Contenteditable with nested elements:</label>
+  <div id="contenteditable-nested" contenteditable="true" style="border: 1px solid #ccc; padding: 10px; min-height: 50px; border-radius: 4px;"><p>Type <strong>/hello</strong> here to test nested element handling...</p></div>
+</body>
+</html>

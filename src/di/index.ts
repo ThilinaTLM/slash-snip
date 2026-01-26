@@ -1,3 +1,11 @@
 // Dependency Injection Container
-// Export DI containers and configuration here
-export {};
+export {
+  container,
+  getStorageAdapter,
+  getTemplateRepository,
+  getCreateTemplateUseCase,
+  getGetAllTemplatesUseCase,
+  getDeleteTemplateUseCase,
+  getGetTemplateByTriggerUseCase,
+  resetContainer,
+} from './container';

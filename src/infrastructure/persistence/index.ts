@@ -1,3 +1,2 @@
 // Persistence Layer
-// Export schema and migration utilities here
-export {};
+export { TemplateRepository } from './TemplateRepository';
