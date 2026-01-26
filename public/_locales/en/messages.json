@@ -10,5 +10,9 @@
   "commandOpenPopup": {
     "message": "Open SlashSnip popup",
     "description": "Description for the keyboard shortcut to open the popup"
+  },
+  "commandOpenPalette": {
+    "message": "Open command palette",
+    "description": "Description for the keyboard shortcut to open the command palette"
   }
 }

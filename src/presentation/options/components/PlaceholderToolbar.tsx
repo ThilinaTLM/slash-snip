@@ -1,4 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
+import {
+  Clipboard,
+  MousePointer2,
+  TextSelect,
+  Calendar,
+  Clock,
+  CalendarClock,
+  FormInput,
+  MoveHorizontal,
+  ChevronDown,
+  Check,
+  X,
+} from 'lucide-react';
 
 interface PlaceholderToolbarProps {
   onInsert: (placeholder: string) => void;
@@ -86,7 +99,8 @@ export function PlaceholderToolbar({
           onClick={() => handleBasicInsert('clipboard')}
           title="Insert clipboard content"
         >
-          📋 Clipboard
+          <Clipboard size={14} />
+          Clipboard
         </button>
         <button
           type="button"
@@ -94,7 +108,8 @@ export function PlaceholderToolbar({
           onClick={() => handleBasicInsert('cursor')}
           title="Insert cursor position marker"
         >
-          ⌖ Cursor
+          <MousePointer2 size={14} />
+          Cursor
         </button>
         <button
           type="button"
@@ -102,7 +117,8 @@ export function PlaceholderToolbar({
           onClick={() => handleBasicInsert('selection')}
           title="Insert selected text"
         >
-          ✂️ Selection
+          <TextSelect size={14} />
+          Selection
         </button>
       </div>
 
@@ -116,7 +132,9 @@ export function PlaceholderToolbar({
             onClick={() => toggleDropdown('date')}
             title="Insert date"
           >
-            📅 Date ▾
+            <Calendar size={14} />
+            Date
+            <ChevronDown size={12} />
           </button>
           {dropdown.isOpen && dropdown.type === 'date' && (
             <div className="toolbar-dropdown-menu">
@@ -142,7 +160,9 @@ export function PlaceholderToolbar({
             onClick={() => toggleDropdown('time')}
             title="Insert time"
           >
-            🕐 Time ▾
+            <Clock size={14} />
+            Time
+            <ChevronDown size={12} />
           </button>
           {dropdown.isOpen && dropdown.type === 'time' && (
             <div className="toolbar-dropdown-menu">
@@ -167,7 +187,8 @@ export function PlaceholderToolbar({
           onClick={() => handleBasicInsert('datetime')}
           title="Insert date and time"
         >
-          📆 DateTime
+          <CalendarClock size={14} />
+          DateTime
         </button>
       </div>
 
@@ -189,17 +210,19 @@ export function PlaceholderToolbar({
             />
             <button
               type="button"
-              className="toolbar-btn toolbar-btn-sm"
+              className="toolbar-btn"
+              style={{ padding: '0 6px', minWidth: 24 }}
               onClick={handleInputSubmit}
             >
-              ✓
+              <Check size={14} />
             </button>
             <button
               type="button"
-              className="toolbar-btn toolbar-btn-sm"
+              className="toolbar-btn"
+              style={{ padding: '0 6px', minWidth: 24 }}
               onClick={() => setShowInputPrompt(false)}
             >
-              ✕
+              <X size={14} />
             </button>
           </div>
         ) : (
@@ -209,7 +232,8 @@ export function PlaceholderToolbar({
             onClick={() => setShowInputPrompt(true)}
             title="Insert user input prompt"
           >
-            ✏️ Input
+            <FormInput size={14} />
+            Input
           </button>
         )}
         <button
@@ -218,7 +242,8 @@ export function PlaceholderToolbar({
           onClick={() => handleBasicInsert('tab:1')}
           title="Insert tab stop"
         >
-          ⇥ Tab
+          <MoveHorizontal size={14} />
+          Tab
         </button>
       </div>
     </div>

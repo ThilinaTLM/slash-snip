@@ -15,7 +15,6 @@ export interface TemplateProps {
   createdAt: number;
   updatedAt: number;
   usageCount: number;
-  isFavorite: boolean;
 }
 
 export interface CreateTemplateInput {
@@ -34,7 +33,6 @@ export interface UpdateTemplateInput {
   description?: string;
   categoryId?: string | null;
   tags?: string[];
-  isFavorite?: boolean;
 }
 
 export class Template {
@@ -85,10 +83,6 @@ export class Template {
     return this.props.usageCount;
   }
 
-  get isFavorite(): boolean {
-    return this.props.isFavorite;
-  }
-
   /**
    * Factory method to create a new template
    */
@@ -124,7 +118,6 @@ export class Template {
       createdAt: now,
       updatedAt: now,
       usageCount: 0,
-      isFavorite: false,
     });
 
     return ok(template);
@@ -200,7 +193,6 @@ export class Template {
       description: input.description !== undefined ? input.description?.trim() : this.props.description,
       categoryId: input.categoryId === null ? undefined : (input.categoryId ?? this.props.categoryId),
       tags: input.tags ?? this.props.tags,
-      isFavorite: input.isFavorite ?? this.props.isFavorite,
       updatedAt: Date.now(),
     });
 
@@ -214,17 +206,6 @@ export class Template {
     return new Template({
       ...this.props,
       usageCount: this.props.usageCount + 1,
-      updatedAt: Date.now(),
-    });
-  }
-
-  /**
-   * Toggle favorite status
-   */
-  toggleFavorite(): Template {
-    return new Template({
-      ...this.props,
-      isFavorite: !this.props.isFavorite,
       updatedAt: Date.now(),
     });
   }

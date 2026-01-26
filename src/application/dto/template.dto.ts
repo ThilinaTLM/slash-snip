@@ -23,7 +23,6 @@ export interface UpdateTemplateDTO {
   description?: string;
   categoryId?: string | null;
   tags?: string[];
-  isFavorite?: boolean;
 }
 
 /**
@@ -40,7 +39,6 @@ export interface TemplateDTO {
   createdAt: number;
   updatedAt: number;
   usageCount: number;
-  isFavorite: boolean;
 }
 
 /**
@@ -58,6 +56,5 @@ export function toTemplateDTO(template: Template): TemplateDTO {
     createdAt: template.createdAt,
     updatedAt: template.updatedAt,
     usageCount: template.usageCount,
-    isFavorite: template.isFavorite,
   };
 }

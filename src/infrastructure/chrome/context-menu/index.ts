@@ -1,3 +1,2 @@
 // Context Menu Setup
-// Export context menu handlers here
-export {};
+export { ContextMenuService, contextMenuService } from './ContextMenuService';

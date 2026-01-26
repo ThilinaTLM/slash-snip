@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import type { TemplateDTO, CategoryDTO } from '@application/dto';
+import type { TemplateDTO, GroupDTO } from '@application/dto';
 
 interface TemplateListProps {
   templates: TemplateDTO[];
-  categories: CategoryDTO[];
+  groups: GroupDTO[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
@@ -51,7 +51,7 @@ function DeleteConfirmDialog({
 
 export function TemplateList({
   templates,
-  categories,
+  groups,
   selectedId,
   onSelect,
   onDelete,
@@ -78,10 +78,10 @@ export function TemplateList({
     return clean.length > 50 ? clean.slice(0, 50) + '...' : clean;
   };
 
-  const getCategoryName = (categoryId?: string): string | undefined => {
+  const getGroupName = (categoryId?: string): string | undefined => {
     if (!categoryId) return undefined;
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.name;
+    const group = groups.find((g) => g.id === categoryId);
+    return group?.name;
   };
 
   if (templates.length === 0) {
@@ -101,7 +101,7 @@ export function TemplateList({
       <div className="template-list-container">
         <ul className="template-list">
           {templates.map((template) => {
-            const categoryName = getCategoryName(template.categoryId);
+            const groupName = getGroupName(template.categoryId);
             return (
               <li
                 key={template.id}
@@ -113,17 +113,14 @@ export function TemplateList({
                 <div className="template-card-content">
                   <div className="template-card-header">
                     <span className="template-trigger">{template.trigger}</span>
-                    {template.isFavorite && (
-                      <span className="template-favorite" title="Favorite">★</span>
-                    )}
                   </div>
                   <div className="template-name">{template.name}</div>
                   <div className="template-preview">
                     {getContentPreview(template.content)}
                   </div>
-                  {categoryName && (
-                    <div className="template-category-badge">
-                      <span className="badge badge-category">{categoryName}</span>
+                  {groupName && (
+                    <div className="template-group-badge">
+                      <span className="badge badge-group">{groupName}</span>
                     </div>
                   )}
                 </div>

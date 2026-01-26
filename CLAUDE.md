@@ -14,9 +14,12 @@ pnpm build            # TypeScript check + Vite production build
 pnpm typecheck        # Run tsc --noEmit
 pnpm lint             # ESLint check
 pnpm lint:fix         # ESLint with auto-fix
+pnpm format           # Format code with Prettier
+pnpm format:check     # Check formatting
 pnpm test             # Run Vitest in watch mode
 pnpm test:ui          # Vitest with browser UI
 pnpm test:coverage    # Single run with coverage report
+pnpm test path/to/file.test.ts  # Run specific test file
 ```
 
 To load the extension in Chrome: build the project, then load `dist/` as an unpacked extension.
@@ -88,3 +91,11 @@ Core TypeScript interfaces are defined in the SRS (`docs/SRS.md`):
 - **Permissions**: storage, clipboardWrite, contextMenus, activeTab
 - **Default shortcut**: Alt+S to open popup
 - Internationalization support via `_locales/` and `__MSG_*` placeholders
+
+## Testing
+
+Tests use Vitest and are co-located with source files using `.test.ts` suffix.
+
+## Development Status
+
+Project is currently in Phase 3 (Interactive Templates). See `docs/PHASES.md` for the full roadmap.

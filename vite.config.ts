@@ -9,7 +9,6 @@ export default defineConfig({
     webExtension({
       manifest: 'public/manifest.json',
       additionalInputs: [
-        'src/presentation/popup/index.html',
         'src/presentation/options/index.html',
       ],
     }),

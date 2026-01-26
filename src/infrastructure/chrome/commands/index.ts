@@ -1,3 +1,2 @@
 // Keyboard Shortcuts
-// Export command handlers here
-export {};
+export { CommandsService, commandsService } from './CommandsService';

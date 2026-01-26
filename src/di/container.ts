@@ -2,12 +2,17 @@ import { ChromeStorageAdapter } from '@infrastructure/chrome/storage/ChromeStora
 import { ClipboardAdapter } from '@infrastructure/chrome/clipboard';
 import { TemplateRepository } from '@infrastructure/persistence/TemplateRepository';
 import { CategoryRepository } from '@infrastructure/persistence/CategoryRepository';
+import { RecentTemplatesRepository } from '@infrastructure/persistence/RecentTemplatesRepository';
 import {
   CreateTemplateUseCase,
   GetAllTemplatesUseCase,
   UpdateTemplateUseCase,
   DeleteTemplateUseCase,
   GetTemplateByTriggerUseCase,
+  GetTemplateByIdUseCase,
+  IncrementUsageUseCase,
+  GetRecentTemplatesUseCase,
+  SearchTemplatesUseCase,
 } from '@application/use-cases/templates';
 import {
   CreateCategoryUseCase,
@@ -15,8 +20,15 @@ import {
   DeleteCategoryUseCase,
   GetAllCategoriesUseCase,
 } from '@application/use-cases/categories';
+import {
+  CreateGroupUseCase,
+  UpdateGroupUseCase,
+  DeleteGroupUseCase,
+  GetAllGroupsUseCase,
+} from '@application/use-cases/groups';
 import { PlaceholderProcessor } from '@domain/services';
-import type { ITemplateRepository, ICategoryRepository } from '@domain/repositories';
+import { GroupRepository } from '@infrastructure/persistence/GroupRepository';
+import type { ITemplateRepository, ICategoryRepository, IGroupRepository, IRecentTemplatesRepository } from '@domain/repositories';
 import type { IClipboardPort } from '@application/ports';
 
 /**
@@ -29,6 +41,8 @@ let storageAdapter: ChromeStorageAdapter | null = null;
 let clipboardAdapter: IClipboardPort | null = null;
 let templateRepository: ITemplateRepository | null = null;
 let categoryRepository: ICategoryRepository | null = null;
+let groupRepository: IGroupRepository | null = null;
+let recentTemplatesRepository: IRecentTemplatesRepository | null = null;
 
 // Domain service singletons
 let placeholderProcessor: PlaceholderProcessor | null = null;
@@ -39,12 +53,22 @@ let getAllTemplatesUseCase: GetAllTemplatesUseCase | null = null;
 let updateTemplateUseCase: UpdateTemplateUseCase | null = null;
 let deleteTemplateUseCase: DeleteTemplateUseCase | null = null;
 let getTemplateByTriggerUseCase: GetTemplateByTriggerUseCase | null = null;
+let getTemplateByIdUseCase: GetTemplateByIdUseCase | null = null;
+let incrementUsageUseCase: IncrementUsageUseCase | null = null;
+let getRecentTemplatesUseCase: GetRecentTemplatesUseCase | null = null;
+let searchTemplatesUseCase: SearchTemplatesUseCase | null = null;
 
 // Category use case singletons
 let createCategoryUseCase: CreateCategoryUseCase | null = null;
 let updateCategoryUseCase: UpdateCategoryUseCase | null = null;
 let deleteCategoryUseCase: DeleteCategoryUseCase | null = null;
 let getAllCategoriesUseCase: GetAllCategoriesUseCase | null = null;
+
+// Group use case singletons
+let createGroupUseCase: CreateGroupUseCase | null = null;
+let updateGroupUseCase: UpdateGroupUseCase | null = null;
+let deleteGroupUseCase: DeleteGroupUseCase | null = null;
+let getAllGroupsUseCase: GetAllGroupsUseCase | null = null;
 
 /**
  * Get or create ChromeStorageAdapter instance
@@ -84,6 +108,26 @@ export function getCategoryRepository(): ICategoryRepository {
     categoryRepository = new CategoryRepository(getStorageAdapter());
   }
   return categoryRepository;
+}
+
+/**
+ * Get or create GroupRepository instance
+ */
+export function getGroupRepository(): IGroupRepository {
+  if (!groupRepository) {
+    groupRepository = new GroupRepository(getStorageAdapter());
+  }
+  return groupRepository;
+}
+
+/**
+ * Get or create RecentTemplatesRepository instance
+ */
+export function getRecentTemplatesRepository(): IRecentTemplatesRepository {
+  if (!recentTemplatesRepository) {
+    recentTemplatesRepository = new RecentTemplatesRepository(getStorageAdapter());
+  }
+  return recentTemplatesRepository;
 }
 
 /**
@@ -147,6 +191,52 @@ export function getGetTemplateByTriggerUseCase(): GetTemplateByTriggerUseCase {
 }
 
 /**
+ * Get or create GetTemplateByIdUseCase instance
+ */
+export function getGetTemplateByIdUseCase(): GetTemplateByIdUseCase {
+  if (!getTemplateByIdUseCase) {
+    getTemplateByIdUseCase = new GetTemplateByIdUseCase(getTemplateRepository());
+  }
+  return getTemplateByIdUseCase;
+}
+
+/**
+ * Get or create IncrementUsageUseCase instance
+ */
+export function getIncrementUsageUseCase(): IncrementUsageUseCase {
+  if (!incrementUsageUseCase) {
+    incrementUsageUseCase = new IncrementUsageUseCase(
+      getTemplateRepository(),
+      getRecentTemplatesRepository()
+    );
+  }
+  return incrementUsageUseCase;
+}
+
+/**
+ * Get or create GetRecentTemplatesUseCase instance
+ */
+export function getGetRecentTemplatesUseCase(): GetRecentTemplatesUseCase {
+  if (!getRecentTemplatesUseCase) {
+    getRecentTemplatesUseCase = new GetRecentTemplatesUseCase(
+      getTemplateRepository(),
+      getRecentTemplatesRepository()
+    );
+  }
+  return getRecentTemplatesUseCase;
+}
+
+/**
+ * Get or create SearchTemplatesUseCase instance
+ */
+export function getSearchTemplatesUseCase(): SearchTemplatesUseCase {
+  if (!searchTemplatesUseCase) {
+    searchTemplatesUseCase = new SearchTemplatesUseCase(getTemplateRepository());
+  }
+  return searchTemplatesUseCase;
+}
+
+/**
  * Get or create CreateCategoryUseCase instance
  */
 export function getCreateCategoryUseCase(): CreateCategoryUseCase {
@@ -187,6 +277,46 @@ export function getGetAllCategoriesUseCase(): GetAllCategoriesUseCase {
 }
 
 /**
+ * Get or create CreateGroupUseCase instance
+ */
+export function getCreateGroupUseCase(): CreateGroupUseCase {
+  if (!createGroupUseCase) {
+    createGroupUseCase = new CreateGroupUseCase(getGroupRepository());
+  }
+  return createGroupUseCase;
+}
+
+/**
+ * Get or create UpdateGroupUseCase instance
+ */
+export function getUpdateGroupUseCase(): UpdateGroupUseCase {
+  if (!updateGroupUseCase) {
+    updateGroupUseCase = new UpdateGroupUseCase(getGroupRepository());
+  }
+  return updateGroupUseCase;
+}
+
+/**
+ * Get or create DeleteGroupUseCase instance
+ */
+export function getDeleteGroupUseCase(): DeleteGroupUseCase {
+  if (!deleteGroupUseCase) {
+    deleteGroupUseCase = new DeleteGroupUseCase(getGroupRepository());
+  }
+  return deleteGroupUseCase;
+}
+
+/**
+ * Get or create GetAllGroupsUseCase instance
+ */
+export function getGetAllGroupsUseCase(): GetAllGroupsUseCase {
+  if (!getAllGroupsUseCase) {
+    getAllGroupsUseCase = new GetAllGroupsUseCase(getGroupRepository());
+  }
+  return getAllGroupsUseCase;
+}
+
+/**
  * Container object with all factory functions
  */
 export const container = {
@@ -194,16 +324,26 @@ export const container = {
   getClipboardAdapter,
   getTemplateRepository,
   getCategoryRepository,
+  getGroupRepository,
+  getRecentTemplatesRepository,
   getPlaceholderProcessor,
   getCreateTemplateUseCase,
   getGetAllTemplatesUseCase,
   getUpdateTemplateUseCase,
   getDeleteTemplateUseCase,
   getGetTemplateByTriggerUseCase,
+  getGetTemplateByIdUseCase,
+  getIncrementUsageUseCase,
+  getGetRecentTemplatesUseCase,
+  getSearchTemplatesUseCase,
   getCreateCategoryUseCase,
   getUpdateCategoryUseCase,
   getDeleteCategoryUseCase,
   getGetAllCategoriesUseCase,
+  getCreateGroupUseCase,
+  getUpdateGroupUseCase,
+  getDeleteGroupUseCase,
+  getGetAllGroupsUseCase,
 };
 
 /**
@@ -214,14 +354,24 @@ export function resetContainer(): void {
   clipboardAdapter = null;
   templateRepository = null;
   categoryRepository = null;
+  groupRepository = null;
+  recentTemplatesRepository = null;
   placeholderProcessor = null;
   createTemplateUseCase = null;
   getAllTemplatesUseCase = null;
   updateTemplateUseCase = null;
   deleteTemplateUseCase = null;
   getTemplateByTriggerUseCase = null;
+  getTemplateByIdUseCase = null;
+  incrementUsageUseCase = null;
+  getRecentTemplatesUseCase = null;
+  searchTemplatesUseCase = null;
   createCategoryUseCase = null;
   updateCategoryUseCase = null;
   deleteCategoryUseCase = null;
   getAllCategoriesUseCase = null;
+  createGroupUseCase = null;
+  updateGroupUseCase = null;
+  deleteGroupUseCase = null;
+  getAllGroupsUseCase = null;
 }

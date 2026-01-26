@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import type { TemplateDTO, CreateTemplateDTO, UpdateTemplateDTO, CategoryDTO } from '@application/dto';
-import { CategorySelector } from './CategorySelector';
+import { Trash2, Copy } from 'lucide-react';
+import type { TemplateDTO, CreateTemplateDTO, UpdateTemplateDTO, GroupDTO } from '@application/dto';
+import { GroupSelector } from './GroupSelector';
 import { PlaceholderToolbar } from './PlaceholderToolbar';
 
 interface TemplateEditorProps {
   template: TemplateDTO | null;
-  categories: CategoryDTO[];
+  groups: GroupDTO[];
   onSave: (data: CreateTemplateDTO | UpdateTemplateDTO) => void;
   onCancel: () => void;
   onDelete?: () => void;
   onDuplicate?: () => void;
-  onCreateCategory?: () => void;
+  onCreateGroup?: () => void;
 }
 
 interface FormData {
@@ -18,7 +19,7 @@ interface FormData {
   name: string;
   content: string;
   description: string;
-  categoryId: string | undefined;
+  groupId: string | undefined;
   tags: string;
 }
 
@@ -29,7 +30,7 @@ function getInitialFormData(template: TemplateDTO | null): FormData {
       name: template.name,
       content: template.content,
       description: template.description ?? '',
-      categoryId: template.categoryId,
+      groupId: template.categoryId, // Using categoryId for backwards compatibility
       tags: template.tags.join(', '),
     };
   }
@@ -38,19 +39,19 @@ function getInitialFormData(template: TemplateDTO | null): FormData {
     name: '',
     content: '',
     description: '',
-    categoryId: undefined,
+    groupId: undefined,
     tags: '',
   };
 }
 
 export function TemplateEditor({
   template,
-  categories,
+  groups,
   onSave,
   onCancel,
   onDelete,
   onDuplicate,
-  onCreateCategory,
+  onCreateGroup,
 }: TemplateEditorProps): React.ReactElement {
   const isEditMode = template !== null;
   const [formData, setFormData] = useState<FormData>(() =>
@@ -76,8 +77,8 @@ export function TemplateEditor({
     []
   );
 
-  const handleCategoryChange = useCallback((categoryId: string | undefined) => {
-    setFormData((prev) => ({ ...prev, categoryId }));
+  const handleGroupChange = useCallback((groupId: string | undefined) => {
+    setFormData((prev) => ({ ...prev, groupId }));
     setHasChanges(true);
   }, []);
 
@@ -155,7 +156,7 @@ export function TemplateEditor({
     const name = formData.name.trim();
     const content = formData.content;
     const description = formData.description.trim() || undefined;
-    const categoryId = formData.categoryId;
+    const groupId = formData.groupId; // Using categoryId field for backwards compatibility
     const tags = formData.tags
       .split(',')
       .map((t) => t.trim())
@@ -168,7 +169,7 @@ export function TemplateEditor({
         name,
         content,
         description,
-        categoryId,
+        categoryId: groupId, // Mapping groupId to categoryId for backwards compatibility
         tags,
       };
       onSave(updates);
@@ -178,7 +179,7 @@ export function TemplateEditor({
         name,
         content,
         description,
-        categoryId,
+        categoryId: groupId, // Mapping groupId to categoryId for backwards compatibility
         tags,
       };
       onSave(data);
@@ -202,7 +203,9 @@ export function TemplateEditor({
   return (
     <form className="template-editor" onSubmit={handleSubmit}>
       <div className="editor-header">
-        <h2>{isEditMode ? 'Edit Template' : 'New Template'}</h2>
+        <div className="editor-header-title">
+          <h2>{isEditMode ? 'Edit Template' : 'New Template'}</h2>
+        </div>
         {isEditMode && template && (
           <span className="editor-meta">
             Last updated: {new Date(template.updatedAt).toLocaleString()}
@@ -226,7 +229,7 @@ export function TemplateEditor({
             placeholder="/hello"
             autoFocus={!isEditMode}
           />
-          <span className="hint">Type this + space to expand</span>
+          <span className="form-hint">Type this + space to expand</span>
         </div>
 
         <div className="form-group">
@@ -256,12 +259,12 @@ export function TemplateEditor({
 
       <div className="form-row">
         <div className="form-group">
-          <label htmlFor="category">Category</label>
-          <CategorySelector
-            categories={categories}
-            value={formData.categoryId}
-            onChange={handleCategoryChange}
-            onCreateNew={onCreateCategory}
+          <label htmlFor="group">Group</label>
+          <GroupSelector
+            groups={groups}
+            value={formData.groupId}
+            onChange={handleGroupChange}
+            onCreateNew={onCreateGroup}
           />
         </div>
 
@@ -274,7 +277,7 @@ export function TemplateEditor({
             onChange={handleChange('tags')}
             placeholder="greeting, email, work"
           />
-          <span className="hint">Comma-separated</span>
+          <span className="form-hint">Comma-separated</span>
         </div>
       </div>
 
@@ -294,18 +297,20 @@ export function TemplateEditor({
           {isEditMode && onDelete && (
             <button
               type="button"
-              className="btn btn-danger-outline"
+              className="btn btn-danger"
               onClick={onDelete}
             >
+              <Trash2 size={16} />
               Delete
             </button>
           )}
           {isEditMode && onDuplicate && (
             <button
               type="button"
-              className="btn btn-outline"
+              className="btn"
               onClick={onDuplicate}
             >
+              <Copy size={16} />
               Duplicate
             </button>
           )}

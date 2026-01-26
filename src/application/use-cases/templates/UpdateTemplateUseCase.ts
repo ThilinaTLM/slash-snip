@@ -34,7 +34,6 @@ export class UpdateTemplateUseCase {
       description: dto.description,
       categoryId: dto.categoryId,
       tags: dto.tags,
-      isFavorite: dto.isFavorite,
     });
 
     if (updateResult.isErr()) {

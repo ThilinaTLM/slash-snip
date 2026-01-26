@@ -3,6 +3,7 @@
 
 import { TriggerDetector } from './TriggerDetector';
 import { TextExpander } from './TextExpander';
+import { commandPalette } from './CommandPalette';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES } from '@shared/constants';
 import { PlaceholderProcessor } from '@domain/services';
@@ -81,6 +82,9 @@ async function handleInput(event: Event): Promise<void> {
     if (processed.tabStops && processed.tabStops.length > 0) {
       tabStopManager.activate(target, processed.tabStops, match.startIndex);
     }
+
+    // Increment usage count
+    incrementUsage(template.id);
   } else if (target instanceof HTMLElement && target.isContentEditable) {
     // Contenteditable handling
     const result = detector.detectTriggerInContenteditable(target);
@@ -133,6 +137,9 @@ async function handleInput(event: Event): Promise<void> {
     if (processed.tabStops && processed.tabStops.length > 0) {
       tabStopManager.activate(target, processed.tabStops, match.startIndex);
     }
+
+    // Increment usage count
+    incrementUsage(template.id);
   }
 }
 
@@ -231,12 +238,153 @@ function isTextInput(element: EventTarget | null): element is HTMLInputElement |
 }
 
 /**
+ * Increment usage count for a template (fire and forget)
+ */
+function incrementUsage(templateId: string): void {
+  sendMessage<{ id: string }, void>(MESSAGE_TYPES.INCREMENT_USAGE, { id: templateId }).catch(
+    (error) => {
+      console.error('[SlashSnip] Failed to increment usage:', error);
+    }
+  );
+}
+
+/**
+ * Get the currently focused text input element
+ */
+function getActiveTextInput(): HTMLInputElement | HTMLTextAreaElement | HTMLElement | null {
+  const active = document.activeElement;
+  if (active && isTextInput(active)) {
+    return active as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
+  }
+  return null;
+}
+
+/**
+ * Insert template content at the current cursor position
+ */
+async function insertTemplateAtCursor(template: TemplateDTO): Promise<void> {
+  const target = getActiveTextInput();
+  if (!target) {
+    console.log('[SlashSnip] No active text input for template insertion');
+    return;
+  }
+
+  // Gather placeholder context
+  const context = await gatherPlaceholderContext(target);
+
+  // Check for interactive placeholders that require user input
+  const interactiveFields = placeholderProcessor.analyzeInteractive(template.content);
+
+  let inputValues: Record<string, string> = {};
+
+  if (interactiveFields && interactiveFields.length > 0) {
+    const result = await inputDialog.show(interactiveFields);
+    if (result.cancelled) {
+      console.log('[SlashSnip] User cancelled input dialog');
+      return;
+    }
+    inputValues = result.values;
+  }
+
+  // Process with context and any user inputs
+  const processed = interactiveFields
+    ? placeholderProcessor.processWithInputs(template.content, context, inputValues, interactiveFields)
+    : placeholderProcessor.process(template.content, context);
+
+  console.log('[SlashSnip] Processed content for insertion:', processed);
+
+  // Insert at cursor position
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+    const start = target.selectionStart ?? target.value.length;
+    const end = target.selectionEnd ?? start;
+    const before = target.value.slice(0, start);
+    const after = target.value.slice(end);
+
+    target.value = before + processed.text + after;
+
+    // Position cursor
+    const newPosition = start + processed.text.length - (processed.cursorOffset ?? 0);
+    target.setSelectionRange(newPosition, newPosition);
+    target.focus();
+
+    // Dispatch input event
+    target.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  } else if (target.isContentEditable) {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+
+      const textNode = document.createTextNode(processed.text);
+      range.insertNode(textNode);
+
+      // Move cursor to end
+      range.setStartAfter(textNode);
+      range.setEndAfter(textNode);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
+
+  // Increment usage count
+  incrementUsage(template.id);
+}
+
+/**
+ * Handle messages from the background script
+ */
+function handleBackgroundMessage(
+  message: { type: string; payload?: { template?: TemplateDTO } },
+  _sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: unknown) => void
+): boolean {
+  console.log('[SlashSnip] Content script received message:', message.type);
+
+  if (message.type === MESSAGE_TYPES.OPEN_COMMAND_PALETTE) {
+    openCommandPalette();
+    sendResponse({ success: true });
+    return true;
+  }
+
+  if (message.type === MESSAGE_TYPES.INSERT_TEMPLATE && message.payload?.template) {
+    insertTemplateAtCursor(message.payload.template).then(() => {
+      sendResponse({ success: true });
+    });
+    return true; // Will respond asynchronously
+  }
+
+  return false;
+}
+
+/**
+ * Open the command palette
+ */
+async function openCommandPalette(): Promise<void> {
+  console.log('[SlashSnip] Opening command palette');
+
+  const result = await commandPalette.show();
+
+  if (result.cancelled || !result.template) {
+    console.log('[SlashSnip] Command palette cancelled');
+    return;
+  }
+
+  console.log('[SlashSnip] Template selected from palette:', result.template.trigger);
+
+  // Insert the selected template
+  await insertTemplateAtCursor(result.template);
+}
+
+/**
  * Initialize content script
  */
 function init(): void {
   // Use event delegation on document for dynamic elements
   document.addEventListener('input', handleInput);
   document.addEventListener('keydown', handleKeydown);
+
+  // Listen for messages from background script
+  chrome.runtime.onMessage.addListener(handleBackgroundMessage);
 
   console.log('SlashSnip content script initialized');
 }
