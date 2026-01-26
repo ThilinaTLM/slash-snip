@@ -1,149 +1,131 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Keyboard, Palette, Zap } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardRow,
+  CardRowLabel,
+  CardRowTitle,
+  CardRowDescription,
+  CardIcon,
+} from '@ui/index';
+import { Switch } from '@ui/switch';
+import { Select, SelectItem } from '@ui/select';
 
 export function SettingsScreen(): React.ReactElement {
-  return (
-    <>
-      <div className="content-header">
-        <div className="content-header-left">
-          <h1 className="content-header-title">Settings</h1>
-        </div>
-      </div>
+  const [triggerKey, setTriggerKey] = useState('space');
+  const [caseSensitive, setCaseSensitive] = useState(false);
 
-      <div className="content-body">
-        <div className="screen-container">
+  return (
+    <div className="settings-screen">
+      <div className="settings-container">
+        <div className="settings-header">
+          <h1 className="settings-title">Settings</h1>
+          <p className="settings-subtitle">
+            Configure how SlashSnip works for you
+          </p>
+        </div>
+
+        <div className="settings-sections">
           {/* Trigger Settings */}
-          <div className="settings-section">
+          <section className="settings-section">
             <div className="settings-section-header">
-              <div className="settings-section-icon">
-                <Zap size={18} />
-              </div>
+              <CardIcon>
+                <Zap size={16} />
+              </CardIcon>
               <h2 className="settings-section-title">Trigger Behavior</h2>
             </div>
-            <div className="settings-card">
-              <div className="settings-row">
-                <div className="settings-row-content">
-                  <div className="settings-row-label">Expansion Trigger</div>
-                  <div className="settings-row-description">
-                    How to trigger template expansion after typing a shortcut
-                  </div>
-                </div>
-                <div className="settings-row-action">
-                  <select className="input" style={{ width: 140 }}>
-                    <option value="space">Space</option>
-                    <option value="tab">Tab</option>
-                    <option value="enter">Enter</option>
-                  </select>
-                </div>
-              </div>
-              <div className="settings-row">
-                <div className="settings-row-content">
-                  <div className="settings-row-label">Case Sensitivity</div>
-                  <div className="settings-row-description">
-                    Whether trigger shortcuts are case-sensitive
-                  </div>
-                </div>
-                <div className="settings-row-action">
-                  <button className="toggle" role="switch" aria-checked="false">
-                    <span className="toggle-knob" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+            <Card>
+              <CardContent>
+                <CardRow>
+                  <CardRowLabel>
+                    <CardRowTitle>Expansion Trigger</CardRowTitle>
+                    <CardRowDescription>
+                      How to trigger template expansion after typing a shortcut
+                    </CardRowDescription>
+                  </CardRowLabel>
+                  <Select value={triggerKey} onValueChange={setTriggerKey} className="settings-select">
+                    <SelectItem value="space">Space</SelectItem>
+                    <SelectItem value="tab">Tab</SelectItem>
+                    <SelectItem value="enter">Enter</SelectItem>
+                  </Select>
+                </CardRow>
+                <CardRow>
+                  <CardRowLabel>
+                    <CardRowTitle>Case Sensitivity</CardRowTitle>
+                    <CardRowDescription>
+                      Whether trigger shortcuts are case-sensitive
+                    </CardRowDescription>
+                  </CardRowLabel>
+                  <Switch
+                    checked={caseSensitive}
+                    onCheckedChange={setCaseSensitive}
+                    aria-label="Case sensitivity"
+                  />
+                </CardRow>
+              </CardContent>
+            </Card>
+          </section>
 
           {/* Keyboard Shortcuts */}
-          <div className="settings-section">
+          <section className="settings-section">
             <div className="settings-section-header">
-              <div className="settings-section-icon">
-                <Keyboard size={18} />
-              </div>
+              <CardIcon>
+                <Keyboard size={16} />
+              </CardIcon>
               <h2 className="settings-section-title">Keyboard Shortcuts</h2>
             </div>
-            <div className="settings-card">
-              <div className="settings-row">
-                <div className="settings-row-content">
-                  <div className="settings-row-label">Open Command Palette</div>
-                  <div className="settings-row-description">
-                    Quick access to search and insert templates
-                  </div>
-                </div>
-                <div className="settings-row-action">
-                  <kbd
-                    style={{
-                      padding: '4px 8px',
-                      background: 'var(--color-bg-tertiary)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 'var(--text-sm)',
-                    }}
-                  >
-                    Alt + S
-                  </kbd>
-                </div>
-              </div>
-              <div className="settings-row">
-                <div className="settings-row-content">
-                  <div className="settings-row-label">Quick Insert</div>
-                  <div className="settings-row-description">
-                    Insert most recently used template
-                  </div>
-                </div>
-                <div className="settings-row-action">
-                  <kbd
-                    style={{
-                      padding: '4px 8px',
-                      background: 'var(--color-bg-tertiary)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 'var(--text-sm)',
-                    }}
-                  >
-                    Alt + Shift + S
-                  </kbd>
-                </div>
-              </div>
-            </div>
-            <p
-              style={{
-                marginTop: 'var(--space-3)',
-                fontSize: 'var(--text-sm)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
+            <Card>
+              <CardContent>
+                <CardRow>
+                  <CardRowLabel>
+                    <CardRowTitle>Open Command Palette</CardRowTitle>
+                    <CardRowDescription>
+                      Quick access to search and insert templates
+                    </CardRowDescription>
+                  </CardRowLabel>
+                  <kbd className="settings-kbd">Alt + S</kbd>
+                </CardRow>
+                <CardRow>
+                  <CardRowLabel>
+                    <CardRowTitle>Quick Insert</CardRowTitle>
+                    <CardRowDescription>
+                      Insert most recently used template
+                    </CardRowDescription>
+                  </CardRowLabel>
+                  <kbd className="settings-kbd">Alt + Shift + S</kbd>
+                </CardRow>
+              </CardContent>
+            </Card>
+            <p className="settings-section-note">
               Keyboard shortcuts can be customized in Chrome&apos;s extension settings at{' '}
-              <code style={{ fontFamily: 'var(--font-mono)' }}>chrome://extensions/shortcuts</code>
+              <code>chrome://extensions/shortcuts</code>
             </p>
-          </div>
+          </section>
 
           {/* Appearance */}
-          <div className="settings-section">
+          <section className="settings-section">
             <div className="settings-section-header">
-              <div className="settings-section-icon">
-                <Palette size={18} />
-              </div>
+              <CardIcon>
+                <Palette size={16} />
+              </CardIcon>
               <h2 className="settings-section-title">Appearance</h2>
             </div>
-            <div className="settings-card">
-              <div className="settings-row">
-                <div className="settings-row-content">
-                  <div className="settings-row-label">Theme</div>
-                  <div className="settings-row-description">
-                    Choose the color scheme for the extension
-                  </div>
-                </div>
-                <div className="settings-row-action">
-                  <select className="input" style={{ width: 140 }}>
-                    <option value="system">System</option>
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
+            <Card>
+              <CardContent>
+                <CardRow>
+                  <CardRowLabel>
+                    <CardRowTitle>Theme</CardRowTitle>
+                    <CardRowDescription>
+                      Use the toggle in the navigation bar to switch themes
+                    </CardRowDescription>
+                  </CardRowLabel>
+                </CardRow>
+              </CardContent>
+            </Card>
+          </section>
         </div>
       </div>
-    </>
+    </div>
   );
 }

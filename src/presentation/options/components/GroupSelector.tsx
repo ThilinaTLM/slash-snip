@@ -1,5 +1,6 @@
 import React from 'react';
 import type { GroupDTO } from '@application/dto';
+import { Select, SelectItem, SelectSeparator } from '@ui/index';
 
 interface GroupSelectorProps {
   groups: GroupDTO[];
@@ -14,8 +15,7 @@ export function GroupSelector({
   onChange,
   onCreateNew,
 }: GroupSelectorProps): React.ReactElement {
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedValue = e.target.value;
+  const handleChange = (selectedValue: string) => {
     if (selectedValue === '__create_new__') {
       onCreateNew?.();
       return;
@@ -24,25 +24,23 @@ export function GroupSelector({
   };
 
   return (
-    <div className="group-selector">
-      <select
-        value={value ?? ''}
-        onChange={handleChange}
-        className="group-select"
-      >
-        <option value="">No group</option>
-        {groups.map((group) => (
-          <option key={group.id} value={group.id}>
-            {group.name}
-          </option>
-        ))}
-        {onCreateNew && (
-          <>
-            <option disabled>─────────────</option>
-            <option value="__create_new__">+ Create new group...</option>
-          </>
-        )}
-      </select>
-    </div>
+    <Select
+      value={value ?? ''}
+      onValueChange={handleChange}
+      placeholder="No group"
+    >
+      <SelectItem value="">No group</SelectItem>
+      {groups.map((group) => (
+        <SelectItem key={group.id} value={group.id}>
+          {group.name}
+        </SelectItem>
+      ))}
+      {onCreateNew && (
+        <>
+          <SelectSeparator />
+          <SelectItem value="__create_new__">+ Create new group...</SelectItem>
+        </>
+      )}
+    </Select>
   );
 }

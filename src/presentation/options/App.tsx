@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppShell, type View } from './components/layout';
-import { TemplatesScreen } from './screens/TemplatesScreen';
-import { GroupsScreen } from './screens/GroupsScreen';
+import { SnippetsScreen } from './screens/SnippetsScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { ImportExportScreen } from './screens/ImportExportScreen';
 import { useTemplates } from './hooks/useTemplates';
 import { useGroups } from './hooks/useGroups';
+import { getInitialTheme, type Theme } from './components/ThemeToggle';
 import type { CreateGroupDTO, UpdateGroupDTO } from '@application/dto';
 
 export function App(): React.ReactElement {
@@ -28,21 +28,31 @@ export function App(): React.ReactElement {
     deleteGroup,
   } = useGroups();
 
-  const [currentView, setCurrentView] = useState<View>('templates');
+  const [currentView, setCurrentView] = useState<View>('snippets');
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+
+  // Enable theme transitions after initial render (theme is applied by ThemeToggle)
+  useEffect(() => {
+    // Remove no-transitions class after a short delay to enable smooth transitions
+    const timer = setTimeout(() => {
+      document.documentElement.classList.remove('no-transitions');
+    }, 50);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Cmd/Ctrl + N: New template (only on templates screen)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'n' && currentView === 'templates') {
+      // Cmd/Ctrl + N: New template (only on snippets screen)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n' && currentView === 'snippets') {
         e.preventDefault();
-        // Will be handled by TemplatesScreen
+        // Will be handled by SnippetsScreen
       }
 
-      // Cmd/Ctrl + F: Focus search (only on templates screen)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'f' && currentView === 'templates') {
+      // Cmd/Ctrl + F: Focus search (only on snippets screen)
+      if ((e.metaKey || e.ctrlKey) && e.key === 'f' && currentView === 'snippets') {
         e.preventDefault();
-        const searchInput = document.querySelector('.search-input input') as HTMLInputElement;
+        const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
         searchInput?.focus();
       }
     };
@@ -77,9 +87,9 @@ export function App(): React.ReactElement {
 
   const renderScreen = () => {
     switch (currentView) {
-      case 'templates':
+      case 'snippets':
         return (
-          <TemplatesScreen
+          <SnippetsScreen
             templates={templates}
             groups={groups}
             loading={loading}
@@ -88,18 +98,9 @@ export function App(): React.ReactElement {
             onUpdateTemplate={updateTemplate}
             onDeleteTemplate={deleteTemplate}
             onCreateGroup={handleCreateGroup}
-            onRefresh={refreshTemplates}
-          />
-        );
-      case 'groups':
-        return (
-          <GroupsScreen
-            groups={groups}
-            templates={templates}
-            loading={groupsLoading}
-            onCreateGroup={handleCreateGroup}
             onUpdateGroup={handleUpdateGroup}
             onDeleteGroup={handleDeleteGroup}
+            onRefresh={refreshTemplates}
           />
         );
       case 'settings':
@@ -116,7 +117,8 @@ export function App(): React.ReactElement {
       currentView={currentView}
       onViewChange={setCurrentView}
       templateCount={templates.length}
-      groupCount={groups.length}
+      theme={theme}
+      onThemeChange={setTheme}
     >
       {renderScreen()}
     </AppShell>

@@ -28,7 +28,9 @@
       "@infrastructure/*": ["src/infrastructure/*"],
       "@presentation/*": ["src/presentation/*"],
       "@shared/*": ["src/shared/*"],
-      "@di/*": ["src/di/*"]
+      "@di/*": ["src/di/*"],
+      "@ui/*": ["src/presentation/shared/ui/*"],
+      "@lib/*": ["src/presentation/shared/lib/*"]
     }
   },
   "include": ["src"],

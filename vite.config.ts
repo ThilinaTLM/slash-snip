@@ -21,6 +21,8 @@ export default defineConfig({
       '@presentation': resolve(__dirname, 'src/presentation'),
       '@shared': resolve(__dirname, 'src/shared'),
       '@di': resolve(__dirname, 'src/di'),
+      '@ui': resolve(__dirname, 'src/presentation/shared/ui'),
+      '@lib': resolve(__dirname, 'src/presentation/shared/lib'),
     },
   },
   build: {

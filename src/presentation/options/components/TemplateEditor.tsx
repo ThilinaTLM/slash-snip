@@ -3,6 +3,9 @@ import { Trash2, Copy } from 'lucide-react';
 import type { TemplateDTO, CreateTemplateDTO, UpdateTemplateDTO, GroupDTO } from '@application/dto';
 import { GroupSelector } from './GroupSelector';
 import { PlaceholderToolbar } from './PlaceholderToolbar';
+import { Button } from '@ui/button';
+import { Input } from '@ui/input';
+import { Textarea } from '@ui/textarea';
 
 interface TemplateEditorProps {
   template: TemplateDTO | null;
@@ -30,7 +33,7 @@ function getInitialFormData(template: TemplateDTO | null): FormData {
       name: template.name,
       content: template.content,
       description: template.description ?? '',
-      groupId: template.categoryId, // Using categoryId for backwards compatibility
+      groupId: template.categoryId,
       tags: template.tags.join(', '),
     };
   }
@@ -94,7 +97,6 @@ export function TemplateEditor({
     setFormData((prev) => ({ ...prev, content: newContent }));
     setHasChanges(true);
 
-    // Restore focus and cursor position after React re-renders
     requestAnimationFrame(() => {
       textarea.focus();
       const newPosition = start + placeholder.length;
@@ -156,7 +158,7 @@ export function TemplateEditor({
     const name = formData.name.trim();
     const content = formData.content;
     const description = formData.description.trim() || undefined;
-    const groupId = formData.groupId; // Using categoryId field for backwards compatibility
+    const groupId = formData.groupId;
     const tags = formData.tags
       .split(',')
       .map((t) => t.trim())
@@ -169,7 +171,7 @@ export function TemplateEditor({
         name,
         content,
         description,
-        categoryId: groupId, // Mapping groupId to categoryId for backwards compatibility
+        categoryId: groupId,
         tags,
       };
       onSave(updates);
@@ -179,7 +181,7 @@ export function TemplateEditor({
         name,
         content,
         description,
-        categoryId: groupId, // Mapping groupId to categoryId for backwards compatibility
+        categoryId: groupId,
         tags,
       };
       onSave(data);
@@ -201,27 +203,24 @@ export function TemplateEditor({
   };
 
   return (
-    <form className="template-editor" onSubmit={handleSubmit}>
+    <form className="editor-form" onSubmit={handleSubmit}>
+      {/* Header */}
       <div className="editor-header">
-        <div className="editor-header-title">
-          <h2>{isEditMode ? 'Edit Template' : 'New Template'}</h2>
-        </div>
-        {isEditMode && template && (
-          <span className="editor-meta">
-            Last updated: {new Date(template.updatedAt).toLocaleString()}
-            {template.usageCount > 0 && (
-              <> · Used {template.usageCount} time{template.usageCount !== 1 ? 's' : ''}</>
-            )}
-          </span>
+        <h2 className="editor-title">
+          {isEditMode ? 'Edit Snippet' : 'New Snippet'}
+        </h2>
+        {isEditMode && template && template.usageCount > 0 && (
+          <span className="editor-usage">Used {template.usageCount}x</span>
         )}
       </div>
 
-      {error && <div className="form-error">{error}</div>}
+      {error && <div className="editor-error">{error}</div>}
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="trigger">Trigger *</label>
-          <input
+      {/* Trigger & Name row */}
+      <div className="editor-row">
+        <div className="editor-field">
+          <label htmlFor="trigger" className="editor-label">Trigger *</label>
+          <Input
             id="trigger"
             type="text"
             value={formData.trigger}
@@ -229,12 +228,12 @@ export function TemplateEditor({
             placeholder="/hello"
             autoFocus={!isEditMode}
           />
-          <span className="form-hint">Type this + space to expand</span>
+          <span className="editor-hint">Type + space to expand</span>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="name">Name *</label>
-          <input
+        <div className="editor-field">
+          <label htmlFor="name" className="editor-label">Name *</label>
+          <Input
             id="name"
             type="text"
             value={formData.name}
@@ -244,22 +243,25 @@ export function TemplateEditor({
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="content">Content</label>
+      {/* Content */}
+      <div className="editor-field">
+        <label htmlFor="content" className="editor-label">Content</label>
         <PlaceholderToolbar onInsert={handleInsertPlaceholder} />
-        <textarea
+        <Textarea
           id="content"
           ref={contentRef}
           value={formData.content}
           onChange={handleChange('content')}
           placeholder="Hello <input:Name>!&#10;Today is <date>."
-          rows={10}
+          rows={6}
+          mono
         />
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="group">Group</label>
+      {/* Group & Tags row */}
+      <div className="editor-row">
+        <div className="editor-field">
+          <label htmlFor="group" className="editor-label">Group</label>
           <GroupSelector
             groups={groups}
             value={formData.groupId}
@@ -268,64 +270,54 @@ export function TemplateEditor({
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="tags">Tags</label>
-          <input
+        <div className="editor-field">
+          <label htmlFor="tags" className="editor-label">Tags</label>
+          <Input
             id="tags"
             type="text"
             value={formData.tags}
             onChange={handleChange('tags')}
-            placeholder="greeting, email, work"
+            placeholder="greeting, email"
           />
-          <span className="form-hint">Comma-separated</span>
+          <span className="editor-hint">Comma-separated</span>
         </div>
       </div>
 
-      <div className="form-group">
-        <label htmlFor="description">Description</label>
-        <input
+      {/* Description */}
+      <div className="editor-field">
+        <label htmlFor="description" className="editor-label">Description</label>
+        <Input
           id="description"
           type="text"
           value={formData.description}
           onChange={handleChange('description')}
-          placeholder="Optional description for this template"
+          placeholder="Optional description"
         />
       </div>
 
-      <div className="form-actions">
-        <div className="form-actions-left">
+      {/* Actions */}
+      <div className="editor-actions">
+        <div className="editor-actions-left">
           {isEditMode && onDelete && (
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={onDelete}
-            >
-              <Trash2 size={16} />
+            <Button type="button" variant="destructive" size="sm" onClick={onDelete}>
+              <Trash2 size={14} />
               Delete
-            </button>
+            </Button>
           )}
           {isEditMode && onDuplicate && (
-            <button
-              type="button"
-              className="btn"
-              onClick={onDuplicate}
-            >
-              <Copy size={16} />
+            <Button type="button" variant="secondary" size="sm" onClick={onDuplicate}>
+              <Copy size={14} />
               Duplicate
-            </button>
+            </Button>
           )}
         </div>
-        <div className="form-actions-right">
-          <button type="button" className="btn" onClick={handleCancel}>
+        <div className="editor-actions-right">
+          <Button type="button" variant="secondary" onClick={handleCancel}>
             Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={!hasChanges && isEditMode}
-          >
-            {isEditMode ? 'Save Changes' : 'Create Template'}
-          </button>
+          </Button>
+          <Button type="submit" disabled={!hasChanges && isEditMode}>
+            {isEditMode ? 'Save' : 'Create'}
+          </Button>
         </div>
       </div>
     </form>

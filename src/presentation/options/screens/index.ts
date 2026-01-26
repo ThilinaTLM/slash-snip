@@ -1,4 +1,3 @@
-export { TemplatesScreen } from './TemplatesScreen';
-export { GroupsScreen } from './GroupsScreen';
+export { SnippetsScreen } from './SnippetsScreen';
 export { SettingsScreen } from './SettingsScreen';
 export { ImportExportScreen } from './ImportExportScreen';

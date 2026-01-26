@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
 import type { GroupDTO, CreateGroupDTO, UpdateGroupDTO } from '@application/dto';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+  DialogFooter,
+} from '@ui/index';
+import { Button } from '@ui/button';
+import { Input } from '@ui/input';
 
 interface GroupDialogProps {
   isOpen: boolean;
-  group: GroupDTO | null; // null = create mode
+  group: GroupDTO | null;
   onSave: (data: CreateGroupDTO | UpdateGroupDTO) => void;
   onClose: () => void;
 }
@@ -30,10 +39,6 @@ export function GroupDialog({
       setError(null);
     }
   }, [isOpen, group]);
-
-  if (!isOpen) {
-    return null;
-  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,28 +69,25 @@ export function GroupDialog({
     }
   };
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="modal-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>{isEditMode ? 'Edit Group' : 'New Group'}</h3>
-          <button className="modal-close" onClick={onClose}>
-            <X size={18} />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent>
+        <DialogHeader onClose={onClose}>
+          <DialogTitle>{isEditMode ? 'Edit Group' : 'New Group'}</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit}>
-          <div className="modal-body">
-            {error && <div className="form-error">{error}</div>}
+          <DialogBody>
+            {error && (
+              <div className="group-dialog-error">
+                {error}
+              </div>
+            )}
 
-            <div className="form-group">
-              <label htmlFor="group-name">Name *</label>
-              <input
+            <div className="editor-field">
+              <label htmlFor="group-name" className="editor-label">
+                Name *
+              </label>
+              <Input
                 id="group-name"
                 type="text"
                 value={name}
@@ -94,17 +96,17 @@ export function GroupDialog({
                 autoFocus
               />
             </div>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn" onClick={onClose}>
+          </DialogBody>
+          <DialogFooter variant="highlighted">
+            <Button type="button" variant="secondary" onClick={onClose}>
               Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
+            </Button>
+            <Button type="submit">
               {isEditMode ? 'Save' : 'Create'}
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

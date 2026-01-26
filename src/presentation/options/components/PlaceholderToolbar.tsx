@@ -12,6 +12,8 @@ import {
   Check,
   X,
 } from 'lucide-react';
+import { Button } from '@ui/button';
+import { Input } from '@ui/input';
 
 interface PlaceholderToolbarProps {
   onInsert: (placeholder: string) => void;
@@ -88,116 +90,125 @@ export function PlaceholderToolbar({
     }
   };
 
+  const isDateActive = dropdown.isOpen && dropdown.type === 'date';
+  const isTimeActive = dropdown.isOpen && dropdown.type === 'time';
+
   return (
     <div className="placeholder-toolbar">
-      <span className="toolbar-label">Insert:</span>
+      <span className="placeholder-toolbar-label">Insert:</span>
 
-      <div className="toolbar-group">
-        <button
+      <div className="placeholder-toolbar-group">
+        <Button
           type="button"
-          className="toolbar-btn"
+          variant="secondary"
+          size="sm"
           onClick={() => handleBasicInsert('clipboard')}
           title="Insert clipboard content"
         >
-          <Clipboard size={14} />
+          <Clipboard size={12} />
           Clipboard
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="toolbar-btn"
+          variant="secondary"
+          size="sm"
           onClick={() => handleBasicInsert('cursor')}
           title="Insert cursor position marker"
         >
-          <MousePointer2 size={14} />
+          <MousePointer2 size={12} />
           Cursor
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="toolbar-btn"
+          variant="secondary"
+          size="sm"
           onClick={() => handleBasicInsert('selection')}
           title="Insert selected text"
         >
-          <TextSelect size={14} />
+          <TextSelect size={12} />
           Selection
-        </button>
+        </Button>
       </div>
 
-      <div className="toolbar-separator" />
+      <div className="placeholder-toolbar-divider" />
 
-      <div className="toolbar-group" ref={dropdownRef}>
-        <div className="toolbar-dropdown">
-          <button
+      <div className="placeholder-toolbar-group" ref={dropdownRef}>
+        <div className="relative">
+          <Button
             type="button"
-            className={`toolbar-btn ${dropdown.isOpen && dropdown.type === 'date' ? 'active' : ''}`}
+            variant={isDateActive ? 'default' : 'secondary'}
+            size="sm"
             onClick={() => toggleDropdown('date')}
             title="Insert date"
           >
-            <Calendar size={14} />
+            <Calendar size={12} />
             Date
-            <ChevronDown size={12} />
-          </button>
-          {dropdown.isOpen && dropdown.type === 'date' && (
-            <div className="toolbar-dropdown-menu">
+            <ChevronDown size={10} />
+          </Button>
+          {isDateActive && (
+            <div className="placeholder-dropdown">
               {DATE_FORMATS.map((item) => (
                 <button
                   key={item.format}
                   type="button"
-                  className="toolbar-dropdown-item"
+                  className="placeholder-dropdown-item"
                   onClick={() => handleDateFormatSelect(item.format)}
                 >
-                  <span className="format-name">{item.format}</span>
-                  <span className="format-example">{item.example}</span>
+                  <span className="placeholder-dropdown-format">{item.format}</span>
+                  <span className="placeholder-dropdown-example">{item.example}</span>
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="toolbar-dropdown">
-          <button
+        <div className="relative">
+          <Button
             type="button"
-            className={`toolbar-btn ${dropdown.isOpen && dropdown.type === 'time' ? 'active' : ''}`}
+            variant={isTimeActive ? 'default' : 'secondary'}
+            size="sm"
             onClick={() => toggleDropdown('time')}
             title="Insert time"
           >
-            <Clock size={14} />
+            <Clock size={12} />
             Time
-            <ChevronDown size={12} />
-          </button>
-          {dropdown.isOpen && dropdown.type === 'time' && (
-            <div className="toolbar-dropdown-menu">
+            <ChevronDown size={10} />
+          </Button>
+          {isTimeActive && (
+            <div className="placeholder-dropdown">
               {TIME_FORMATS.map((item) => (
                 <button
                   key={item.format}
                   type="button"
-                  className="toolbar-dropdown-item"
+                  className="placeholder-dropdown-item"
                   onClick={() => handleTimeFormatSelect(item.format)}
                 >
-                  <span className="format-name">{item.format}</span>
-                  <span className="format-example">{item.example}</span>
+                  <span className="placeholder-dropdown-format">{item.format}</span>
+                  <span className="placeholder-dropdown-example">{item.example}</span>
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <button
+        <Button
           type="button"
-          className="toolbar-btn"
+          variant="secondary"
+          size="sm"
           onClick={() => handleBasicInsert('datetime')}
           title="Insert date and time"
         >
-          <CalendarClock size={14} />
+          <CalendarClock size={12} />
           DateTime
-        </button>
+        </Button>
       </div>
 
-      <div className="toolbar-separator" />
+      <div className="placeholder-toolbar-divider" />
 
-      <div className="toolbar-group">
+      <div className="placeholder-toolbar-group">
         {showInputPrompt ? (
-          <div className="toolbar-input-prompt">
-            <input
+          <div className="placeholder-input-group">
+            <Input
               type="text"
               value={inputLabel}
               onChange={(e) => setInputLabel(e.target.value)}
@@ -205,46 +216,49 @@ export function PlaceholderToolbar({
                 if (e.key === 'Enter') handleInputSubmit();
                 if (e.key === 'Escape') setShowInputPrompt(false);
               }}
-              placeholder="Label for input..."
+              placeholder="Label..."
               autoFocus
+              className="placeholder-input"
             />
-            <button
+            <Button
               type="button"
-              className="toolbar-btn"
-              style={{ padding: '0 6px', minWidth: 24 }}
+              variant="secondary"
+              size="icon-sm"
               onClick={handleInputSubmit}
             >
-              <Check size={14} />
-            </button>
-            <button
+              <Check size={12} />
+            </Button>
+            <Button
               type="button"
-              className="toolbar-btn"
-              style={{ padding: '0 6px', minWidth: 24 }}
+              variant="secondary"
+              size="icon-sm"
               onClick={() => setShowInputPrompt(false)}
             >
-              <X size={14} />
-            </button>
+              <X size={12} />
+            </Button>
           </div>
         ) : (
-          <button
+          <Button
             type="button"
-            className="toolbar-btn"
+            variant="secondary"
+            size="sm"
             onClick={() => setShowInputPrompt(true)}
             title="Insert user input prompt"
           >
-            <FormInput size={14} />
+            <FormInput size={12} />
             Input
-          </button>
+          </Button>
         )}
-        <button
+        <Button
           type="button"
-          className="toolbar-btn"
+          variant="secondary"
+          size="sm"
           onClick={() => handleBasicInsert('tab:1')}
           title="Insert tab stop"
         >
-          <MoveHorizontal size={14} />
+          <MoveHorizontal size={12} />
           Tab
-        </button>
+        </Button>
       </div>
     </div>
   );

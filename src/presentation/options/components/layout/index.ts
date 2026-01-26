@@ -1,2 +1,2 @@
 export { AppShell } from './AppShell';
-export { Sidebar, type View } from './Sidebar';
+export { TopNav, type View } from './TopNav';

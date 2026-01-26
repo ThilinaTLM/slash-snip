@@ -101,112 +101,98 @@ export function ImportExportScreen({
   };
 
   return (
-    <>
-      <div className="content-header">
-        <div className="content-header-left">
-          <h1 className="content-header-title">Import / Export</h1>
+    <div className="import-export-screen">
+      <div className="import-export-container">
+        <div className="import-export-header">
+          <h1 className="import-export-title">Import / Export</h1>
+          <p className="import-export-subtitle">
+            Back up your templates or restore from a previous backup
+          </p>
         </div>
-      </div>
 
-      <div className="content-body">
-        <div className="screen-container">
+        <div className="import-export-sections">
           {/* Export Section */}
-          <div className="import-export-section">
-            <div className="import-export-card">
-              <div className="import-export-header">
-                <div className="import-export-icon">
-                  <Download size={24} />
-                </div>
-                <div>
-                  <h2 className="import-export-title">Export Backup</h2>
-                  <p className="import-export-description">
-                    Download all your templates and groups as a JSON file
-                  </p>
-                </div>
+          <section className="import-export-section">
+            <div className="import-export-section-header">
+              <div className="import-export-section-icon">
+                <Download size={20} />
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-                <button className="btn btn-primary" onClick={handleExport}>
-                  <Download size={16} />
-                  Download Backup
-                </button>
-                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
-                  {templates.length} templates, {groups.length} groups
-                </span>
+              <div className="import-export-section-info">
+                <h2>Export Backup</h2>
+                <p>Download all your templates and groups as a JSON file</p>
               </div>
             </div>
-          </div>
+            <div className="import-export-actions">
+              <button
+                className="import-export-download-btn"
+                onClick={handleExport}
+              >
+                <Download size={16} />
+                Download Backup
+              </button>
+              <span className="import-export-count">
+                {templates.length} templates, {groups.length} groups
+              </span>
+            </div>
+          </section>
 
           {/* Import Section */}
-          <div className="import-export-section">
-            <div className="import-export-card">
-              <div className="import-export-header">
-                <div className="import-export-icon">
-                  <Upload size={24} />
-                </div>
-                <div>
-                  <h2 className="import-export-title">Import Backup</h2>
-                  <p className="import-export-description">
-                    Restore templates and groups from a backup file
-                  </p>
-                </div>
+          <section className="import-export-section">
+            <div className="import-export-section-header">
+              <div className="import-export-section-icon">
+                <Upload size={20} />
               </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleFileSelect}
-                style={{ display: 'none' }}
-              />
-
-              <div
-                className={`drop-zone ${isDragging ? 'dragging' : ''}`}
-                onClick={() => fileInputRef.current?.click()}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-              >
-                <div className="drop-zone-icon">
-                  <Upload size={32} />
-                </div>
-                <p className="drop-zone-text">
-                  Drop your backup file here or click to browse
-                </p>
-                <p className="drop-zone-hint">Supports .json files exported from SlashSnip</p>
+              <div className="import-export-section-info">
+                <h2>Import Backup</h2>
+                <p>Restore templates and groups from a backup file</p>
               </div>
-
-              {importStatus && (
-                <div
-                  style={{
-                    marginTop: 'var(--space-4)',
-                    padding: 'var(--space-3)',
-                    borderRadius: 'var(--radius-md)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-2)',
-                    background:
-                      importStatus.type === 'success'
-                        ? 'var(--color-success-bg)'
-                        : 'var(--color-danger-bg)',
-                    border: `1px solid ${importStatus.type === 'success' ? 'var(--color-success-border)' : 'var(--color-danger-border)'}`,
-                    color:
-                      importStatus.type === 'success'
-                        ? 'var(--color-success)'
-                        : 'var(--color-danger)',
-                  }}
-                >
-                  {importStatus.type === 'success' ? (
-                    <CheckCircle size={18} />
-                  ) : (
-                    <AlertCircle size={18} />
-                  )}
-                  <span>{importStatus.message}</span>
-                </div>
-              )}
             </div>
-          </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            <div
+              className={`import-export-dropzone ${isDragging ? 'import-export-dropzone-active' : ''}`}
+              onClick={() => fileInputRef.current?.click()}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <div className="import-export-dropzone-icon">
+                <Upload size={24} />
+              </div>
+              <p className="import-export-dropzone-title">
+                Drop your backup file here or click to browse
+              </p>
+              <p className="import-export-dropzone-subtitle">
+                Supports .json files exported from SlashSnip
+              </p>
+            </div>
+
+            {importStatus && (
+              <div
+                className={`import-export-status ${
+                  importStatus.type === 'success'
+                    ? 'import-export-status-success'
+                    : 'import-export-status-error'
+                }`}
+              >
+                {importStatus.type === 'success' ? (
+                  <CheckCircle size={18} />
+                ) : (
+                  <AlertCircle size={18} />
+                )}
+                <span>{importStatus.message}</span>
+              </div>
+            )}
+          </section>
         </div>
       </div>
-    </>
+    </div>
   );
 }
