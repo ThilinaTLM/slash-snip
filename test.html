@@ -15,12 +15,30 @@
   <h1>SlashSnip Test Page</h1>
 
   <div class="instructions">
-    <strong>Instructions:</strong>
+    <strong>Basic Testing:</strong>
     <ol>
       <li>Open the SlashSnip popup and create a template with trigger <code>/hello</code></li>
       <li>Type <code>/hello </code> (with a space at the end) in the inputs below</li>
       <li>The trigger should expand to your template content</li>
       <li>Open DevTools (F12) to see debug logs</li>
+    </ol>
+
+    <strong style="margin-top: 15px; display: block;">Placeholder Testing:</strong>
+    <p>Create these test templates in the popup:</p>
+    <ul>
+      <li><code>/clip</code> &rarr; <code>Clipboard: &lt;clipboard&gt;</code></li>
+      <li><code>/today</code> &rarr; <code>Date: &lt;date:YYYY-MM-DD&gt;</code></li>
+      <li><code>/time</code> &rarr; <code>Time: &lt;time:HH:mm&gt;</code></li>
+      <li><code>/sig</code> &rarr; <code>Best regards,&lt;cursor&gt;\n- Name</code></li>
+      <li><code>/full</code> &rarr; <code>&lt;date&gt; &lt;time&gt; - &lt;clipboard&gt;</code></li>
+    </ul>
+    <p><strong>Test cases:</strong></p>
+    <ol>
+      <li>Copy text to clipboard, type <code>/clip </code> - should show clipboard content</li>
+      <li>Type <code>/today </code> - should show current date (YYYY-MM-DD)</li>
+      <li>Type <code>/time </code> - should show current time (HH:mm)</li>
+      <li>Type <code>/sig </code> - cursor should be positioned after "Best regards,"</li>
+      <li>Type <code>/full </code> - should show date, time, and clipboard content</li>
     </ol>
   </div>
 

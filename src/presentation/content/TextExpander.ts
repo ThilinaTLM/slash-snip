@@ -5,6 +5,7 @@ import {
   replaceContenteditableText,
   storeContenteditableUndo,
   restoreContenteditableUndo,
+  positionCursorAtOffset,
 } from './ContenteditableAdapter';
 
 export interface ExpansionResult {
@@ -13,17 +14,27 @@ export interface ExpansionResult {
   expandedText: string;
 }
 
+export interface ExpansionOptions {
+  /** Cursor offset within the expanded content (for <cursor> placeholder) */
+  cursorOffset?: number;
+}
+
 /**
  * Handles text expansion in input elements
  */
 export class TextExpander {
   /**
    * Expand a trigger in an input or textarea element
+   * @param element - The input or textarea element
+   * @param match - The trigger match information
+   * @param content - The processed content to insert
+   * @param options - Optional expansion options (cursor offset, etc.)
    */
   expand(
     element: HTMLInputElement | HTMLTextAreaElement,
     match: TriggerMatch,
-    content: string
+    content: string,
+    options: ExpansionOptions = {}
   ): ExpansionResult {
     const originalValue = element.value;
     const beforeTrigger = originalValue.slice(0, match.startIndex);
@@ -43,8 +54,12 @@ export class TextExpander {
     // Set the new value
     element.value = expandedText;
 
-    // Set cursor position after expanded content
-    const newCursorPosition = beforeTrigger.length + content.length;
+    // Set cursor position: use cursorOffset if provided (from <cursor> placeholder),
+    // otherwise position at end of expanded content
+    const newCursorPosition =
+      options.cursorOffset !== undefined
+        ? beforeTrigger.length + options.cursorOffset
+        : beforeTrigger.length + content.length;
     element.setSelectionRange(newCursorPosition, newCursorPosition);
 
     // Dispatch input event so frameworks detect the change
@@ -62,12 +77,18 @@ export class TextExpander {
 
   /**
    * Expand a trigger in a contenteditable element
+   * @param element - The contenteditable element
+   * @param match - The trigger match information
+   * @param content - The processed content to insert
+   * @param ctx - The contenteditable context
+   * @param options - Optional expansion options (cursor offset, etc.)
    */
   expandContenteditable(
     element: HTMLElement,
     match: TriggerMatch,
     content: string,
-    ctx: ContenteditableContext
+    ctx: ContenteditableContext,
+    options: ExpansionOptions = {}
   ): ExpansionResult {
     const originalText = ctx.text;
 
@@ -78,6 +99,12 @@ export class TextExpander {
 
     // Replace the trigger with expanded content
     replaceContenteditableText(ctx, match.startIndex, match.endIndex, content);
+
+    // If cursorOffset is specified (from <cursor> placeholder), reposition cursor
+    if (options.cursorOffset !== undefined) {
+      const absoluteCursorPos = match.startIndex + options.cursorOffset;
+      positionCursorAtOffset(element, absoluteCursorPos);
+    }
 
     const expandedText = originalText.slice(0, match.startIndex) + content;
 

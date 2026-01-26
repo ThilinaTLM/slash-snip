@@ -1,3 +1,2 @@
 // Domain Services
-// Export PlaceholderParserService, TemplateExpansionService here
-export {};
+export { PlaceholderProcessor } from './PlaceholderProcessor';

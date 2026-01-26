@@ -5,11 +5,16 @@ import { TriggerDetector } from './TriggerDetector';
 import { TextExpander } from './TextExpander';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES } from '@shared/constants';
+import { PlaceholderProcessor } from '@domain/services';
+import { ClipboardAdapter } from '@infrastructure/chrome/clipboard';
 import type { TemplateDTO } from '@application/dto';
+import type { PlaceholderContext } from '@shared/types';
 
-// Initialize detector and expander
+// Initialize services
 const detector = new TriggerDetector();
 const expander = new TextExpander();
+const placeholderProcessor = new PlaceholderProcessor();
+const clipboardAdapter = new ClipboardAdapter();
 
 /**
  * Handle input events on text inputs, textareas, and contenteditable elements
@@ -42,7 +47,15 @@ async function handleInput(event: Event): Promise<void> {
     const template = await fetchTemplate(match.trigger);
     if (!template) return;
 
-    expander.expand(target, match, template.content);
+    // Gather placeholder context and process
+    const context = await gatherPlaceholderContext(target);
+    const processed = placeholderProcessor.process(template.content, context);
+
+    console.log('[SlashSnip] Processed content:', processed);
+
+    expander.expand(target, match, processed.text, {
+      cursorOffset: processed.cursorOffset,
+    });
   } else if (target instanceof HTMLElement && target.isContentEditable) {
     // Contenteditable handling
     const result = detector.detectTriggerInContenteditable(target);
@@ -63,7 +76,15 @@ async function handleInput(event: Event): Promise<void> {
     const template = await fetchTemplate(match.trigger);
     if (!template) return;
 
-    expander.expandContenteditable(target, match, template.content, ctx);
+    // Gather placeholder context and process
+    const context = await gatherPlaceholderContext(target);
+    const processed = placeholderProcessor.process(template.content, context);
+
+    console.log('[SlashSnip] Processed content:', processed);
+
+    expander.expandContenteditable(target, match, processed.text, ctx, {
+      cursorOffset: processed.cursorOffset,
+    });
   }
 }
 
@@ -85,6 +106,32 @@ async function fetchTemplate(trigger: string): Promise<TemplateDTO | null> {
 
   console.log('[SlashSnip] Expanding template:', response.data.content);
   return response.data;
+}
+
+/**
+ * Gather context for placeholder processing
+ * Collects selection text and clipboard content
+ */
+async function gatherPlaceholderContext(
+  _element: HTMLInputElement | HTMLTextAreaElement | HTMLElement
+): Promise<PlaceholderContext> {
+  // Get selected text (if any) - this would be selection before trigger was typed
+  // Note: After typing the trigger, selection is typically collapsed
+  const selection = window.getSelection();
+  const selectedText = selection?.toString() ?? '';
+
+  // Get clipboard content
+  let clipboardText = '';
+  try {
+    clipboardText = await clipboardAdapter.read();
+  } catch {
+    console.log('[SlashSnip] Could not read clipboard');
+  }
+
+  return {
+    selection: selectedText,
+    clipboard: clipboardText,
+  };
 }
 
 /**

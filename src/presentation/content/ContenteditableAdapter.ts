@@ -162,3 +162,41 @@ export function restoreContenteditableUndo(
 
   element.dispatchEvent(new InputEvent('input', { bubbles: true }));
 }
+
+/**
+ * Position cursor at a specific text offset within a contenteditable element
+ * @param element - The contenteditable element
+ * @param offset - The text offset position (character count from start)
+ */
+export function positionCursorAtOffset(element: HTMLElement, offset: number): void {
+  const selection = window.getSelection();
+  if (!selection) return;
+
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+
+  let charCount = 0;
+  let node: Text | null;
+
+  while ((node = walker.nextNode() as Text | null)) {
+    const nodeLength = node.textContent?.length ?? 0;
+
+    if (charCount + nodeLength >= offset) {
+      // Found the node containing our offset
+      const range = document.createRange();
+      range.setStart(node, offset - charCount);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return;
+    }
+
+    charCount += nodeLength;
+  }
+
+  // Offset is beyond text content - position at end
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}

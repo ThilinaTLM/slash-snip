@@ -1,4 +1,5 @@
 import { ChromeStorageAdapter } from '@infrastructure/chrome/storage/ChromeStorageAdapter';
+import { ClipboardAdapter } from '@infrastructure/chrome/clipboard';
 import { TemplateRepository } from '@infrastructure/persistence/TemplateRepository';
 import {
   CreateTemplateUseCase,
@@ -6,7 +7,9 @@ import {
   DeleteTemplateUseCase,
   GetTemplateByTriggerUseCase,
 } from '@application/use-cases/templates';
+import { PlaceholderProcessor } from '@domain/services';
 import type { ITemplateRepository } from '@domain/repositories';
+import type { IClipboardPort } from '@application/ports';
 
 /**
  * Simple DI container using factory functions
@@ -15,7 +18,11 @@ import type { ITemplateRepository } from '@domain/repositories';
 
 // Infrastructure singletons
 let storageAdapter: ChromeStorageAdapter | null = null;
+let clipboardAdapter: IClipboardPort | null = null;
 let templateRepository: ITemplateRepository | null = null;
+
+// Domain service singletons
+let placeholderProcessor: PlaceholderProcessor | null = null;
 
 // Use case singletons
 let createTemplateUseCase: CreateTemplateUseCase | null = null;
@@ -34,6 +41,16 @@ export function getStorageAdapter(): ChromeStorageAdapter {
 }
 
 /**
+ * Get or create ClipboardAdapter instance
+ */
+export function getClipboardAdapter(): IClipboardPort {
+  if (!clipboardAdapter) {
+    clipboardAdapter = new ClipboardAdapter();
+  }
+  return clipboardAdapter;
+}
+
+/**
  * Get or create TemplateRepository instance
  */
 export function getTemplateRepository(): ITemplateRepository {
@@ -41,6 +58,16 @@ export function getTemplateRepository(): ITemplateRepository {
     templateRepository = new TemplateRepository(getStorageAdapter());
   }
   return templateRepository;
+}
+
+/**
+ * Get or create PlaceholderProcessor instance
+ */
+export function getPlaceholderProcessor(): PlaceholderProcessor {
+  if (!placeholderProcessor) {
+    placeholderProcessor = new PlaceholderProcessor();
+  }
+  return placeholderProcessor;
 }
 
 /**
@@ -88,7 +115,9 @@ export function getGetTemplateByTriggerUseCase(): GetTemplateByTriggerUseCase {
  */
 export const container = {
   getStorageAdapter,
+  getClipboardAdapter,
   getTemplateRepository,
+  getPlaceholderProcessor,
   getCreateTemplateUseCase,
   getGetAllTemplatesUseCase,
   getDeleteTemplateUseCase,
@@ -100,7 +129,9 @@ export const container = {
  */
 export function resetContainer(): void {
   storageAdapter = null;
+  clipboardAdapter = null;
   templateRepository = null;
+  placeholderProcessor = null;
   createTemplateUseCase = null;
   getAllTemplatesUseCase = null;
   deleteTemplateUseCase = null;

@@ -1,3 +1,2 @@
 // Clipboard Adapter
-// Export clipboard implementation here
-export {};
+export { ClipboardAdapter } from './ClipboardAdapter';

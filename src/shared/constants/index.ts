@@ -48,3 +48,21 @@ export const MESSAGE_TYPES = {
 } as const;
 
 export type MessageType = (typeof MESSAGE_TYPES)[keyof typeof MESSAGE_TYPES];
+
+/**
+ * Regex pattern to match placeholders in template content
+ * Matches: <clipboard>, <cursor>, <selection>, <date>, <date:FORMAT>, <time>, <time:FORMAT>, <datetime:FORMAT>
+ */
+export const PLACEHOLDER_PATTERN = /<(clipboard|cursor|selection|date|time|datetime)(?::([^>]+))?>/g;
+
+/**
+ * Individual placeholder patterns for validation
+ */
+export const PLACEHOLDER_PATTERNS = {
+  CLIPBOARD: /<clipboard>/g,
+  CURSOR: /<cursor>/g,
+  SELECTION: /<selection>/g,
+  DATE: /<date(?::([^>]+))?>/g,
+  TIME: /<time(?::([^>]+))?>/g,
+  DATETIME: /<datetime(?::([^>]+))?>/g,
+} as const;

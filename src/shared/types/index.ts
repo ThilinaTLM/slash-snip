@@ -28,3 +28,11 @@ export interface MessageResponse<T = unknown> {
   data?: T;
   error?: string;
 }
+
+// Placeholder types
+export type {
+  PlaceholderType,
+  ParsedPlaceholder,
+  PlaceholderContext,
+  ProcessedContent,
+} from './placeholder';
