@@ -997,13 +997,6 @@ svg {
   align-items: center;
   gap: 2px;
   margin-left: auto;
-  opacity: 0;
-  transition: opacity 0.1s;
-}
-
-.tree-node:hover .tree-node-actions,
-.tree-node-selected .tree-node-actions {
-  opacity: 1;
 }
 
 .tree-node-action-btn {
