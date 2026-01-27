@@ -13,7 +13,6 @@ import {
   GetTemplateByIdUseCase,
   IncrementUsageUseCase,
   GetRecentTemplatesUseCase,
-  SearchTemplatesUseCase,
 } from '@application/use-cases/templates';
 import {
   CreateCategoryUseCase,
@@ -59,7 +58,6 @@ let getTemplateByTriggerUseCase: GetTemplateByTriggerUseCase | null = null;
 let getTemplateByIdUseCase: GetTemplateByIdUseCase | null = null;
 let incrementUsageUseCase: IncrementUsageUseCase | null = null;
 let getRecentTemplatesUseCase: GetRecentTemplatesUseCase | null = null;
-let searchTemplatesUseCase: SearchTemplatesUseCase | null = null;
 
 // Category use case singletons
 let createCategoryUseCase: CreateCategoryUseCase | null = null;
@@ -249,16 +247,6 @@ export function getGetRecentTemplatesUseCase(): GetRecentTemplatesUseCase {
 }
 
 /**
- * Get or create SearchTemplatesUseCase instance
- */
-export function getSearchTemplatesUseCase(): SearchTemplatesUseCase {
-  if (!searchTemplatesUseCase) {
-    searchTemplatesUseCase = new SearchTemplatesUseCase(getTemplateRepository());
-  }
-  return searchTemplatesUseCase;
-}
-
-/**
  * Get or create CreateCategoryUseCase instance
  */
 export function getCreateCategoryUseCase(): CreateCategoryUseCase {
@@ -372,7 +360,6 @@ export const container = {
   getGetTemplateByIdUseCase,
   getIncrementUsageUseCase,
   getGetRecentTemplatesUseCase,
-  getSearchTemplatesUseCase,
   getCreateCategoryUseCase,
   getUpdateCategoryUseCase,
   getDeleteCategoryUseCase,

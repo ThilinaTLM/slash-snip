@@ -63,7 +63,7 @@ src/
 ### Key Extension Components
 
 - **Background Service Worker** (`presentation/background/`): Central message hub, handles storage operations via use cases. Uses `MessageRouter` for typed message handling.
-- **Content Script** (`presentation/content/`): Vanilla TypeScript, monitors input fields for triggers, handles expansion. Key classes: `TriggerDetector`, `TextExpander`, `PlaceholderProcessor`, `CommandPalette`, `TabStopManager`.
+- **Content Script** (`presentation/content/`): Vanilla TypeScript, monitors input fields for triggers, handles expansion. Key classes: `TriggerDetector`, `TextExpander`, `PlaceholderProcessor`, `TabStopManager`.
 - **Options Page** (`presentation/options/`): React app for full template management with Base UI components.
 
 ### Message Flow
@@ -102,7 +102,7 @@ Settings (`src/shared/types/settings.ts`):
 ## Chrome Extension Details
 
 - **Manifest V3** with service worker architecture
-- **Permissions**: storage, clipboardWrite, contextMenus, activeTab
+- **Permissions**: storage, clipboardWrite, activeTab
 - **Default shortcut**: Alt+S to open popup
 - Internationalization support via `_locales/` and `__MSG_*` placeholders
 

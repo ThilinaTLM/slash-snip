@@ -7,4 +7,3 @@ export { GetTemplateByTriggerUseCase } from './GetTemplateByTriggerUseCase';
 export { GetTemplateByIdUseCase } from './GetTemplateByIdUseCase';
 export { IncrementUsageUseCase } from './IncrementUsageUseCase';
 export { GetRecentTemplatesUseCase } from './GetRecentTemplatesUseCase';
-export { SearchTemplatesUseCase, type SearchResult } from './SearchTemplatesUseCase';

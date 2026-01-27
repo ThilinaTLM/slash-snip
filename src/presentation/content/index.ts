@@ -3,8 +3,6 @@
 
 import { TriggerDetector, type TriggerMode } from './TriggerDetector';
 import { TextExpander } from './TextExpander';
-import { commandPalette } from './CommandPalette';
-import { createTextWithLineBreaks, insertTextNatively } from './ContenteditableAdapter';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES, STORAGE_KEYS } from '@shared/constants';
 import { PlaceholderProcessor } from '@domain/services';
@@ -255,142 +253,6 @@ function incrementUsage(templateId: string): void {
 }
 
 /**
- * Get the currently focused text input element
- */
-function getActiveTextInput(): HTMLInputElement | HTMLTextAreaElement | HTMLElement | null {
-  const active = document.activeElement;
-  if (active && isTextInput(active)) {
-    return active as HTMLInputElement | HTMLTextAreaElement | HTMLElement;
-  }
-  return null;
-}
-
-/**
- * Insert template content at the current cursor position
- */
-async function insertTemplateAtCursor(template: TemplateDTO): Promise<void> {
-  const target = getActiveTextInput();
-  if (!target) {
-    console.log('[SlashSnip] No active text input for template insertion');
-    return;
-  }
-
-  // Gather placeholder context
-  const context = await gatherPlaceholderContext(target);
-
-  // Check for interactive placeholders that require user input
-  const interactiveFields = placeholderProcessor.analyzeInteractive(template.content);
-
-  let inputValues: Record<string, string> = {};
-
-  if (interactiveFields && interactiveFields.length > 0) {
-    const result = await inputDialog.show(interactiveFields);
-    if (result.cancelled) {
-      console.log('[SlashSnip] User cancelled input dialog');
-      return;
-    }
-    inputValues = result.values;
-  }
-
-  // Process with context and any user inputs
-  const processed = interactiveFields
-    ? placeholderProcessor.processWithInputs(template.content, context, inputValues, interactiveFields)
-    : placeholderProcessor.process(template.content, context);
-
-  console.log('[SlashSnip] Processed content for insertion:', processed);
-
-  // Insert at cursor position
-  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-    const start = target.selectionStart ?? target.value.length;
-    const end = target.selectionEnd ?? start;
-    const before = target.value.slice(0, start);
-    const after = target.value.slice(end);
-
-    target.value = before + processed.text + after;
-
-    // Position cursor
-    const newPosition = start + processed.text.length - (processed.cursorOffset ?? 0);
-    target.setSelectionRange(newPosition, newPosition);
-    target.focus();
-
-    // Dispatch input event
-    target.dispatchEvent(new InputEvent('input', { bubbles: true }));
-  } else if (target.isContentEditable) {
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      // Try native insertion first (works better with rich text editors like Gemini)
-      const inserted = insertTextNatively(processed.text);
-
-      if (!inserted) {
-        // Fallback: use DOM manipulation
-        const range = selection.getRangeAt(0);
-        range.deleteContents();
-
-        const fragment = createTextWithLineBreaks(processed.text);
-        const lastChild = fragment.lastChild;
-        range.insertNode(fragment);
-
-        // Move cursor to end
-        if (lastChild) {
-          range.setStartAfter(lastChild);
-          range.setEndAfter(lastChild);
-        }
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-  }
-
-  // Increment usage count
-  incrementUsage(template.id);
-}
-
-/**
- * Handle messages from the background script
- */
-function handleBackgroundMessage(
-  message: { type: string; payload?: { template?: TemplateDTO } },
-  _sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: unknown) => void
-): boolean {
-  console.log('[SlashSnip] Content script received message:', message.type);
-
-  if (message.type === MESSAGE_TYPES.OPEN_COMMAND_PALETTE) {
-    openCommandPalette();
-    sendResponse({ success: true });
-    return true;
-  }
-
-  if (message.type === MESSAGE_TYPES.INSERT_TEMPLATE && message.payload?.template) {
-    insertTemplateAtCursor(message.payload.template).then(() => {
-      sendResponse({ success: true });
-    });
-    return true; // Will respond asynchronously
-  }
-
-  return false;
-}
-
-/**
- * Open the command palette
- */
-async function openCommandPalette(): Promise<void> {
-  console.log('[SlashSnip] Opening command palette');
-
-  const result = await commandPalette.show();
-
-  if (result.cancelled || !result.template) {
-    console.log('[SlashSnip] Command palette cancelled');
-    return;
-  }
-
-  console.log('[SlashSnip] Template selected from palette:', result.template.trigger);
-
-  // Insert the selected template
-  await insertTemplateAtCursor(result.template);
-}
-
-/**
  * Load settings from Chrome storage and configure the detector
  */
 async function loadSettings(): Promise<void> {
@@ -474,9 +336,6 @@ async function init(): Promise<void> {
   // Use event delegation on document for dynamic elements
   document.addEventListener('input', handleInput);
   document.addEventListener('keydown', handleKeydown);
-
-  // Listen for messages from background script
-  chrome.runtime.onMessage.addListener(handleBackgroundMessage);
 
   // Listen for settings changes
   chrome.storage.onChanged.addListener(handleSettingsChange);
