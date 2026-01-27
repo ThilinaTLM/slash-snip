@@ -1,6 +1,6 @@
 {
   "name": "slashsnip",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Browser extension for text expansion with customizable triggers and templates",
   "type": "module",
   "scripts": {
