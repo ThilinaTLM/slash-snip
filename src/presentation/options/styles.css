@@ -1700,3 +1700,263 @@ svg {
 .font-mono {
   font-family: var(--font-mono);
 }
+
+/* ==========================================
+   Import Dialog
+   ========================================== */
+
+.import-dialog-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+}
+
+.import-dialog-error-icon {
+  color: var(--danger);
+  margin-bottom: 12px;
+}
+
+.import-dialog-error-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.import-dialog-error-list {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.import-dialog-error-list p {
+  margin: 4px 0;
+}
+
+.import-dialog-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px;
+}
+
+.import-dialog-spinner {
+  color: var(--accent);
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.import-dialog-loading p {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.import-dialog-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px;
+}
+
+.import-dialog-success-icon {
+  color: var(--success);
+  margin-bottom: 12px;
+}
+
+.import-dialog-success-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.import-dialog-stats {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.import-dialog-stats p {
+  margin: 4px 0;
+}
+
+.import-dialog-stat-detail {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.import-dialog-result-errors {
+  margin-top: 12px;
+  padding: 8px;
+  background-color: var(--danger-bg);
+  border-radius: var(--radius);
+  text-align: left;
+}
+
+.import-dialog-result-errors-title {
+  font-weight: 500;
+  color: var(--danger);
+}
+
+.import-dialog-result-error {
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.import-dialog-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.import-dialog-counts {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+}
+
+.import-dialog-count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.import-dialog-count-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.import-dialog-count-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.import-dialog-warnings {
+  padding: 8px;
+  background-color: var(--accent-bg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.import-dialog-warning {
+  font-size: 12px;
+  color: var(--accent-text);
+}
+
+.import-dialog-conflicts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius);
+}
+
+.import-dialog-conflicts-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.import-dialog-conflicts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.import-dialog-conflict-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.import-dialog-conflict-item code {
+  font-family: var(--font-mono);
+  padding: 2px 4px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius);
+}
+
+.import-dialog-conflicts-more {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.import-dialog-resolution {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.import-dialog-resolution-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.import-dialog-resolution-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.import-dialog-resolution-option:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.import-dialog-resolution-option input {
+  margin-top: 2px;
+  accent-color: var(--accent);
+}
+
+.import-dialog-resolution-option div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.import-dialog-resolution-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.import-dialog-resolution-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.import-dialog-no-conflicts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--success-bg);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--success);
+}

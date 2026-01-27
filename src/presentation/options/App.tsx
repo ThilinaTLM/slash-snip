@@ -118,6 +118,7 @@ export function App(): React.ReactElement {
             templates={templates}
             groups={groups}
             onUpdateSettings={updateSettings}
+            onRefresh={refreshTemplates}
           />
         );
       default:

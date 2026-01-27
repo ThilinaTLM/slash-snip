@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Settings, Zap, Download, Upload, AlertCircle } from 'lucide-react';
 import {
   Card,
@@ -11,6 +11,10 @@ import {
 } from '@ui/index';
 import { Switch } from '@ui/switch';
 import { Select, SelectItem } from '@ui/select';
+import { ImportDialog } from '../components/ImportDialog';
+import { sendMessage } from '@infrastructure/chrome/messaging';
+import { MESSAGE_TYPES } from '@shared/constants';
+import { validateBackup, type PreviewResult, type ImportResult, type ConflictResolution, type BackupData, type ConflictInfo } from '@application/use-cases/import-export';
 import type { AppSettings } from '@shared/types/settings';
 import type { TemplateDTO, GroupDTO } from '@application/dto';
 
@@ -19,6 +23,7 @@ interface SettingsScreenProps {
   templates: TemplateDTO[];
   groups: GroupDTO[];
   onUpdateSettings: (updates: Partial<AppSettings>) => void;
+  onRefresh?: () => Promise<void>;
 }
 
 interface ExportData {
@@ -33,8 +38,13 @@ export function SettingsScreen({
   templates,
   groups,
   onUpdateSettings,
+  onRefresh,
 }: SettingsScreenProps): React.ReactElement {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [importPreview, setImportPreview] = useState<PreviewResult | null>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
 
   const handleExport = () => {
     const exportData: ExportData = {
@@ -57,14 +67,107 @@ export function SettingsScreen({
     URL.revokeObjectURL(url);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // TODO: Implement actual import logic
-      console.log('[SlashSnip] Import file selected:', file.name);
-    }
+    if (!file) return;
+
     // Reset input so the same file can be selected again
     e.target.value = '';
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      // Validate backup structure
+      const validation = validateBackup(data);
+      if (!validation.valid || !validation.data) {
+        setImportPreview({
+          valid: false,
+          errors: validation.errors.map(e => `${e.field}: ${e.message}`),
+          warnings: validation.warnings.map(w => `${w.field}: ${w.message}`),
+          templateCount: 0,
+          groupCount: 0,
+          conflicts: [],
+        });
+        setImportResult(null);
+        setImportError(null);
+        setImportDialogOpen(true);
+        return;
+      }
+
+      const backupData = validation.data;
+      const caseSensitive = settings.caseSensitive;
+
+      // Detect trigger conflicts locally
+      const conflicts: ConflictInfo[] = [];
+      for (const templateDTO of backupData.templates) {
+        const existing = templates.find(t => {
+          if (caseSensitive) {
+            return t.trigger === templateDTO.trigger;
+          }
+          return t.trigger.toLowerCase() === templateDTO.trigger.toLowerCase();
+        });
+
+        if (existing) {
+          conflicts.push({
+            importedTrigger: templateDTO.trigger,
+            importedName: templateDTO.name,
+            existingId: existing.id,
+            existingName: existing.name,
+          });
+        }
+      }
+
+      setImportPreview({
+        valid: true,
+        errors: [],
+        warnings: validation.warnings.map(w => `${w.field}: ${w.message}`),
+        templateCount: backupData.templates.length,
+        groupCount: backupData.groups.length,
+        conflicts,
+        data: backupData,
+      });
+      setImportResult(null);
+      setImportError(null);
+      setImportDialogOpen(true);
+    } catch (err) {
+      setImportPreview(null);
+      setImportResult(null);
+      setImportError(err instanceof Error ? err.message : 'Failed to parse file');
+      setImportDialogOpen(true);
+    }
+  };
+
+  const handleImport = async (resolution: ConflictResolution) => {
+    if (!importPreview?.data) {
+      throw new Error('No backup data available');
+    }
+
+    const response = await sendMessage<
+      { backupData: BackupData; options: { conflictResolution: ConflictResolution } },
+      ImportResult
+    >(MESSAGE_TYPES.IMPORT_BACKUP, {
+      backupData: importPreview.data,
+      options: { conflictResolution: resolution },
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.error || 'Import failed');
+    }
+
+    setImportResult(response.data);
+
+    // Refresh templates after import
+    if (onRefresh) {
+      await onRefresh();
+    }
+  };
+
+  const handleDialogClose = () => {
+    setImportDialogOpen(false);
+    setImportPreview(null);
+    setImportResult(null);
+    setImportError(null);
   };
 
   return (
@@ -191,6 +294,15 @@ export function SettingsScreen({
           </section>
         </div>
       </div>
+
+      <ImportDialog
+        open={importDialogOpen}
+        onClose={handleDialogClose}
+        preview={importPreview}
+        onImport={handleImport}
+        importResult={importResult}
+        error={importError}
+      />
     </div>
   );
 }

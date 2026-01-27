@@ -16,7 +16,6 @@ export class UpdateTemplateUseCase {
     // Load settings to check trigger mode and case sensitivity
     const settings = await this.settingsPort?.getSettings();
     const caseSensitive = settings?.caseSensitive ?? true;
-    const triggerMode = settings?.triggerKey ?? 'space';
 
     // Find existing template
     const existing = await this.templateRepository.findById(dto.id);
@@ -35,7 +34,7 @@ export class UpdateTemplateUseCase {
       }
 
       // In "none" mode, check for prefix conflicts
-      if (triggerMode === 'none') {
+      if (settings?.triggerKey === 'none') {
         const conflicts = await this.templateRepository.findTriggerConflicts(dto.trigger, {
           excludeId: dto.id,
           caseSensitive,

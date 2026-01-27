@@ -19,7 +19,6 @@ export class CreateTemplateUseCase {
     // Load settings to check trigger mode and case sensitivity
     const settings = await this.settingsPort?.getSettings();
     const caseSensitive = settings?.caseSensitive ?? true;
-    const triggerMode = settings?.triggerKey ?? 'space';
 
     // Check for duplicate trigger
     const exists = await this.templateRepository.existsByTrigger(dto.trigger, {
@@ -30,7 +29,7 @@ export class CreateTemplateUseCase {
     }
 
     // In "none" mode, check for prefix conflicts
-    if (triggerMode === 'none') {
+    if (settings?.triggerKey === 'none') {
       const conflicts = await this.templateRepository.findTriggerConflicts(dto.trigger, {
         caseSensitive,
       });

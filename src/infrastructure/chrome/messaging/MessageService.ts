@@ -76,6 +76,3 @@ export class MessageRouter {
     );
   }
 }
-
-// Singleton instance for the router
-export const messageRouter = new MessageRouter();

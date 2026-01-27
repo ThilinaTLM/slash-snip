@@ -70,6 +70,8 @@ export const MESSAGE_TYPES = {
   SEARCH_TEMPLATES: 'SEARCH_TEMPLATES',
   OPEN_COMMAND_PALETTE: 'OPEN_COMMAND_PALETTE',
   INSERT_TEMPLATE: 'INSERT_TEMPLATE',
+  // Import/Export messages
+  IMPORT_BACKUP: 'IMPORT_BACKUP',
 } as const;
 
 export type MessageType = (typeof MESSAGE_TYPES)[keyof typeof MESSAGE_TYPES];

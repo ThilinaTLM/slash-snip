@@ -7,5 +7,4 @@ export {
   getGetAllTemplatesUseCase,
   getDeleteTemplateUseCase,
   getGetTemplateByTriggerUseCase,
-  resetContainer,
 } from './container';

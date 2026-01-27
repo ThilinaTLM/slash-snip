@@ -28,7 +28,9 @@ import {
   getUpdateGroupUseCase,
   getDeleteGroupUseCase,
   getGetAllGroupsUseCase,
+  getImportBackupUseCase,
 } from '@di/container';
+import type { ImportResult, ImportOptions, BackupData } from '@application/use-cases/import-export';
 
 // Initialize message router
 const router = new MessageRouter();
@@ -443,6 +445,28 @@ router.on<{ id: string }, void>(
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to delete group',
+      };
+    }
+  }
+);
+
+// ============ Import/Export Handlers ============
+
+// Handle IMPORT_BACKUP
+router.on<{ backupData: BackupData; options: ImportOptions }, ImportResult>(
+  MESSAGE_TYPES.IMPORT_BACKUP,
+  async (payload): Promise<MessageResponse<ImportResult>> => {
+    console.log('[SlashSnip BG] IMPORT_BACKUP received');
+    try {
+      const useCase = getImportBackupUseCase();
+      const result = await useCase.execute(payload.backupData, payload.options);
+      console.log('[SlashSnip BG] Import completed:', result);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error('[SlashSnip BG] Import error:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to import backup',
       };
     }
   }

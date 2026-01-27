@@ -27,6 +27,7 @@ import {
   DeleteGroupUseCase,
   GetAllGroupsUseCase,
 } from '@application/use-cases/groups';
+import { ImportBackupUseCase } from '@application/use-cases/import-export';
 import { PlaceholderProcessor } from '@domain/services';
 import { GroupRepository } from '@infrastructure/persistence/GroupRepository';
 import type { ITemplateRepository, ICategoryRepository, IGroupRepository, IRecentTemplatesRepository } from '@domain/repositories';
@@ -71,6 +72,9 @@ let createGroupUseCase: CreateGroupUseCase | null = null;
 let updateGroupUseCase: UpdateGroupUseCase | null = null;
 let deleteGroupUseCase: DeleteGroupUseCase | null = null;
 let getAllGroupsUseCase: GetAllGroupsUseCase | null = null;
+
+// Import/Export use case singletons
+let importBackupUseCase: ImportBackupUseCase | null = null;
 
 /**
  * Get or create ChromeStorageAdapter instance
@@ -335,6 +339,20 @@ export function getGetAllGroupsUseCase(): GetAllGroupsUseCase {
 }
 
 /**
+ * Get or create ImportBackupUseCase instance
+ */
+export function getImportBackupUseCase(): ImportBackupUseCase {
+  if (!importBackupUseCase) {
+    importBackupUseCase = new ImportBackupUseCase(
+      getTemplateRepository(),
+      getGroupRepository(),
+      getSettingsAdapter()
+    );
+  }
+  return importBackupUseCase;
+}
+
+/**
  * Container object with all factory functions
  */
 export const container = {
@@ -363,35 +381,6 @@ export const container = {
   getUpdateGroupUseCase,
   getDeleteGroupUseCase,
   getGetAllGroupsUseCase,
+  getImportBackupUseCase,
 };
 
-/**
- * Reset all singletons (useful for testing)
- */
-export function resetContainer(): void {
-  storageAdapter = null;
-  clipboardAdapter = null;
-  settingsAdapter = null;
-  templateRepository = null;
-  categoryRepository = null;
-  groupRepository = null;
-  recentTemplatesRepository = null;
-  placeholderProcessor = null;
-  createTemplateUseCase = null;
-  getAllTemplatesUseCase = null;
-  updateTemplateUseCase = null;
-  deleteTemplateUseCase = null;
-  getTemplateByTriggerUseCase = null;
-  getTemplateByIdUseCase = null;
-  incrementUsageUseCase = null;
-  getRecentTemplatesUseCase = null;
-  searchTemplatesUseCase = null;
-  createCategoryUseCase = null;
-  updateCategoryUseCase = null;
-  deleteCategoryUseCase = null;
-  getAllCategoriesUseCase = null;
-  createGroupUseCase = null;
-  updateGroupUseCase = null;
-  deleteGroupUseCase = null;
-  getAllGroupsUseCase = null;
-}
