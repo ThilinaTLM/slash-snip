@@ -13,7 +13,7 @@ export class SearchTemplatesUseCase {
 
   /**
    * Search templates by query string using fuzzy matching
-   * Searches trigger, name, content, description, and tags
+   * Searches trigger, name, content, and tags
    * Results are sorted by relevance score (higher = better match)
    */
   async execute(query: string, limit = 20): Promise<SearchResult[]> {
@@ -62,7 +62,6 @@ export class SearchTemplatesUseCase {
     const trigger = template.trigger.toLowerCase();
     const name = template.name.toLowerCase();
     const content = template.content.toLowerCase();
-    const description = (template.description ?? '').toLowerCase();
     const tags = template.tags.map((t) => t.toLowerCase());
 
     // Exact trigger match - highest priority
@@ -94,13 +93,6 @@ export class SearchTemplatesUseCase {
       } else if (tag.includes(query)) {
         score += 25;
       }
-    }
-
-    // Description match
-    if (description.includes(query)) {
-      score += 15;
-    } else if (this.fuzzyMatch(description, query)) {
-      score += 10;
     }
 
     // Content match - lower priority

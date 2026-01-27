@@ -73,7 +73,7 @@ export function SnippetsScreen({
       trigger,
       name: 'New Snippet',
       content: '',
-      categoryId: groupId,
+      groupId: groupId,
       tags: [],
     };
 
@@ -113,8 +113,7 @@ export function SnippetsScreen({
       trigger: newTrigger,
       name: `${template.name} (copy)`,
       content: template.content,
-      description: template.description,
-      categoryId: template.categoryId,
+      groupId: template.groupId,
       tags: [...template.tags],
     };
 
@@ -130,12 +129,12 @@ export function SnippetsScreen({
       if (!template) return;
 
       // Don't update if already in the target group
-      if (template.categoryId === targetGroupId) return;
-      if (!template.categoryId && targetGroupId === null) return;
+      if (template.groupId === targetGroupId) return;
+      if (!template.groupId && targetGroupId === null) return;
 
       await onUpdateTemplate({
         id: templateId,
-        categoryId: targetGroupId ?? undefined,
+        groupId: targetGroupId ?? undefined,
       });
     },
     [templates, onUpdateTemplate]
@@ -191,7 +190,7 @@ export function SnippetsScreen({
       return `Are you sure you want to delete "${template.name}"? This action cannot be undone.`;
     }
     const group = deleteTarget.data as GroupDTO;
-    const templateCount = templates.filter((t) => t.categoryId === group.id).length;
+    const templateCount = templates.filter((t) => t.groupId === group.id).length;
     if (templateCount > 0) {
       return `Are you sure you want to delete "${group.name}"? The ${templateCount} template${templateCount !== 1 ? 's' : ''} in this group will become ungrouped.`;
     }

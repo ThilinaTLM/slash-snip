@@ -76,7 +76,7 @@ export function TemplateEditor({
       trigger,
       name,
       content: data.content,
-      categoryId: template.categoryId,
+      groupId: template.groupId,
       tags,
     };
 
@@ -86,7 +86,7 @@ export function TemplateEditor({
     // Show "Saved" status briefly
     setTimeout(() => setSaveStatus('saved'), 100);
     setTimeout(() => setSaveStatus('idle'), 2000);
-  }, [template.id, template.categoryId, onSave]);
+  }, [template.id, template.groupId, onSave]);
 
   const debouncedSave = useCallback((data: FormData) => {
     if (saveTimeoutRef.current) {

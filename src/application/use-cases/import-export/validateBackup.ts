@@ -55,12 +55,8 @@ function validateTemplate(template: unknown, index: number): ValidationError[] {
     errors.push({ field: `${prefix}.content`, message: 'Template content must be a string' });
   }
 
-  if (template.description !== undefined && typeof template.description !== 'string') {
-    errors.push({ field: `${prefix}.description`, message: 'Template description must be a string if provided' });
-  }
-
-  if (template.categoryId !== undefined && typeof template.categoryId !== 'string') {
-    errors.push({ field: `${prefix}.categoryId`, message: 'Template categoryId must be a string if provided' });
+  if (template.groupId !== undefined && typeof template.groupId !== 'string') {
+    errors.push({ field: `${prefix}.groupId`, message: 'Template groupId must be a string if provided' });
   }
 
   if (!Array.isArray(template.tags)) {

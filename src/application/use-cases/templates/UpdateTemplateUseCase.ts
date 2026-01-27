@@ -51,8 +51,7 @@ export class UpdateTemplateUseCase {
       trigger: dto.trigger,
       name: dto.name,
       content: dto.content,
-      description: dto.description,
-      categoryId: dto.categoryId,
+      groupId: dto.groupId,
       tags: dto.tags,
     });
 

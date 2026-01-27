@@ -92,7 +92,7 @@ Configured in both `tsconfig.json` and `vite.config.ts`:
 
 Core entities are defined in `src/domain/entities/`:
 
-- **Template**: id, trigger, name, content, description?, categoryId?, tags[], createdAt, updatedAt, usageCount
+- **Template**: id, trigger, name, content, groupId?, tags[], createdAt, updatedAt, usageCount
 - **Category**: id, name, parentId?, order
 - **Group**: id, name, templateIds[], createdAt, updatedAt
 

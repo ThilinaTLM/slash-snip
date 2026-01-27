@@ -106,11 +106,11 @@ export function TemplateTree({
   const { groupedData, ungroupedTemplates } = useMemo(() => {
     const grouped: TreeGroup[] = groups.map((group) => ({
       group,
-      templates: filteredTemplates.filter((t) => t.categoryId === group.id),
+      templates: filteredTemplates.filter((t) => t.groupId === group.id),
     }));
 
     const ungrouped = filteredTemplates.filter(
-      (t) => !t.categoryId || !groups.some((g) => g.id === t.categoryId)
+      (t) => !t.groupId || !groups.some((g) => g.id === t.groupId)
     );
 
     return { groupedData: grouped, ungroupedTemplates: ungrouped };

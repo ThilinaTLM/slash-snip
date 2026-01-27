@@ -267,7 +267,6 @@ export class CommandPalette {
         <span class="preview-trigger">${this.escapeHtml(template.trigger)}</span>
       </div>
       <div class="preview-name">${this.escapeHtml(template.name)}</div>
-      ${template.description ? `<div class="preview-description">${this.escapeHtml(template.description)}</div>` : ''}
       <div class="preview-content"><pre>${this.escapeHtml(template.content)}</pre></div>
       <div class="preview-meta">
         ${template.usageCount > 0 ? `<span>Used ${template.usageCount} time${template.usageCount !== 1 ? 's' : ''}</span>` : ''}
@@ -599,12 +598,6 @@ export class CommandPalette {
         font-size: 16px;
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 4px;
-      }
-
-      .preview-description {
-        font-size: 13px;
-        color: #6b7280;
         margin-bottom: 12px;
       }
 
@@ -732,10 +725,6 @@ export class CommandPalette {
 
         .preview-name {
           color: #f9fafb;
-        }
-
-        .preview-description {
-          color: #9ca3af;
         }
 
         .preview-content {

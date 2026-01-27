@@ -7,8 +7,7 @@ export interface CreateTemplateDTO {
   trigger: string;
   name: string;
   content: string;
-  description?: string;
-  categoryId?: string;
+  groupId?: string;
   tags?: string[];
 }
 
@@ -20,8 +19,7 @@ export interface UpdateTemplateDTO {
   trigger?: string;
   name?: string;
   content?: string;
-  description?: string;
-  categoryId?: string | null;
+  groupId?: string | null;
   tags?: string[];
 }
 
@@ -33,8 +31,7 @@ export interface TemplateDTO {
   trigger: string;
   name: string;
   content: string;
-  description?: string;
-  categoryId?: string;
+  groupId?: string;
   tags: string[];
   createdAt: number;
   updatedAt: number;
@@ -50,8 +47,7 @@ export function toTemplateDTO(template: Template): TemplateDTO {
     trigger: template.trigger,
     name: template.name,
     content: template.content,
-    description: template.description,
-    categoryId: template.categoryId,
+    groupId: template.groupId,
     tags: template.tags,
     createdAt: template.createdAt,
     updatedAt: template.updatedAt,

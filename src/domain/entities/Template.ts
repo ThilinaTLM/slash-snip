@@ -9,8 +9,7 @@ export interface TemplateProps {
   trigger: string;
   name: string;
   content: string;
-  description?: string;
-  categoryId?: string;
+  groupId?: string;
   tags: string[];
   createdAt: number;
   updatedAt: number;
@@ -21,8 +20,7 @@ export interface CreateTemplateInput {
   trigger: string;
   name: string;
   content: string;
-  description?: string;
-  categoryId?: string;
+  groupId?: string;
   tags?: string[];
 }
 
@@ -30,8 +28,7 @@ export interface UpdateTemplateInput {
   trigger?: string;
   name?: string;
   content?: string;
-  description?: string;
-  categoryId?: string | null;
+  groupId?: string | null;
   tags?: string[];
 }
 
@@ -59,12 +56,8 @@ export class Template {
     return this.props.content;
   }
 
-  get description(): string | undefined {
-    return this.props.description;
-  }
-
-  get categoryId(): string | undefined {
-    return this.props.categoryId;
+  get groupId(): string | undefined {
+    return this.props.groupId;
   }
 
   get tags(): string[] {
@@ -112,8 +105,7 @@ export class Template {
       trigger: input.trigger.trim(),
       name: input.name.trim(),
       content: input.content,
-      description: input.description?.trim(),
-      categoryId: input.categoryId,
+      groupId: input.groupId,
       tags: input.tags ?? [],
       createdAt: now,
       updatedAt: now,
@@ -190,8 +182,7 @@ export class Template {
       trigger: newTrigger,
       name: newName,
       content: newContent,
-      description: input.description !== undefined ? input.description?.trim() : this.props.description,
-      categoryId: input.categoryId === null ? undefined : (input.categoryId ?? this.props.categoryId),
+      groupId: input.groupId === null ? undefined : (input.groupId ?? this.props.groupId),
       tags: input.tags ?? this.props.tags,
       updatedAt: Date.now(),
     });
