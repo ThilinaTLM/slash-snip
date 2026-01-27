@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="22" fill="#009F93"/>
+  <!-- Dot representing cursor/input point -->
+  <circle cx="24" cy="24" r="8" fill="#ffffff"/>
+  <!-- Bold slash "snipped" in the middle - represents the trigger and action -->
+  <path fill="#ffffff" d="M56 12 L68 12 L52 44 L40 44 Z"/>
+  <path fill="#ffffff" d="M34 56 L46 56 L30 88 L18 88 Z"/>
+  <!-- Subtle expansion lines (visible at larger sizes) -->
+  <rect x="70" y="38" width="16" height="5" rx="2" fill="#ffffff" opacity="0.7"/>
+  <rect x="66" y="48" width="20" height="5" rx="2" fill="#ffffff" opacity="0.7"/>
+  <rect x="62" y="58" width="24" height="5" rx="2" fill="#ffffff" opacity="0.7"/>
+</svg>
