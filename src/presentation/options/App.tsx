@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppShell, type View } from './components/layout';
 import { SnippetsScreen } from './screens/SnippetsScreen';
-import { TryItOutScreen } from './screens/TryItOutScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { useTemplates } from './hooks/useTemplates';
 import { useGroups } from './hooks/useGroups';
@@ -112,8 +111,6 @@ export function App(): React.ReactElement {
             onUpdateSettings={updateSettings}
           />
         );
-      case 'try-it-out':
-        return <TryItOutScreen templates={templates} />;
       case 'settings':
         return (
           <SettingsScreen

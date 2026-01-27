@@ -1,8 +1,8 @@
 import React from 'react';
-import { Scissors, Settings, Play } from 'lucide-react';
+import { Scissors, Settings } from 'lucide-react';
 import { ThemeToggle, type Theme } from '../ThemeToggle';
 
-export type View = 'snippets' | 'try-it-out' | 'settings';
+export type View = 'snippets' | 'settings';
 
 interface TopNavProps {
   currentView: View;
@@ -32,11 +32,6 @@ export function TopNav({
       label: 'Snippets',
       icon: <Scissors size={16} />,
       badge: templateCount,
-    },
-    {
-      id: 'try-it-out',
-      label: 'Try It Out',
-      icon: <Play size={16} />,
     },
     {
       id: 'settings',
