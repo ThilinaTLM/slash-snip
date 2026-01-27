@@ -4,7 +4,7 @@
 import { TriggerDetector, type TriggerMode } from './TriggerDetector';
 import { TextExpander } from './TextExpander';
 import { commandPalette } from './CommandPalette';
-import { createTextWithLineBreaks } from './ContenteditableAdapter';
+import { createTextWithLineBreaks, insertTextNatively } from './ContenteditableAdapter';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES, STORAGE_KEYS } from '@shared/constants';
 import { PlaceholderProcessor } from '@domain/services';
@@ -318,20 +318,26 @@ async function insertTemplateAtCursor(template: TemplateDTO): Promise<void> {
   } else if (target.isContentEditable) {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      range.deleteContents();
+      // Try native insertion first (works better with rich text editors like Gemini)
+      const inserted = insertTextNatively(processed.text);
 
-      const fragment = createTextWithLineBreaks(processed.text);
-      const lastChild = fragment.lastChild;
-      range.insertNode(fragment);
+      if (!inserted) {
+        // Fallback: use DOM manipulation
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
 
-      // Move cursor to end
-      if (lastChild) {
-        range.setStartAfter(lastChild);
-        range.setEndAfter(lastChild);
+        const fragment = createTextWithLineBreaks(processed.text);
+        const lastChild = fragment.lastChild;
+        range.insertNode(fragment);
+
+        // Move cursor to end
+        if (lastChild) {
+          range.setStartAfter(lastChild);
+          range.setEndAfter(lastChild);
+        }
+        selection.removeAllRanges();
+        selection.addRange(range);
       }
-      selection.removeAllRanges();
-      selection.addRange(range);
     }
   }
 

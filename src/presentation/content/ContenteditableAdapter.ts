@@ -4,6 +4,15 @@
  */
 
 /**
+ * Insert text using execCommand for better compatibility with rich text editors.
+ * This lets the editor handle newline representation natively.
+ * Returns true if successful, false if the method is not supported or fails.
+ */
+export function insertTextNatively(text: string): boolean {
+  return document.execCommand('insertText', false, text);
+}
+
+/**
  * Create a DocumentFragment with text and <br> elements for newlines.
  * HTML does not render \n characters as visual line breaks in contenteditable,
  * so we must convert them to <br> elements.
@@ -65,6 +74,10 @@ export function getContenteditableContext(element: HTMLElement): Contenteditable
 
 /**
  * Replace text in a contenteditable element
+ * Uses execCommand('insertText') for better compatibility with rich text editors
+ * like Gemini, which expect specific line break representations.
+ * Falls back to DOM manipulation if execCommand is not supported.
+ *
  * @param ctx - The contenteditable context
  * @param startIndex - Start index of text to replace (relative to text up to cursor)
  * @param endIndex - End index of text to replace
@@ -84,27 +97,36 @@ export function replaceContenteditableText(
   const deleteRange = findRangeForTextPosition(element, startIndex, endIndex);
   if (!deleteRange) return;
 
-  // Delete the trigger text
-  deleteRange.deleteContents();
-
-  // Insert the new text with proper line break handling
-  const fragment = createTextWithLineBreaks(newText);
-  const lastChild = fragment.lastChild;
-  deleteRange.insertNode(fragment);
-
-  // Move cursor to end of inserted content
-  const newRange = document.createRange();
-  if (lastChild) {
-    newRange.setStartAfter(lastChild);
-  } else {
-    newRange.setStart(deleteRange.startContainer, deleteRange.startOffset);
-  }
-  newRange.collapse(true);
+  // Select the trigger text to be replaced
   selection.removeAllRanges();
-  selection.addRange(newRange);
+  selection.addRange(deleteRange);
 
-  // Dispatch input event for framework compatibility
-  element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
+  // Try native insertion first (works better with rich text editors like Gemini)
+  // execCommand lets the editor handle text insertion and newline representation natively
+  const inserted = document.execCommand('insertText', false, newText);
+
+  if (!inserted) {
+    // Fallback: delete contents and insert DOM fragment
+    deleteRange.deleteContents();
+    const fragment = createTextWithLineBreaks(newText);
+    const lastChild = fragment.lastChild;
+    deleteRange.insertNode(fragment);
+
+    // Move cursor to end of inserted content
+    const newRange = document.createRange();
+    if (lastChild) {
+      newRange.setStartAfter(lastChild);
+    } else {
+      newRange.setStart(deleteRange.startContainer, deleteRange.startOffset);
+    }
+    newRange.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+
+    // Dispatch input event for framework compatibility
+    element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
+  }
+  // Note: execCommand already dispatches the appropriate input events
 }
 
 /**
