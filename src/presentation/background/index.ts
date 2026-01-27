@@ -25,6 +25,8 @@ import {
   getDeleteGroupUseCase,
   getGetAllGroupsUseCase,
   getImportBackupUseCase,
+  getGroupRepository,
+  getTemplateRepository,
 } from '@di/container';
 import type { ImportResult, ImportOptions, BackupData } from '@application/use-cases/import-export';
 
@@ -447,6 +449,32 @@ router.on<{ backupData: BackupData; options: ImportOptions }, ImportResult>(
 
 // Start listening for messages
 router.listen();
+
+// ============ Initialization ============
+
+/**
+ * Initialize extension data on startup
+ * Ensures default group and templates exist on first install
+ */
+async function initializeExtension(): Promise<void> {
+  try {
+    const groupRepository = getGroupRepository();
+    const templateRepository = getTemplateRepository();
+
+    // Ensure default group exists first (templates reference it)
+    await groupRepository.ensureDefaultGroup();
+
+    // Seed default templates on first install
+    await templateRepository.ensureDefaultTemplates();
+
+    console.log('[SlashSnip BG] Extension initialized');
+  } catch (error) {
+    console.error('[SlashSnip BG] Initialization error:', error);
+  }
+}
+
+// Run initialization
+initializeExtension();
 
 // ============ Action Click Handler ============
 

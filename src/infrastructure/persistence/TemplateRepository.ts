@@ -7,6 +7,7 @@ import type {
 } from '@domain/repositories';
 import { Template, type TemplateProps } from '@domain/entities';
 import { STORAGE_KEYS } from '@shared/constants';
+import { createDefaultTemplates } from '@shared/constants/defaultTemplates';
 import { ChromeStorageAdapter } from '../chrome/storage/ChromeStorageAdapter';
 
 /**
@@ -108,6 +109,21 @@ export class TemplateRepository implements ITemplateRepository {
     }
 
     return conflicts;
+  }
+
+  /**
+   * Ensure default templates exist (seeds on first install)
+   */
+  async ensureDefaultTemplates(): Promise<void> {
+    const templates = await this.getAllProps();
+
+    // Only seed if storage is empty (first install)
+    if (templates.length > 0) {
+      return;
+    }
+
+    const defaultTemplates = createDefaultTemplates();
+    await this.storage.set(STORAGE_KEYS.TEMPLATES, defaultTemplates);
   }
 
   /**

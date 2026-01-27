@@ -84,4 +84,9 @@ export interface ITemplateRepository {
    * @param options Optional check options (excludeId, caseSensitive)
    */
   findTriggerConflicts(trigger: string, options?: ConflictCheckOptions): Promise<TriggerConflict[]>;
+
+  /**
+   * Ensure default templates exist (seeds on first install)
+   */
+  ensureDefaultTemplates(): Promise<void>;
 }
