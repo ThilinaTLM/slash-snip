@@ -24,7 +24,15 @@ export function useSettings(): UseSettingsResult {
         const stored = result[STORAGE_KEYS.SETTINGS] as Partial<AppSettings> | undefined;
 
         if (stored) {
-          setSettings({ ...DEFAULT_SETTINGS, ...stored });
+          // Migrate legacy trigger key values (tab, enter) to 'space'
+          let migratedSettings = { ...DEFAULT_SETTINGS, ...stored };
+          if (stored.triggerKey && stored.triggerKey !== 'space' && stored.triggerKey !== 'none') {
+            migratedSettings = { ...migratedSettings, triggerKey: 'space' };
+            // Persist the migration
+            await chrome.storage.local.set({ [STORAGE_KEYS.SETTINGS]: migratedSettings });
+            console.log('[SlashSnip] Migrated legacy triggerKey to space');
+          }
+          setSettings(migratedSettings);
         }
       } catch (error) {
         console.error('[SlashSnip] Failed to load settings:', error);

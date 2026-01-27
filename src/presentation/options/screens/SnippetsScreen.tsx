@@ -101,7 +101,7 @@ export function SnippetsScreen({
 
   const handleDuplicateTemplate = async (template: TemplateDTO) => {
     // Find a unique trigger for the duplicate
-    let baseTrigger = template.trigger;
+    const baseTrigger = template.trigger;
     let suffix = 1;
     let newTrigger = `${baseTrigger}-copy`;
     while (templates.some((t) => t.trigger === newTrigger)) {

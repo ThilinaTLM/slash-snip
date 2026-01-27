@@ -3,6 +3,27 @@
  * Provides utilities for text extraction and replacement using Selection/Range APIs
  */
 
+/**
+ * Create a DocumentFragment with text and <br> elements for newlines.
+ * HTML does not render \n characters as visual line breaks in contenteditable,
+ * so we must convert them to <br> elements.
+ */
+export function createTextWithLineBreaks(text: string): DocumentFragment {
+  const fragment = document.createDocumentFragment();
+  const lines = text.split('\n');
+
+  lines.forEach((line, index) => {
+    if (index > 0) {
+      fragment.appendChild(document.createElement('br'));
+    }
+    if (line) {
+      fragment.appendChild(document.createTextNode(line));
+    }
+  });
+
+  return fragment;
+}
+
 export interface ContenteditableContext {
   element: HTMLElement;
   text: string;           // Text content up to cursor
@@ -66,13 +87,18 @@ export function replaceContenteditableText(
   // Delete the trigger text
   deleteRange.deleteContents();
 
-  // Insert the new text
-  const textNode = document.createTextNode(newText);
-  deleteRange.insertNode(textNode);
+  // Insert the new text with proper line break handling
+  const fragment = createTextWithLineBreaks(newText);
+  const lastChild = fragment.lastChild;
+  deleteRange.insertNode(fragment);
 
-  // Move cursor to end of inserted text
+  // Move cursor to end of inserted content
   const newRange = document.createRange();
-  newRange.setStartAfter(textNode);
+  if (lastChild) {
+    newRange.setStartAfter(lastChild);
+  } else {
+    newRange.setStart(deleteRange.startContainer, deleteRange.startOffset);
+  }
   newRange.collapse(true);
   selection.removeAllRanges();
   selection.addRange(newRange);

@@ -102,3 +102,19 @@ export class DuplicateGroupNameError extends DomainError {
     super(`Group name already exists: ${name}`);
   }
 }
+
+/**
+ * Trigger conflict (prefix overlap) in "none" trigger mode
+ */
+export class TriggerConflictError extends DomainError {
+  constructor(
+    public readonly newTrigger: string,
+    public readonly conflictingTrigger: string,
+    public readonly isPrefix: boolean
+  ) {
+    const direction = isPrefix
+      ? `"${newTrigger}" is a prefix of existing trigger "${conflictingTrigger}"`
+      : `existing trigger "${conflictingTrigger}" is a prefix of "${newTrigger}"`;
+    super(`Trigger conflict: ${direction}. In immediate mode, prefix overlaps prevent reliable matching.`);
+  }
+}

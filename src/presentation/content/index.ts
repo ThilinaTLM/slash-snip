@@ -1,23 +1,29 @@
 // Content Script Entry Point
 // Vanilla TypeScript for trigger detection and expansion
 
-import { TriggerDetector } from './TriggerDetector';
+import { TriggerDetector, type TriggerMode } from './TriggerDetector';
 import { TextExpander } from './TextExpander';
 import { commandPalette } from './CommandPalette';
+import { createTextWithLineBreaks } from './ContenteditableAdapter';
 import { sendMessage } from '@infrastructure/chrome/messaging';
-import { MESSAGE_TYPES } from '@shared/constants';
+import { MESSAGE_TYPES, STORAGE_KEYS } from '@shared/constants';
 import { PlaceholderProcessor } from '@domain/services';
 import { ClipboardAdapter } from '@infrastructure/chrome/clipboard';
 import { inputDialog } from './InputDialog';
 import { tabStopManager } from './TabStopManager';
 import type { TemplateDTO } from '@application/dto';
 import type { PlaceholderContext } from '@shared/types';
+import type { AppSettings } from '@shared/types/settings';
+import { DEFAULT_SETTINGS } from '@shared/types/settings';
 
 // Initialize services
 const detector = new TriggerDetector();
 const expander = new TextExpander();
 const placeholderProcessor = new PlaceholderProcessor();
 const clipboardAdapter = new ClipboardAdapter();
+
+// Current settings cache
+let currentSettings: AppSettings = DEFAULT_SETTINGS;
 
 /**
  * Handle input events on text inputs, textareas, and contenteditable elements
@@ -315,12 +321,15 @@ async function insertTemplateAtCursor(template: TemplateDTO): Promise<void> {
       const range = selection.getRangeAt(0);
       range.deleteContents();
 
-      const textNode = document.createTextNode(processed.text);
-      range.insertNode(textNode);
+      const fragment = createTextWithLineBreaks(processed.text);
+      const lastChild = fragment.lastChild;
+      range.insertNode(fragment);
 
       // Move cursor to end
-      range.setStartAfter(textNode);
-      range.setEndAfter(textNode);
+      if (lastChild) {
+        range.setStartAfter(lastChild);
+        range.setEndAfter(lastChild);
+      }
       selection.removeAllRanges();
       selection.addRange(range);
     }
@@ -376,15 +385,95 @@ async function openCommandPalette(): Promise<void> {
 }
 
 /**
+ * Load settings from Chrome storage and configure the detector
+ */
+async function loadSettings(): Promise<void> {
+  try {
+    const result = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
+    const stored = result[STORAGE_KEYS.SETTINGS] as Partial<AppSettings> | undefined;
+    currentSettings = { ...DEFAULT_SETTINGS, ...stored };
+    applySettings(currentSettings);
+  } catch (error) {
+    console.error('[SlashSnip] Failed to load settings:', error);
+  }
+}
+
+/**
+ * Apply settings to the trigger detector
+ */
+function applySettings(settings: AppSettings): void {
+  const mode: TriggerMode = settings.triggerKey === 'none' ? 'none' : 'delimiter';
+  detector.setMode(mode);
+  detector.setCaseSensitive(settings.caseSensitive);
+
+  console.log('[SlashSnip] Settings applied:', {
+    mode,
+    caseSensitive: settings.caseSensitive,
+  });
+
+  // In "none" mode, we need to load known triggers
+  if (mode === 'none') {
+    loadKnownTriggers();
+  }
+}
+
+/**
+ * Load all known triggers for "none" mode matching
+ */
+async function loadKnownTriggers(): Promise<void> {
+  try {
+    const response = await sendMessage<object, TemplateDTO[]>(
+      MESSAGE_TYPES.GET_TEMPLATES,
+      {}
+    );
+    if (response.success && response.data) {
+      const triggers = response.data.map((t) => t.trigger);
+      detector.setKnownTriggers(triggers);
+      console.log('[SlashSnip] Loaded', triggers.length, 'known triggers for immediate mode');
+    }
+  } catch (error) {
+    console.error('[SlashSnip] Failed to load known triggers:', error);
+  }
+}
+
+/**
+ * Handle settings changes from Chrome storage
+ */
+function handleSettingsChange(
+  changes: { [key: string]: chrome.storage.StorageChange },
+  areaName: string
+): void {
+  if (areaName !== 'local') return;
+
+  if (changes[STORAGE_KEYS.SETTINGS]) {
+    const newSettings = changes[STORAGE_KEYS.SETTINGS].newValue as Partial<AppSettings> | undefined;
+    currentSettings = { ...DEFAULT_SETTINGS, ...newSettings };
+    applySettings(currentSettings);
+    console.log('[SlashSnip] Settings changed:', currentSettings);
+  }
+
+  // Also reload triggers when templates change (for "none" mode)
+  if (changes[STORAGE_KEYS.TEMPLATES] && detector.getMode() === 'none') {
+    loadKnownTriggers();
+  }
+}
+
+/**
  * Initialize content script
  */
-function init(): void {
+async function init(): Promise<void> {
+  // Load settings first
+  await loadSettings();
+
   // Use event delegation on document for dynamic elements
   document.addEventListener('input', handleInput);
   document.addEventListener('keydown', handleKeydown);
 
   // Listen for messages from background script
   chrome.runtime.onMessage.addListener(handleBackgroundMessage);
+
+  // Listen for settings changes
+  chrome.storage.onChanged.addListener(handleSettingsChange);
 
   console.log('SlashSnip content script initialized');
 }

@@ -1,4 +1,10 @@
-import type { ITemplateRepository, TriggerQueryOptions } from '@domain/repositories';
+import type {
+  ITemplateRepository,
+  TriggerQueryOptions,
+  ExistsByTriggerOptions,
+  ConflictCheckOptions,
+  TriggerConflict,
+} from '@domain/repositories';
 import { Template, type TemplateProps } from '@domain/entities';
 import { STORAGE_KEYS } from '@shared/constants';
 import { ChromeStorageAdapter } from '../chrome/storage/ChromeStorageAdapter';
@@ -55,11 +61,53 @@ export class TemplateRepository implements ITemplateRepository {
     await this.storage.set(STORAGE_KEYS.TEMPLATES, filtered);
   }
 
-  async existsByTrigger(trigger: string, excludeId?: string): Promise<boolean> {
+  async existsByTrigger(trigger: string, options?: ExistsByTriggerOptions): Promise<boolean> {
     const templates = await this.getAllProps();
-    return templates.some(
-      (t) => t.trigger === trigger && t.id !== excludeId
-    );
+    const caseSensitive = options?.caseSensitive ?? true;
+    const excludeId = options?.excludeId;
+
+    return templates.some((t) => {
+      if (t.id === excludeId) return false;
+      if (caseSensitive) {
+        return t.trigger === trigger;
+      }
+      return t.trigger.toLowerCase() === trigger.toLowerCase();
+    });
+  }
+
+  async findTriggerConflicts(
+    trigger: string,
+    options?: ConflictCheckOptions
+  ): Promise<TriggerConflict[]> {
+    const templates = await this.getAllProps();
+    const caseSensitive = options?.caseSensitive ?? true;
+    const excludeId = options?.excludeId;
+    const conflicts: TriggerConflict[] = [];
+
+    const normalizedTrigger = caseSensitive ? trigger : trigger.toLowerCase();
+
+    for (const t of templates) {
+      if (t.id === excludeId) continue;
+
+      const normalizedExisting = caseSensitive ? t.trigger : t.trigger.toLowerCase();
+
+      // Check if new trigger is a prefix of existing trigger
+      if (normalizedExisting.startsWith(normalizedTrigger) && normalizedExisting !== normalizedTrigger) {
+        conflicts.push({
+          trigger: t.trigger,
+          isPrefix: true,
+        });
+      }
+      // Check if existing trigger is a prefix of new trigger
+      else if (normalizedTrigger.startsWith(normalizedExisting) && normalizedExisting !== normalizedTrigger) {
+        conflicts.push({
+          trigger: t.trigger,
+          isPrefix: false,
+        });
+      }
+    }
+
+    return conflicts;
   }
 
   /**

@@ -1,4 +1,5 @@
 import { ChromeStorageAdapter } from '@infrastructure/chrome/storage/ChromeStorageAdapter';
+import { SettingsAdapter } from '@infrastructure/chrome/storage/SettingsAdapter';
 import { ClipboardAdapter } from '@infrastructure/chrome/clipboard';
 import { TemplateRepository } from '@infrastructure/persistence/TemplateRepository';
 import { CategoryRepository } from '@infrastructure/persistence/CategoryRepository';
@@ -29,7 +30,7 @@ import {
 import { PlaceholderProcessor } from '@domain/services';
 import { GroupRepository } from '@infrastructure/persistence/GroupRepository';
 import type { ITemplateRepository, ICategoryRepository, IGroupRepository, IRecentTemplatesRepository } from '@domain/repositories';
-import type { IClipboardPort } from '@application/ports';
+import type { IClipboardPort, ISettingsPort } from '@application/ports';
 
 /**
  * Simple DI container using factory functions
@@ -39,6 +40,7 @@ import type { IClipboardPort } from '@application/ports';
 // Infrastructure singletons
 let storageAdapter: ChromeStorageAdapter | null = null;
 let clipboardAdapter: IClipboardPort | null = null;
+let settingsAdapter: ISettingsPort | null = null;
 let templateRepository: ITemplateRepository | null = null;
 let categoryRepository: ICategoryRepository | null = null;
 let groupRepository: IGroupRepository | null = null;
@@ -88,6 +90,16 @@ export function getClipboardAdapter(): IClipboardPort {
     clipboardAdapter = new ClipboardAdapter();
   }
   return clipboardAdapter;
+}
+
+/**
+ * Get or create SettingsAdapter instance
+ */
+export function getSettingsAdapter(): ISettingsPort {
+  if (!settingsAdapter) {
+    settingsAdapter = new SettingsAdapter(getStorageAdapter());
+  }
+  return settingsAdapter;
 }
 
 /**
@@ -145,7 +157,10 @@ export function getPlaceholderProcessor(): PlaceholderProcessor {
  */
 export function getCreateTemplateUseCase(): CreateTemplateUseCase {
   if (!createTemplateUseCase) {
-    createTemplateUseCase = new CreateTemplateUseCase(getTemplateRepository());
+    createTemplateUseCase = new CreateTemplateUseCase(
+      getTemplateRepository(),
+      getSettingsAdapter()
+    );
   }
   return createTemplateUseCase;
 }
@@ -165,7 +180,10 @@ export function getGetAllTemplatesUseCase(): GetAllTemplatesUseCase {
  */
 export function getUpdateTemplateUseCase(): UpdateTemplateUseCase {
   if (!updateTemplateUseCase) {
-    updateTemplateUseCase = new UpdateTemplateUseCase(getTemplateRepository());
+    updateTemplateUseCase = new UpdateTemplateUseCase(
+      getTemplateRepository(),
+      getSettingsAdapter()
+    );
   }
   return updateTemplateUseCase;
 }
@@ -322,6 +340,7 @@ export function getGetAllGroupsUseCase(): GetAllGroupsUseCase {
 export const container = {
   getStorageAdapter,
   getClipboardAdapter,
+  getSettingsAdapter,
   getTemplateRepository,
   getCategoryRepository,
   getGroupRepository,
@@ -352,6 +371,7 @@ export const container = {
 export function resetContainer(): void {
   storageAdapter = null;
   clipboardAdapter = null;
+  settingsAdapter = null;
   templateRepository = null;
   categoryRepository = null;
   groupRepository = null;

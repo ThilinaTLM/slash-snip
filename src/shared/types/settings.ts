@@ -3,7 +3,7 @@
  */
 
 export interface AppSettings {
-  triggerKey: 'space' | 'tab' | 'enter';
+  triggerKey: 'space' | 'none';
   caseSensitive: boolean;
   treePanelWidth: number;
 }

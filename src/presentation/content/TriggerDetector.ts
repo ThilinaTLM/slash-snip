@@ -7,21 +7,66 @@ export interface TriggerMatch {
   endIndex: number;
 }
 
+export type TriggerMode = 'delimiter' | 'none';
+
 /**
  * Detects trigger patterns in text input
  */
 export class TriggerDetector {
   private delimiters: string[];
+  private mode: TriggerMode;
+  private knownTriggers: Set<string> = new Set();
+  private caseSensitive: boolean = true;
 
-  constructor(delimiters: string[] = DEFAULT_TRIGGER_DELIMITERS) {
+  constructor(delimiters: string[] = DEFAULT_TRIGGER_DELIMITERS, mode: TriggerMode = 'delimiter') {
     this.delimiters = delimiters;
+    this.mode = mode;
   }
 
   /**
-   * Check if text ends with a trigger followed by a delimiter
+   * Set the trigger mode at runtime
+   */
+  setMode(mode: TriggerMode): void {
+    this.mode = mode;
+  }
+
+  /**
+   * Get the current trigger mode
+   */
+  getMode(): TriggerMode {
+    return this.mode;
+  }
+
+  /**
+   * Set case sensitivity for trigger matching
+   */
+  setCaseSensitive(caseSensitive: boolean): void {
+    this.caseSensitive = caseSensitive;
+  }
+
+  /**
+   * Update the list of known triggers (for "none" mode matching)
+   */
+  setKnownTriggers(triggers: string[]): void {
+    this.knownTriggers = new Set(triggers);
+  }
+
+  /**
+   * Check if text ends with a trigger followed by a delimiter (delimiter mode)
+   * or ends with a known trigger (none mode)
    * Returns the trigger if found, null otherwise
    */
   detectTrigger(text: string): TriggerMatch | null {
+    if (this.mode === 'none') {
+      return this.detectNoneTrigger(text);
+    }
+    return this.detectDelimiterTrigger(text);
+  }
+
+  /**
+   * Detect trigger in delimiter mode (space triggers expansion)
+   */
+  private detectDelimiterTrigger(text: string): TriggerMatch | null {
     if (!text || text.length < 2) {
       return null;
     }
@@ -57,6 +102,49 @@ export class TriggerDetector {
       startIndex: triggerStart,
       endIndex: text.length, // includes the delimiter
     };
+  }
+
+  /**
+   * Detect trigger in "none" mode (immediate expansion without delimiter)
+   * Checks if text ends with a known trigger
+   */
+  private detectNoneTrigger(text: string): TriggerMatch | null {
+    if (!text || text.length < 2) {
+      return null;
+    }
+
+    // Find the start of the current word (last whitespace or start of string)
+    let wordStart = text.length;
+    for (let i = text.length - 1; i >= 0; i--) {
+      const char = text[i];
+      if (this.isWhitespace(char)) {
+        break;
+      }
+      wordStart = i;
+    }
+
+    const currentWord = text.slice(wordStart);
+
+    // Current word must be at least 2 characters
+    if (currentWord.length < 2) {
+      return null;
+    }
+
+    // Check if current word matches a known trigger
+    const normalizedWord = this.caseSensitive ? currentWord : currentWord.toLowerCase();
+
+    for (const trigger of this.knownTriggers) {
+      const normalizedTrigger = this.caseSensitive ? trigger : trigger.toLowerCase();
+      if (normalizedWord === normalizedTrigger) {
+        return {
+          trigger: currentWord,
+          startIndex: wordStart,
+          endIndex: text.length, // no delimiter in "none" mode
+        };
+      }
+    }
+
+    return null;
   }
 
   /**

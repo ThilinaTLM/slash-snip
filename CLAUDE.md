@@ -62,10 +62,19 @@ src/
 
 ### Key Extension Components
 
-- **Background Service Worker** (`presentation/background/`): Central message hub, manages storage operations
-- **Content Script** (`presentation/content/`): Vanilla TypeScript, monitors input fields for triggers, handles expansion
-- **Popup** (`presentation/popup/`): React app for quick template access
-- **Options Page** (`presentation/options/`): React app for full template management
+- **Background Service Worker** (`presentation/background/`): Central message hub, handles storage operations via use cases. Uses `MessageRouter` for typed message handling.
+- **Content Script** (`presentation/content/`): Vanilla TypeScript, monitors input fields for triggers, handles expansion. Key classes: `TriggerDetector`, `TextExpander`, `PlaceholderProcessor`, `CommandPalette`, `TabStopManager`.
+- **Options Page** (`presentation/options/`): React app for full template management with Base UI components.
+
+### Message Flow
+
+Content script ↔ Background communication uses Chrome messaging with typed message handlers:
+1. Content script detects trigger via `TriggerDetector`
+2. Sends `GET_BY_TRIGGER` message to background
+3. Background resolves via `GetTemplateByTriggerUseCase` and returns template
+4. Content script expands via `TextExpander`, processes placeholders via `PlaceholderProcessor`
+
+Message types are defined in `src/shared/constants/index.ts` (`MESSAGE_TYPES`).
 
 ### Path Aliases
 
@@ -81,11 +90,14 @@ Configured in both `tsconfig.json` and `vite.config.ts`:
 
 ## Data Schemas
 
-Core TypeScript interfaces are defined in the SRS (`docs/SRS.md`):
+Core entities are defined in `src/domain/entities/`:
 
-- **Template**: id, trigger, name, content, description?, categoryId?, tags[], siteRestrictions?, timestamps, usageCount, isFavorite
+- **Template**: id, trigger, name, content, description?, categoryId?, tags[], createdAt, updatedAt, usageCount
 - **Category**: id, name, parentId?, order
-- **Settings**: triggerDelimiters, enableCommandPalette, shortcuts, theme, storageMode
+- **Group**: id, name, templateIds[], createdAt, updatedAt
+
+Settings (`src/shared/types/settings.ts`):
+- **AppSettings**: triggerKey ('space'|'tab'|'enter'), caseSensitive, treePanelWidth
 
 ## Chrome Extension Details
 
@@ -98,14 +110,13 @@ Core TypeScript interfaces are defined in the SRS (`docs/SRS.md`):
 
 Tests use Vitest and are co-located with source files using `.test.ts` suffix.
 
-## Development Status
+## Placeholder System
 
-Project is currently in Phase 3 (Interactive Templates). See `docs/PHASES.md` for the full roadmap.
+Placeholders are processed by `PlaceholderProcessor` (`src/domain/services/`). Supported placeholders:
 
-### Phase Overview
-1. **Phase 1** ✓ - Foundation: Basic template expansion
-2. **Phase 2** ✓ - Placeholders: `<clipboard>`, `<date>`, `<cursor>`, undo support
-3. **Phase 3** (current) - Interactive: `<input:Label>`, `<select:...>`, tab stops, transforms
-4. **Phase 4** - Organization: Categories, tags, search, full options page
-5. **Phase 5** - Quick Access: Command palette, context menu, favorites
-6. **Phase 6** - Advanced: Import/export, site restrictions, settings
+- `<clipboard>`, `<selection>` - Insert clipboard/selection content, supports transforms (`:upper`, `:lower`, etc.)
+- `<date:FORMAT>`, `<time:FORMAT>`, `<datetime:FORMAT>` - Date/time with custom formats
+- `<cursor>` - Position cursor after expansion
+- `<input:Label>`, `<input:Label:default>` - Prompt user for input
+- `<select:Label:opt1,opt2,opt3>` - Dropdown selection
+- `<tab:N>`, `<tab:N:default>` - Tab stops for multi-field navigation

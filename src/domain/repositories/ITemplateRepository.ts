@@ -9,6 +9,36 @@ export interface TriggerQueryOptions {
 }
 
 /**
+ * Options for checking trigger existence
+ */
+export interface ExistsByTriggerOptions {
+  /** Template ID to exclude from the check (for updates) */
+  excludeId?: string;
+  /** Whether to match triggers case-sensitively (default: true) */
+  caseSensitive?: boolean;
+}
+
+/**
+ * Options for checking trigger conflicts
+ */
+export interface ConflictCheckOptions {
+  /** Template ID to exclude from the check (for updates) */
+  excludeId?: string;
+  /** Whether to match triggers case-sensitively (default: true) */
+  caseSensitive?: boolean;
+}
+
+/**
+ * Represents a trigger conflict (prefix overlap)
+ */
+export interface TriggerConflict {
+  /** The conflicting trigger */
+  trigger: string;
+  /** Whether the new trigger is a prefix of the existing one (true) or vice versa (false) */
+  isPrefix: boolean;
+}
+
+/**
  * Repository interface for Template persistence
  * Implementations are in infrastructure layer
  */
@@ -41,7 +71,17 @@ export interface ITemplateRepository {
   delete(id: string): Promise<void>;
 
   /**
-   * Check if a trigger is already in use (optionally excluding a specific template ID)
+   * Check if a trigger is already in use
+   * @param trigger The trigger string to check
+   * @param options Optional check options (excludeId, caseSensitive)
    */
-  existsByTrigger(trigger: string, excludeId?: string): Promise<boolean>;
+  existsByTrigger(trigger: string, options?: ExistsByTriggerOptions): Promise<boolean>;
+
+  /**
+   * Find triggers that conflict with the given trigger (prefix overlaps)
+   * Used in "none" mode where immediate expansion requires no prefix ambiguity
+   * @param trigger The trigger to check for conflicts
+   * @param options Optional check options (excludeId, caseSensitive)
+   */
+  findTriggerConflicts(trigger: string, options?: ConflictCheckOptions): Promise<TriggerConflict[]>;
 }

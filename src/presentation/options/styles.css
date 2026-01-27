@@ -569,6 +569,9 @@ svg {
 }
 
 .switch-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0;
   display: block;
   width: 16px;
   height: 16px;
@@ -576,14 +579,15 @@ svg {
   border-radius: 50%;
   box-shadow: var(--shadow-sm);
   transition: transform 0.2s;
+  transform: translate(4px, -50%);
 }
 
 .switch-thumb-unchecked {
-  transform: translateX(4px);
+  transform: translate(4px, -50%);
 }
 
 .switch-thumb-checked {
-  transform: translateX(24px);
+  transform: translate(24px, -50%);
 }
 
 /* ==========================================
@@ -1631,12 +1635,27 @@ svg {
 }
 
 .settings-container {
-  max-width: 672px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
 .settings-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
   margin-bottom: 32px;
+}
+
+.settings-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .settings-title {
@@ -1699,6 +1718,30 @@ svg {
 
 .settings-select {
   width: 128px;
+}
+
+.settings-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  font-size: 12px;
+  background-color: var(--accent-bg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  color: var(--accent-text);
+}
+
+.settings-warning svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.settings-warning code {
+  font-family: var(--font-mono);
+  padding: 2px 4px;
+  border-radius: var(--radius);
+  background-color: var(--accent-bg-strong);
 }
 
 /* ==========================================
@@ -1797,6 +1840,25 @@ svg {
 
 .import-export-download-btn:hover {
   background-color: var(--accent-hover);
+}
+
+.import-export-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.import-export-upload-btn:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-strong);
 }
 
 .import-export-count {

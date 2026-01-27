@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Zap, Download, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useRef } from 'react';
+import { Settings, Zap, Download, Upload, AlertCircle } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -34,11 +34,6 @@ export function SettingsScreen({
   groups,
   onUpdateSettings,
 }: SettingsScreenProps): React.ReactElement {
-  const [isDragging, setIsDragging] = useState(false);
-  const [importStatus, setImportStatus] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -62,68 +57,29 @@ export function SettingsScreen({
     URL.revokeObjectURL(url);
   };
 
-  const processImport = async (file: File) => {
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text) as ExportData;
-
-      // Validate structure
-      if (!data.version || !Array.isArray(data.templates)) {
-        throw new Error('Invalid backup file format');
-      }
-
-      // For now, just show success - actual import would need use case integration
-      setImportStatus({
-        type: 'success',
-        message: `Found ${data.templates.length} templates and ${data.groups?.length ?? 0} groups. Import functionality coming soon.`,
-      });
-    } catch (error) {
-      setImportStatus({
-        type: 'error',
-        message: error instanceof Error ? error.message : 'Failed to parse backup file',
-      });
-    }
-  };
-
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      processImport(file);
+      // TODO: Implement actual import logic
+      console.log('[SlashSnip] Import file selected:', file.name);
     }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/json') {
-      processImport(file);
-    } else {
-      setImportStatus({
-        type: 'error',
-        message: 'Please drop a valid JSON file',
-      });
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
+    // Reset input so the same file can be selected again
+    e.target.value = '';
   };
 
   return (
     <div className="settings-screen">
       <div className="settings-container">
         <div className="settings-header">
-          <h1 className="settings-title">Settings</h1>
-          <p className="settings-subtitle">
-            Configure how SlashSnip works for you
-          </p>
+          <div className="settings-icon-wrapper">
+            <Settings size={20} />
+          </div>
+          <div>
+            <h1 className="settings-title">Settings</h1>
+            <p className="settings-subtitle">
+              Configure how SlashSnip works for you
+            </p>
+          </div>
         </div>
 
         <div className="settings-sections">
@@ -150,10 +106,21 @@ export function SettingsScreen({
                     className="settings-select"
                   >
                     <SelectItem value="space">Space</SelectItem>
-                    <SelectItem value="tab">Tab</SelectItem>
-                    <SelectItem value="enter">Enter</SelectItem>
+                    <SelectItem value="none">Immediate</SelectItem>
                   </Select>
                 </CardRow>
+                {settings.triggerKey === 'none' && (
+                  <CardRow>
+                    <div className="settings-warning">
+                      <AlertCircle size={16} />
+                      <span>
+                        In immediate mode, triggers expand as soon as typed. Avoid creating
+                        triggers that are prefixes of each other (e.g., <code>/t</code> and <code>/test</code>)
+                        as the shorter one will always match first.
+                      </span>
+                    </div>
+                  </CardRow>
+                )}
                 <CardRow>
                   <CardRowLabel>
                     <CardRowTitle>Case Sensitivity</CardRowTitle>
@@ -180,86 +147,47 @@ export function SettingsScreen({
               <h2 className="settings-section-title">Import / Export</h2>
             </div>
 
-            {/* Export */}
-            <div className="import-export-section" style={{ marginBottom: '16px' }}>
-              <div className="import-export-section-header">
-                <div className="import-export-section-icon">
-                  <Download size={20} />
-                </div>
-                <div className="import-export-section-info">
-                  <h2>Export Backup</h2>
-                  <p>Download all your templates and groups as a JSON file</p>
-                </div>
-              </div>
-              <div className="import-export-actions">
-                <button
-                  className="import-export-download-btn"
-                  onClick={handleExport}
-                >
-                  <Download size={16} />
-                  Download Backup
-                </button>
-                <span className="import-export-count">
-                  {templates.length} templates, {groups.length} groups
-                </span>
-              </div>
-            </div>
-
-            {/* Import */}
-            <div className="import-export-section">
-              <div className="import-export-section-header">
-                <div className="import-export-section-icon">
-                  <Upload size={20} />
-                </div>
-                <div className="import-export-section-info">
-                  <h2>Import Backup</h2>
-                  <p>Restore templates and groups from a backup file</p>
-                </div>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-
-              <div
-                className={`import-export-dropzone ${isDragging ? 'import-export-dropzone-active' : ''}`}
-                onClick={() => fileInputRef.current?.click()}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-              >
-                <div className="import-export-dropzone-icon">
-                  <Upload size={24} />
-                </div>
-                <p className="import-export-dropzone-title">
-                  Drop your backup file here or click to browse
-                </p>
-                <p className="import-export-dropzone-subtitle">
-                  Supports .json files exported from SlashSnip
-                </p>
-              </div>
-
-              {importStatus && (
-                <div
-                  className={`import-export-status ${
-                    importStatus.type === 'success'
-                      ? 'import-export-status-success'
-                      : 'import-export-status-error'
-                  }`}
-                >
-                  {importStatus.type === 'success' ? (
-                    <CheckCircle size={18} />
-                  ) : (
-                    <AlertCircle size={18} />
-                  )}
-                  <span>{importStatus.message}</span>
-                </div>
-              )}
-            </div>
+            <Card>
+              <CardContent>
+                <CardRow>
+                  <CardRowLabel>
+                    <CardRowTitle>Export Backup</CardRowTitle>
+                    <CardRowDescription>
+                      {templates.length} templates, {groups.length} groups
+                    </CardRowDescription>
+                  </CardRowLabel>
+                  <button
+                    className="import-export-download-btn"
+                    onClick={handleExport}
+                  >
+                    <Download size={16} />
+                    Export
+                  </button>
+                </CardRow>
+                <CardRow>
+                  <CardRowLabel>
+                    <CardRowTitle>Import Backup</CardRowTitle>
+                    <CardRowDescription>
+                      Restore from a .json backup file
+                    </CardRowDescription>
+                  </CardRowLabel>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <button
+                    className="import-export-upload-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload size={16} />
+                    Import
+                  </button>
+                </CardRow>
+              </CardContent>
+            </Card>
           </section>
         </div>
       </div>
