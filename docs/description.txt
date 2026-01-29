@@ -1,0 +1,81 @@
+SlashSnip — Type Less, Write More
+
+Stop typing the same text over and over. SlashSnip lets you create custom text shortcuts that instantly expand into full messages, emails, code snippets, or any text you use frequently.
+
+
+HOW IT WORKS
+
+1. Create a template with a short trigger (like /sig or ::email)
+2. Add your full text content with optional dynamic placeholders
+3. Type your trigger in any text field and press Space (or use Immediate mode)
+4. Your trigger instantly expands into the full text
+
+
+KEY FEATURES
+
+Custom Triggers
+Use any prefix you like: /hello, ::address, //todo, or whatever feels natural to you.
+
+Dynamic Placeholders
+Insert live data into your templates:
+  • <clipboard> — Paste clipboard content automatically
+  • <selection> — Include currently selected text
+  • <date:YYYY-MM-DD> — Insert today's date in any format
+  • <time:HH:mm> — Insert current time
+  • <datetime:FORMAT> — Insert date and time together
+  • <input:Name> — Prompt for custom input when expanding
+  • <select:Option:A,B,C> — Choose from a dropdown list
+  • <cursor> — Position your cursor exactly where you want it
+
+Tab Stops
+Create templates with multiple fill-in fields. Press Tab to jump between them for quick data entry.
+
+Text Transforms
+Apply automatic formatting with :upper, :lower, :title, or :trim transforms.
+
+Organize with Groups
+Keep templates organized by category, project, or however you prefer.
+
+Import/Export
+Back up your templates to JSON or share them between devices.
+
+PERFECT FOR
+
+• Customer support — Respond to common questions instantly
+• Email — Insert signatures, greetings, and standard replies
+• Coding — Expand boilerplate code, comments, and documentation
+• Data entry — Fill forms faster with template-driven input
+• Social media — Post consistent, formatted content across platforms
+• Personal productivity — Any repetitive text you type regularly
+
+
+PRIVACY FIRST
+
+SlashSnip respects your privacy:
+✓ All data stored locally on your device
+✓ No accounts or sign-ups required
+✓ No data collection or tracking
+✓ No external servers or cloud sync
+✓ Open source and transparent
+
+
+PERMISSIONS EXPLAINED
+
+• Storage — Save your templates locally
+• Clipboard Write — Enable clipboard placeholder functionality
+• Active Tab — Detect triggers and expand text in input fields
+
+
+GETTING STARTED
+
+1. Install SlashSnip
+2. Click the extension icon to open the options page
+3. Create your first template with a trigger and content
+4. Start typing your triggers in any text field
+
+Save hours every week by turning repetitive typing into instant expansion. SlashSnip is lightweight, fast, and designed to stay out of your way until you need it.
+
+
+REPORT BUGS
+
+https://github.com/ThilinaTLM/slash-snip
