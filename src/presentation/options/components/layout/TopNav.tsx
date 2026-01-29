@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scissors, Settings } from 'lucide-react';
+import { Bug, Github, Scissors, Settings } from 'lucide-react';
 import { ThemeToggle, type Theme } from '../ThemeToggle';
 
 export type View = 'snippets' | 'settings';
@@ -73,8 +73,28 @@ export function TopNav({
         ))}
       </nav>
 
-      {/* Theme Toggle */}
-      <ThemeToggle theme={theme} onThemeChange={onThemeChange} />
+      {/* Right Side Actions */}
+      <div className="top-nav-actions">
+        <a
+          href="https://github.com/ThilinaTLM/slash-snip/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="top-nav-action"
+          title="Report a Bug"
+        >
+          <Bug size={18} />
+        </a>
+        <a
+          href="https://github.com/ThilinaTLM/slash-snip"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="top-nav-action"
+          title="View Source Code"
+        >
+          <Github size={18} />
+        </a>
+        <ThemeToggle theme={theme} onThemeChange={onThemeChange} />
+      </div>
     </header>
   );
 }

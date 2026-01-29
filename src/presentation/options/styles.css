@@ -892,6 +892,29 @@ svg {
   color: var(--text-muted);
 }
 
+/* Top Nav Actions */
+.top-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.top-nav-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.top-nav-action:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text);
+}
+
 /* Theme Toggle */
 .theme-toggle {
   display: flex;
