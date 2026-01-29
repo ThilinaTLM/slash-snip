@@ -1,7 +1,7 @@
-export { Button, type ButtonProps } from "./button";
-export { Input, type InputProps } from "./input";
-export { Textarea, type TextareaProps } from "./textarea";
-export { Select, SelectItem, SelectSeparator } from "./select";
+export { Button, type ButtonProps } from './button';
+export { Input, type InputProps } from './input';
+export { Textarea, type TextareaProps } from './textarea';
+export { Select, SelectItem, SelectSeparator } from './select';
 export {
   Dialog,
   DialogTrigger,
@@ -14,7 +14,7 @@ export {
   DialogDescription,
   DialogBody,
   DialogFooter,
-} from "./dialog";
+} from './dialog';
 export {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -22,9 +22,9 @@ export {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-} from "./dropdown-menu";
-export { Switch } from "./switch";
-export { ConfirmDialog } from "./confirm-dialog";
+} from './dropdown-menu';
+export { Switch } from './switch';
+export { ConfirmDialog } from './confirm-dialog';
 export {
   Card,
   CardHeader,
@@ -36,4 +36,4 @@ export {
   CardRowLabel,
   CardRowTitle,
   CardRowDescription,
-} from "./card";
+} from './card';

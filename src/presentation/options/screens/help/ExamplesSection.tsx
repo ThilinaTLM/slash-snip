@@ -152,8 +152,8 @@ export function ExamplesSection(): React.ReactElement {
         <CardContent>
           <div className="help-content-section">
             <p className="help-intro">
-              Here are some example templates to get you started. Click the copy button to copy the
-              content and create your own version.
+              Here are some example templates to get you started. Click the copy
+              button to copy the content and create your own version.
             </p>
 
             <div className="help-examples-category">

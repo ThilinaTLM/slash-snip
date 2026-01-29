@@ -5,7 +5,10 @@ interface SearchBarProps {
   onChange: (value: string) => void;
 }
 
-export function SearchBar({ value, onChange }: SearchBarProps): React.ReactElement {
+export function SearchBar({
+  value,
+  onChange,
+}: SearchBarProps): React.ReactElement {
   return (
     <div className="search-bar">
       <input

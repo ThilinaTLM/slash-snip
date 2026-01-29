@@ -62,7 +62,9 @@ export class CategoryRepository implements ICategoryRepository {
    * Get raw category props from storage
    */
   private async getAllProps(): Promise<CategoryProps[]> {
-    const categories = await this.storage.get<CategoryProps[]>(STORAGE_KEYS.CATEGORIES);
+    const categories = await this.storage.get<CategoryProps[]>(
+      STORAGE_KEYS.CATEGORIES
+    );
     return categories ?? [];
   }
 }

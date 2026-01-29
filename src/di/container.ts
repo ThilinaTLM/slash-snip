@@ -29,7 +29,12 @@ import {
 import { ImportBackupUseCase } from '@application/use-cases/import-export';
 import { PlaceholderProcessor } from '@domain/services';
 import { GroupRepository } from '@infrastructure/persistence/GroupRepository';
-import type { ITemplateRepository, ICategoryRepository, IGroupRepository, IRecentTemplatesRepository } from '@domain/repositories';
+import type {
+  ITemplateRepository,
+  ICategoryRepository,
+  IGroupRepository,
+  IRecentTemplatesRepository,
+} from '@domain/repositories';
 import type { IClipboardPort, ISettingsPort } from '@application/ports';
 
 /**
@@ -139,7 +144,9 @@ export function getGroupRepository(): IGroupRepository {
  */
 export function getRecentTemplatesRepository(): IRecentTemplatesRepository {
   if (!recentTemplatesRepository) {
-    recentTemplatesRepository = new RecentTemplatesRepository(getStorageAdapter());
+    recentTemplatesRepository = new RecentTemplatesRepository(
+      getStorageAdapter()
+    );
   }
   return recentTemplatesRepository;
 }
@@ -172,7 +179,9 @@ export function getCreateTemplateUseCase(): CreateTemplateUseCase {
  */
 export function getGetAllTemplatesUseCase(): GetAllTemplatesUseCase {
   if (!getAllTemplatesUseCase) {
-    getAllTemplatesUseCase = new GetAllTemplatesUseCase(getTemplateRepository());
+    getAllTemplatesUseCase = new GetAllTemplatesUseCase(
+      getTemplateRepository()
+    );
   }
   return getAllTemplatesUseCase;
 }
@@ -205,7 +214,9 @@ export function getDeleteTemplateUseCase(): DeleteTemplateUseCase {
  */
 export function getGetTemplateByTriggerUseCase(): GetTemplateByTriggerUseCase {
   if (!getTemplateByTriggerUseCase) {
-    getTemplateByTriggerUseCase = new GetTemplateByTriggerUseCase(getTemplateRepository());
+    getTemplateByTriggerUseCase = new GetTemplateByTriggerUseCase(
+      getTemplateRepository()
+    );
   }
   return getTemplateByTriggerUseCase;
 }
@@ -215,7 +226,9 @@ export function getGetTemplateByTriggerUseCase(): GetTemplateByTriggerUseCase {
  */
 export function getGetTemplateByIdUseCase(): GetTemplateByIdUseCase {
   if (!getTemplateByIdUseCase) {
-    getTemplateByIdUseCase = new GetTemplateByIdUseCase(getTemplateRepository());
+    getTemplateByIdUseCase = new GetTemplateByIdUseCase(
+      getTemplateRepository()
+    );
   }
   return getTemplateByIdUseCase;
 }
@@ -281,7 +294,9 @@ export function getDeleteCategoryUseCase(): DeleteCategoryUseCase {
  */
 export function getGetAllCategoriesUseCase(): GetAllCategoriesUseCase {
   if (!getAllCategoriesUseCase) {
-    getAllCategoriesUseCase = new GetAllCategoriesUseCase(getCategoryRepository());
+    getAllCategoriesUseCase = new GetAllCategoriesUseCase(
+      getCategoryRepository()
+    );
   }
   return getAllCategoriesUseCase;
 }
@@ -370,4 +385,3 @@ export const container = {
   getGetAllGroupsUseCase,
   getImportBackupUseCase,
 };
-

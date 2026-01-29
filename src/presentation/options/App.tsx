@@ -29,11 +29,7 @@ export function App(): React.ReactElement {
     deleteGroup,
   } = useGroups();
 
-  const {
-    settings,
-    loading: settingsLoading,
-    updateSettings,
-  } = useSettings();
+  const { settings, loading: settingsLoading, updateSettings } = useSettings();
 
   const [currentView, setCurrentView] = useState<View>('snippets');
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
@@ -51,15 +47,25 @@ export function App(): React.ReactElement {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Cmd/Ctrl + N: New template (only on snippets screen)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'n' && currentView === 'snippets') {
+      if (
+        (e.metaKey || e.ctrlKey) &&
+        e.key === 'n' &&
+        currentView === 'snippets'
+      ) {
         e.preventDefault();
         // Will be handled by SnippetsScreen
       }
 
       // Cmd/Ctrl + F: Focus search (only on snippets screen)
-      if ((e.metaKey || e.ctrlKey) && e.key === 'f' && currentView === 'snippets') {
+      if (
+        (e.metaKey || e.ctrlKey) &&
+        e.key === 'f' &&
+        currentView === 'snippets'
+      ) {
         e.preventDefault();
-        const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
+        const searchInput = document.querySelector(
+          'input[type="search"]'
+        ) as HTMLInputElement;
         searchInput?.focus();
       }
     };

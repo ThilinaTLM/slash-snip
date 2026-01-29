@@ -14,7 +14,14 @@ import { Select, SelectItem } from '@ui/select';
 import { ImportDialog } from '../components/ImportDialog';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES } from '@shared/constants';
-import { validateBackup, type PreviewResult, type ImportResult, type ConflictResolution, type BackupData, type ConflictInfo } from '@application/use-cases/import-export';
+import {
+  validateBackup,
+  type PreviewResult,
+  type ImportResult,
+  type ConflictResolution,
+  type BackupData,
+  type ConflictInfo,
+} from '@application/use-cases/import-export';
 import type { AppSettings } from '@shared/types/settings';
 import type { TemplateDTO, GroupDTO } from '@application/dto';
 
@@ -42,7 +49,9 @@ export function SettingsScreen({
 }: SettingsScreenProps): React.ReactElement {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const [importPreview, setImportPreview] = useState<PreviewResult | null>(null);
+  const [importPreview, setImportPreview] = useState<PreviewResult | null>(
+    null
+  );
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
 
@@ -83,8 +92,8 @@ export function SettingsScreen({
       if (!validation.valid || !validation.data) {
         setImportPreview({
           valid: false,
-          errors: validation.errors.map(e => `${e.field}: ${e.message}`),
-          warnings: validation.warnings.map(w => `${w.field}: ${w.message}`),
+          errors: validation.errors.map((e) => `${e.field}: ${e.message}`),
+          warnings: validation.warnings.map((w) => `${w.field}: ${w.message}`),
           templateCount: 0,
           groupCount: 0,
           conflicts: [],
@@ -101,7 +110,7 @@ export function SettingsScreen({
       // Detect trigger conflicts locally
       const conflicts: ConflictInfo[] = [];
       for (const templateDTO of backupData.templates) {
-        const existing = templates.find(t => {
+        const existing = templates.find((t) => {
           if (caseSensitive) {
             return t.trigger === templateDTO.trigger;
           }
@@ -121,7 +130,7 @@ export function SettingsScreen({
       setImportPreview({
         valid: true,
         errors: [],
-        warnings: validation.warnings.map(w => `${w.field}: ${w.message}`),
+        warnings: validation.warnings.map((w) => `${w.field}: ${w.message}`),
         templateCount: backupData.templates.length,
         groupCount: backupData.groups.length,
         conflicts,
@@ -133,7 +142,9 @@ export function SettingsScreen({
     } catch (err) {
       setImportPreview(null);
       setImportResult(null);
-      setImportError(err instanceof Error ? err.message : 'Failed to parse file');
+      setImportError(
+        err instanceof Error ? err.message : 'Failed to parse file'
+      );
       setImportDialogOpen(true);
     }
   };
@@ -144,7 +155,10 @@ export function SettingsScreen({
     }
 
     const response = await sendMessage<
-      { backupData: BackupData; options: { conflictResolution: ConflictResolution } },
+      {
+        backupData: BackupData;
+        options: { conflictResolution: ConflictResolution };
+      },
       ImportResult
     >(MESSAGE_TYPES.IMPORT_BACKUP, {
       backupData: importPreview.data,
@@ -205,7 +219,11 @@ export function SettingsScreen({
                   </CardRowLabel>
                   <Select
                     value={settings.triggerKey}
-                    onValueChange={(value) => onUpdateSettings({ triggerKey: value as AppSettings['triggerKey'] })}
+                    onValueChange={(value) =>
+                      onUpdateSettings({
+                        triggerKey: value as AppSettings['triggerKey'],
+                      })
+                    }
                     className="settings-select"
                   >
                     <SelectItem value="space">Space</SelectItem>
@@ -217,9 +235,10 @@ export function SettingsScreen({
                     <div className="settings-warning">
                       <AlertCircle size={16} />
                       <span>
-                        In immediate mode, triggers expand as soon as typed. Avoid creating
-                        triggers that are prefixes of each other (e.g., <code>/t</code> and <code>/test</code>)
-                        as the shorter one will always match first.
+                        In immediate mode, triggers expand as soon as typed.
+                        Avoid creating triggers that are prefixes of each other
+                        (e.g., <code>/t</code> and <code>/test</code>) as the
+                        shorter one will always match first.
                       </span>
                     </div>
                   </CardRow>
@@ -233,7 +252,9 @@ export function SettingsScreen({
                   </CardRowLabel>
                   <Switch
                     checked={settings.caseSensitive}
-                    onCheckedChange={(checked) => onUpdateSettings({ caseSensitive: checked })}
+                    onCheckedChange={(checked) =>
+                      onUpdateSettings({ caseSensitive: checked })
+                    }
                     aria-label="Case sensitivity"
                   />
                 </CardRow>

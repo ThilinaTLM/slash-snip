@@ -1,5 +1,10 @@
 import type { IGroupRepository } from '@domain/repositories';
-import { Group, type GroupProps, DEFAULT_GROUP_ID, DEFAULT_GROUP_NAME } from '@domain/entities';
+import {
+  Group,
+  type GroupProps,
+  DEFAULT_GROUP_ID,
+  DEFAULT_GROUP_NAME,
+} from '@domain/entities';
 import { STORAGE_KEYS } from '@shared/constants';
 import { ChromeStorageAdapter } from '../chrome/storage/ChromeStorageAdapter';
 

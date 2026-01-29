@@ -11,7 +11,9 @@ export class SettingsAdapter implements ISettingsPort {
   constructor(private storage: ChromeStorageAdapter) {}
 
   async getSettings(): Promise<AppSettings> {
-    const stored = await this.storage.get<Partial<AppSettings>>(STORAGE_KEYS.SETTINGS);
+    const stored = await this.storage.get<Partial<AppSettings>>(
+      STORAGE_KEYS.SETTINGS
+    );
     return { ...DEFAULT_SETTINGS, ...stored };
   }
 }

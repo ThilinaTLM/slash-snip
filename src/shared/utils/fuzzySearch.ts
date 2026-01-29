@@ -35,7 +35,11 @@ export function fuzzyMatch(query: string, target: string): FuzzyMatch | null {
   let prevMatchIndex = -1;
   let consecutiveBonus = 0;
 
-  for (let i = 0; i < targetLower.length && queryIndex < queryLower.length; i++) {
+  for (
+    let i = 0;
+    i < targetLower.length && queryIndex < queryLower.length;
+    i++
+  ) {
     if (targetLower[i] === queryLower[queryIndex]) {
       indices.push(i);
 
@@ -51,7 +55,12 @@ export function fuzzyMatch(query: string, target: string): FuzzyMatch | null {
       }
 
       // Bonus for start of word
-      if (i === 0 || target[i - 1] === ' ' || target[i - 1] === '-' || target[i - 1] === '_') {
+      if (
+        i === 0 ||
+        target[i - 1] === ' ' ||
+        target[i - 1] === '-' ||
+        target[i - 1] === '_'
+      ) {
         score += 15;
       }
 

@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Menu } from "@base-ui/react/menu";
-import { cn } from "@lib/utils";
+import * as React from 'react';
+import { Menu } from '@base-ui/react/menu';
+import { cn } from '@lib/utils';
 
 const DropdownMenu = Menu.Root;
 
@@ -10,16 +10,17 @@ const DropdownMenuTrigger = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Menu.Trigger
     ref={ref}
-    className={cn("dropdown-trigger", className)}
+    className={cn('dropdown-trigger', className)}
     {...props}
   />
 ));
-DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
+DropdownMenuTrigger.displayName = 'DropdownMenuTrigger';
 
 const DropdownMenuPortal = Menu.Portal;
 
-interface DropdownMenuContentProps
-  extends React.ComponentPropsWithoutRef<typeof Menu.Popup> {
+interface DropdownMenuContentProps extends React.ComponentPropsWithoutRef<
+  typeof Menu.Popup
+> {
   sideOffset?: number;
 }
 
@@ -31,33 +32,35 @@ const DropdownMenuContent = React.forwardRef<
     <Menu.Positioner sideOffset={sideOffset}>
       <Menu.Popup
         ref={ref}
-        className={cn("dropdown-content", className)}
+        className={cn('dropdown-content', className)}
         {...props}
       />
     </Menu.Positioner>
   </Menu.Portal>
 ));
-DropdownMenuContent.displayName = "DropdownMenuContent";
+DropdownMenuContent.displayName = 'DropdownMenuContent';
 
-interface DropdownMenuItemProps
-  extends React.ComponentPropsWithoutRef<typeof Menu.Item> {
+interface DropdownMenuItemProps extends React.ComponentPropsWithoutRef<
+  typeof Menu.Item
+> {
   destructive?: boolean;
 }
 
-const DropdownMenuItem = React.forwardRef<HTMLDivElement, DropdownMenuItemProps>(
-  ({ className, destructive, ...props }, ref) => (
-    <Menu.Item
-      ref={ref}
-      className={cn(
-        "dropdown-item",
-        destructive && "dropdown-item-destructive",
-        className
-      )}
-      {...props}
-    />
-  )
-);
-DropdownMenuItem.displayName = "DropdownMenuItem";
+const DropdownMenuItem = React.forwardRef<
+  HTMLDivElement,
+  DropdownMenuItemProps
+>(({ className, destructive, ...props }, ref) => (
+  <Menu.Item
+    ref={ref}
+    className={cn(
+      'dropdown-item',
+      destructive && 'dropdown-item-destructive',
+      className
+    )}
+    {...props}
+  />
+));
+DropdownMenuItem.displayName = 'DropdownMenuItem';
 
 const DropdownMenuSeparator = React.forwardRef<
   HTMLDivElement,
@@ -65,11 +68,11 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Menu.Separator
     ref={ref}
-    className={cn("dropdown-separator", className)}
+    className={cn('dropdown-separator', className)}
     {...props}
   />
 ));
-DropdownMenuSeparator.displayName = "DropdownMenuSeparator";
+DropdownMenuSeparator.displayName = 'DropdownMenuSeparator';
 
 export {
   DropdownMenu,

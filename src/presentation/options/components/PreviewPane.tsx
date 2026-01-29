@@ -135,7 +135,8 @@ function resolvePreview(content: string): React.ReactNode[] {
     }
 
     // Add placeholder with styling
-    const isResolved = type === 'date' || type === 'time' || type === 'datetime';
+    const isResolved =
+      type === 'date' || type === 'time' || type === 'datetime';
     parts.push(
       <span
         key={key++}

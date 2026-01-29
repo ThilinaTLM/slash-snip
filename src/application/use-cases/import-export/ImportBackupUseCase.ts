@@ -1,4 +1,7 @@
-import type { ITemplateRepository, IGroupRepository } from '@domain/repositories';
+import type {
+  ITemplateRepository,
+  IGroupRepository,
+} from '@domain/repositories';
 import type { ISettingsPort } from '@application/ports';
 import { Template, Group } from '@domain/entities';
 import type { TemplateDTO } from '@application/dto';
@@ -51,8 +54,8 @@ export class ImportBackupUseCase {
     if (!validation.valid || !validation.data) {
       return {
         valid: false,
-        errors: validation.errors.map(e => `${e.field}: ${e.message}`),
-        warnings: validation.warnings.map(w => `${w.field}: ${w.message}`),
+        errors: validation.errors.map((e) => `${e.field}: ${e.message}`),
+        warnings: validation.warnings.map((w) => `${w.field}: ${w.message}`),
         templateCount: 0,
         groupCount: 0,
         conflicts: [],
@@ -68,9 +71,12 @@ export class ImportBackupUseCase {
 
     // Check for trigger conflicts
     for (const templateDTO of backupData.templates) {
-      const existing = await this.templateRepository.findByTrigger(templateDTO.trigger, {
-        caseSensitive,
-      });
+      const existing = await this.templateRepository.findByTrigger(
+        templateDTO.trigger,
+        {
+          caseSensitive,
+        }
+      );
 
       if (existing) {
         conflicts.push({
@@ -85,7 +91,7 @@ export class ImportBackupUseCase {
     return {
       valid: true,
       errors: [],
-      warnings: validation.warnings.map(w => `${w.field}: ${w.message}`),
+      warnings: validation.warnings.map((w) => `${w.field}: ${w.message}`),
       templateCount: backupData.templates.length,
       groupCount: backupData.groups.length,
       conflicts,
@@ -96,7 +102,10 @@ export class ImportBackupUseCase {
   /**
    * Execute the import with the specified conflict resolution
    */
-  async execute(backupData: BackupData, options: ImportOptions): Promise<ImportResult> {
+  async execute(
+    backupData: BackupData,
+    options: ImportOptions
+  ): Promise<ImportResult> {
     const result: ImportResult = {
       templatesImported: 0,
       templatesSkipped: 0,
@@ -130,8 +139,11 @@ export class ImportBackupUseCase {
         await this.groupRepository.save(group);
         result.groupsImported++;
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        result.errors.push(`Failed to import group "${groupDTO.name}": ${message}`);
+        const message =
+          error instanceof Error ? error.message : 'Unknown error';
+        result.errors.push(
+          `Failed to import group "${groupDTO.name}": ${message}`
+        );
       }
     }
 
@@ -139,9 +151,12 @@ export class ImportBackupUseCase {
     for (const templateDTO of backupData.templates) {
       try {
         // Check for existing template with same trigger
-        const existingByTrigger = await this.templateRepository.findByTrigger(templateDTO.trigger, {
-          caseSensitive,
-        });
+        const existingByTrigger = await this.templateRepository.findByTrigger(
+          templateDTO.trigger,
+          {
+            caseSensitive,
+          }
+        );
 
         if (existingByTrigger) {
           switch (options.conflictResolution) {
@@ -158,8 +173,14 @@ export class ImportBackupUseCase {
 
             case 'keep_both': {
               // Modify trigger and import
-              const newTrigger = await this.generateUniqueTrigger(templateDTO.trigger, caseSensitive);
-              await this.importTemplate({ ...templateDTO, trigger: newTrigger });
+              const newTrigger = await this.generateUniqueTrigger(
+                templateDTO.trigger,
+                caseSensitive
+              );
+              await this.importTemplate({
+                ...templateDTO,
+                trigger: newTrigger,
+              });
               result.templatesImported++;
               break;
             }
@@ -170,8 +191,11 @@ export class ImportBackupUseCase {
           result.templatesImported++;
         }
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        result.errors.push(`Failed to import template "${templateDTO.name}": ${message}`);
+        const message =
+          error instanceof Error ? error.message : 'Unknown error';
+        result.errors.push(
+          `Failed to import template "${templateDTO.name}": ${message}`
+        );
       }
     }
 
@@ -200,11 +224,18 @@ export class ImportBackupUseCase {
   /**
    * Generate a unique trigger by appending a number suffix
    */
-  private async generateUniqueTrigger(baseTrigger: string, caseSensitive: boolean): Promise<string> {
+  private async generateUniqueTrigger(
+    baseTrigger: string,
+    caseSensitive: boolean
+  ): Promise<string> {
     let counter = 2;
     let newTrigger = `${baseTrigger}_${counter}`;
 
-    while (await this.templateRepository.existsByTrigger(newTrigger, { caseSensitive })) {
+    while (
+      await this.templateRepository.existsByTrigger(newTrigger, {
+        caseSensitive,
+      })
+    ) {
       counter++;
       newTrigger = `${baseTrigger}_${counter}`;
     }

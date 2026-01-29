@@ -63,7 +63,9 @@ export function CategorySelector({
         <option value="">No category</option>
         {options.map((option) => (
           <option key={option.id} value={option.id}>
-            {'  '.repeat(option.level)}{option.level > 0 ? '└ ' : ''}{option.name}
+            {'  '.repeat(option.level)}
+            {option.level > 0 ? '└ ' : ''}
+            {option.name}
           </option>
         ))}
         {onCreateNew && (

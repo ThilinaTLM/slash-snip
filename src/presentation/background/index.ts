@@ -6,7 +6,17 @@ import { MESSAGE_TYPES, STORAGE_KEYS } from '@shared/constants';
 import type { MessageResponse } from '@shared/types';
 import type { AppSettings } from '@shared/types/settings';
 import { DEFAULT_SETTINGS } from '@shared/types/settings';
-import type { CreateTemplateDTO, UpdateTemplateDTO, TemplateDTO, CreateCategoryDTO, UpdateCategoryDTO, CategoryDTO, CreateGroupDTO, UpdateGroupDTO, GroupDTO } from '@application/dto';
+import type {
+  CreateTemplateDTO,
+  UpdateTemplateDTO,
+  TemplateDTO,
+  CreateCategoryDTO,
+  UpdateCategoryDTO,
+  CategoryDTO,
+  CreateGroupDTO,
+  UpdateGroupDTO,
+  GroupDTO,
+} from '@application/dto';
 import {
   getCreateTemplateUseCase,
   getGetAllTemplatesUseCase,
@@ -28,7 +38,11 @@ import {
   getGroupRepository,
   getTemplateRepository,
 } from '@di/container';
-import type { ImportResult, ImportOptions, BackupData } from '@application/use-cases/import-export';
+import type {
+  ImportResult,
+  ImportOptions,
+  BackupData,
+} from '@application/use-cases/import-export';
 
 // Initialize message router
 const router = new MessageRouter();
@@ -39,7 +53,9 @@ const router = new MessageRouter();
 async function loadSettings(): Promise<AppSettings> {
   try {
     const result = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
-    const stored = result[STORAGE_KEYS.SETTINGS] as Partial<AppSettings> | undefined;
+    const stored = result[STORAGE_KEYS.SETTINGS] as
+      | Partial<AppSettings>
+      | undefined;
     return { ...DEFAULT_SETTINGS, ...stored };
   } catch (error) {
     console.error('[SlashSnip BG] Failed to load settings:', error);
@@ -55,13 +71,18 @@ router.on<void, TemplateDTO[]>(
     try {
       const useCase = getGetAllTemplatesUseCase();
       const templates = await useCase.execute();
-      console.log('[SlashSnip BG] Templates found:', templates.length, templates);
+      console.log(
+        '[SlashSnip BG] Templates found:',
+        templates.length,
+        templates
+      );
       return { success: true, data: templates };
     } catch (error) {
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to get templates',
+        error:
+          error instanceof Error ? error.message : 'Failed to get templates',
       };
     }
   }
@@ -87,7 +108,8 @@ router.on<CreateTemplateDTO, TemplateDTO>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create template',
+        error:
+          error instanceof Error ? error.message : 'Failed to create template',
       };
     }
   }
@@ -113,7 +135,8 @@ router.on<UpdateTemplateDTO, TemplateDTO>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update template',
+        error:
+          error instanceof Error ? error.message : 'Failed to update template',
       };
     }
   }
@@ -135,7 +158,8 @@ router.on<{ id: string }, void>(
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete template',
+        error:
+          error instanceof Error ? error.message : 'Failed to delete template',
       };
     }
   }
@@ -158,7 +182,8 @@ router.on<{ trigger: string }, TemplateDTO | null>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to get template',
+        error:
+          error instanceof Error ? error.message : 'Failed to get template',
       };
     }
   }
@@ -178,7 +203,8 @@ router.on<{ id: string }, TemplateDTO | null>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to get template',
+        error:
+          error instanceof Error ? error.message : 'Failed to get template',
       };
     }
   }
@@ -194,7 +220,10 @@ router.on<{ id: string }, TemplateDTO>(
       const result = await useCase.execute(payload.id);
 
       if (result.isErr()) {
-        console.error('[SlashSnip BG] Increment usage failed:', result.error.message);
+        console.error(
+          '[SlashSnip BG] Increment usage failed:',
+          result.error.message
+        );
         return { success: false, error: result.error.message };
       }
 
@@ -205,7 +234,8 @@ router.on<{ id: string }, TemplateDTO>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to increment usage',
+        error:
+          error instanceof Error ? error.message : 'Failed to increment usage',
       };
     }
   }
@@ -225,7 +255,10 @@ router.on<{ limit?: number }, TemplateDTO[]>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to get recent templates',
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to get recent templates',
       };
     }
   }
@@ -247,7 +280,8 @@ router.on<void, CategoryDTO[]>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to get categories',
+        error:
+          error instanceof Error ? error.message : 'Failed to get categories',
       };
     }
   }
@@ -263,7 +297,10 @@ router.on<CreateCategoryDTO, CategoryDTO>(
       const result = await useCase.execute(payload);
 
       if (result.isErr()) {
-        console.error('[SlashSnip BG] Create category failed:', result.error.message);
+        console.error(
+          '[SlashSnip BG] Create category failed:',
+          result.error.message
+        );
         return { success: false, error: result.error.message };
       }
 
@@ -273,7 +310,8 @@ router.on<CreateCategoryDTO, CategoryDTO>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create category',
+        error:
+          error instanceof Error ? error.message : 'Failed to create category',
       };
     }
   }
@@ -289,7 +327,10 @@ router.on<UpdateCategoryDTO, CategoryDTO>(
       const result = await useCase.execute(payload);
 
       if (result.isErr()) {
-        console.error('[SlashSnip BG] Update category failed:', result.error.message);
+        console.error(
+          '[SlashSnip BG] Update category failed:',
+          result.error.message
+        );
         return { success: false, error: result.error.message };
       }
 
@@ -299,7 +340,8 @@ router.on<UpdateCategoryDTO, CategoryDTO>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update category',
+        error:
+          error instanceof Error ? error.message : 'Failed to update category',
       };
     }
   }
@@ -322,7 +364,8 @@ router.on<{ id: string }, void>(
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete category',
+        error:
+          error instanceof Error ? error.message : 'Failed to delete category',
       };
     }
   }
@@ -360,7 +403,10 @@ router.on<CreateGroupDTO, GroupDTO>(
       const result = await useCase.execute(payload);
 
       if (result.isErr()) {
-        console.error('[SlashSnip BG] Create group failed:', result.error.message);
+        console.error(
+          '[SlashSnip BG] Create group failed:',
+          result.error.message
+        );
         return { success: false, error: result.error.message };
       }
 
@@ -370,7 +416,8 @@ router.on<CreateGroupDTO, GroupDTO>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to create group',
+        error:
+          error instanceof Error ? error.message : 'Failed to create group',
       };
     }
   }
@@ -386,7 +433,10 @@ router.on<UpdateGroupDTO, GroupDTO>(
       const result = await useCase.execute(payload);
 
       if (result.isErr()) {
-        console.error('[SlashSnip BG] Update group failed:', result.error.message);
+        console.error(
+          '[SlashSnip BG] Update group failed:',
+          result.error.message
+        );
         return { success: false, error: result.error.message };
       }
 
@@ -396,7 +446,8 @@ router.on<UpdateGroupDTO, GroupDTO>(
       console.error('[SlashSnip BG] Error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to update group',
+        error:
+          error instanceof Error ? error.message : 'Failed to update group',
       };
     }
   }
@@ -419,7 +470,8 @@ router.on<{ id: string }, void>(
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to delete group',
+        error:
+          error instanceof Error ? error.message : 'Failed to delete group',
       };
     }
   }
@@ -441,7 +493,8 @@ router.on<{ backupData: BackupData; options: ImportOptions }, ImportResult>(
       console.error('[SlashSnip BG] Import error:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to import backup',
+        error:
+          error instanceof Error ? error.message : 'Failed to import backup',
       };
     }
   }

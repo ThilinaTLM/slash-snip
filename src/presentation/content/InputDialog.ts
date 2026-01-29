@@ -138,7 +138,9 @@ export class InputDialog {
 
     // Focus first input
     requestAnimationFrame(() => {
-      const firstInput = this.shadowRoot?.querySelector('input, select') as HTMLElement | null;
+      const firstInput = this.shadowRoot?.querySelector(
+        'input, select'
+      ) as HTMLElement | null;
       firstInput?.focus();
     });
 
@@ -165,10 +167,9 @@ export class InputDialog {
     const values: Record<string, string> = {};
 
     for (const field of fields) {
-      const element = this.shadowRoot?.querySelector(`[data-field-id="${field.id}"]`) as
-        | HTMLInputElement
-        | HTMLSelectElement
-        | null;
+      const element = this.shadowRoot?.querySelector(
+        `[data-field-id="${field.id}"]`
+      ) as HTMLInputElement | HTMLSelectElement | null;
       values[field.id] = element?.value ?? '';
     }
 

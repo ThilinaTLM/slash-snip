@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES } from '@shared/constants';
-import type { CategoryDTO, CreateCategoryDTO, UpdateCategoryDTO } from '@application/dto';
+import type {
+  CategoryDTO,
+  CreateCategoryDTO,
+  UpdateCategoryDTO,
+} from '@application/dto';
 
 interface UseCategoriesReturn {
   categories: CategoryDTO[];
@@ -37,43 +41,51 @@ export function useCategories(): UseCategoriesReturn {
     setLoading(false);
   }, []);
 
-  const createCategory = useCallback(async (data: CreateCategoryDTO): Promise<CategoryDTO | null> => {
-    setError(null);
-    const response = await sendMessage<CreateCategoryDTO, CategoryDTO>(
-      MESSAGE_TYPES.CREATE_CATEGORY,
-      data
-    );
+  const createCategory = useCallback(
+    async (data: CreateCategoryDTO): Promise<CategoryDTO | null> => {
+      setError(null);
+      const response = await sendMessage<CreateCategoryDTO, CategoryDTO>(
+        MESSAGE_TYPES.CREATE_CATEGORY,
+        data
+      );
 
-    if (response.success && response.data) {
-      setCategories((prev) => [...prev, response.data!].sort((a, b) => a.order - b.order));
-      return response.data;
-    } else {
-      setError(response.error ?? 'Failed to create category');
-      return null;
-    }
-  }, []);
+      if (response.success && response.data) {
+        setCategories((prev) =>
+          [...prev, response.data!].sort((a, b) => a.order - b.order)
+        );
+        return response.data;
+      } else {
+        setError(response.error ?? 'Failed to create category');
+        return null;
+      }
+    },
+    []
+  );
 
-  const updateCategory = useCallback(async (data: UpdateCategoryDTO): Promise<boolean> => {
-    setError(null);
-    const response = await sendMessage<UpdateCategoryDTO, CategoryDTO>(
-      MESSAGE_TYPES.UPDATE_CATEGORY,
-      data
-    );
+  const updateCategory = useCallback(
+    async (data: UpdateCategoryDTO): Promise<boolean> => {
+      setError(null);
+      const response = await sendMessage<UpdateCategoryDTO, CategoryDTO>(
+        MESSAGE_TYPES.UPDATE_CATEGORY,
+        data
+      );
 
-    if (response.success && response.data) {
-      setCategories((prev) => {
-        const index = prev.findIndex((c) => c.id === data.id);
-        if (index === -1) return prev;
-        const updated = [...prev];
-        updated[index] = response.data!;
-        return updated.sort((a, b) => a.order - b.order);
-      });
-      return true;
-    } else {
-      setError(response.error ?? 'Failed to update category');
-      return false;
-    }
-  }, []);
+      if (response.success && response.data) {
+        setCategories((prev) => {
+          const index = prev.findIndex((c) => c.id === data.id);
+          if (index === -1) return prev;
+          const updated = [...prev];
+          updated[index] = response.data!;
+          return updated.sort((a, b) => a.order - b.order);
+        });
+        return true;
+      } else {
+        setError(response.error ?? 'Failed to update category');
+        return false;
+      }
+    },
+    []
+  );
 
   const deleteCategory = useCallback(async (id: string): Promise<boolean> => {
     setError(null);

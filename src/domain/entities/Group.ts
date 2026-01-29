@@ -91,7 +91,11 @@ export class Group {
     }
 
     if (trimmed.length > MAX_GROUP_NAME_LENGTH) {
-      return err(new InvalidGroupError(`Group name must be ${MAX_GROUP_NAME_LENGTH} characters or less`));
+      return err(
+        new InvalidGroupError(
+          `Group name must be ${MAX_GROUP_NAME_LENGTH} characters or less`
+        )
+      );
     }
 
     return ok(trimmed);

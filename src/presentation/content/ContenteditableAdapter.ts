@@ -35,15 +35,17 @@ export function createTextWithLineBreaks(text: string): DocumentFragment {
 
 export interface ContenteditableContext {
   element: HTMLElement;
-  text: string;           // Text content up to cursor
+  text: string; // Text content up to cursor
   cursorPosition: number;
-  range: Range;           // Current selection range for replacement
+  range: Range; // Current selection range for replacement
 }
 
 /**
  * Get the text content and cursor context from a contenteditable element
  */
-export function getContenteditableContext(element: HTMLElement): ContenteditableContext | null {
+export function getContenteditableContext(
+  element: HTMLElement
+): ContenteditableContext | null {
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) {
     return null;
@@ -124,7 +126,9 @@ export function replaceContenteditableText(
     selection.addRange(newRange);
 
     // Dispatch input event for framework compatibility
-    element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
+    element.dispatchEvent(
+      new InputEvent('input', { bubbles: true, inputType: 'insertText' })
+    );
   }
   // Note: execCommand already dispatches the appropriate input events
 }
@@ -141,11 +145,7 @@ function findRangeForTextPosition(
   let charCount = 0;
   let foundStart = false;
 
-  const walker = document.createTreeWalker(
-    element,
-    NodeFilter.SHOW_TEXT,
-    null
-  );
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
 
   let node: Text | null;
   while ((node = walker.nextNode() as Text | null)) {
@@ -185,7 +185,9 @@ export interface ContenteditableUndoData {
   textLength: number;
 }
 
-export function storeContenteditableUndo(element: HTMLElement): ContenteditableUndoData {
+export function storeContenteditableUndo(
+  element: HTMLElement
+): ContenteditableUndoData {
   return {
     innerHTML: element.innerHTML,
     textLength: element.textContent?.length ?? 0,
@@ -216,7 +218,10 @@ export function restoreContenteditableUndo(
  * @param element - The contenteditable element
  * @param offset - The text offset position (character count from start)
  */
-export function positionCursorAtOffset(element: HTMLElement, offset: number): void {
+export function positionCursorAtOffset(
+  element: HTMLElement,
+  offset: number
+): void {
   const selection = window.getSelection();
   if (!selection) return;
 

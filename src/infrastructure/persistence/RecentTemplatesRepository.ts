@@ -1,4 +1,7 @@
-import type { IRecentTemplatesRepository, RecentTemplateEntry } from '@domain/repositories';
+import type {
+  IRecentTemplatesRepository,
+  RecentTemplateEntry,
+} from '@domain/repositories';
 import { STORAGE_KEYS, MAX_RECENT_TEMPLATES } from '@shared/constants';
 import { ChromeStorageAdapter } from '../chrome/storage/ChromeStorageAdapter';
 

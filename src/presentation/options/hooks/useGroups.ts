@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES } from '@shared/constants';
-import type { GroupDTO, CreateGroupDTO, UpdateGroupDTO } from '@application/dto';
+import type {
+  GroupDTO,
+  CreateGroupDTO,
+  UpdateGroupDTO,
+} from '@application/dto';
 
 interface UseGroupsReturn {
   groups: GroupDTO[];
@@ -37,43 +41,51 @@ export function useGroups(): UseGroupsReturn {
     setLoading(false);
   }, []);
 
-  const createGroup = useCallback(async (data: CreateGroupDTO): Promise<GroupDTO | null> => {
-    setError(null);
-    const response = await sendMessage<CreateGroupDTO, GroupDTO>(
-      MESSAGE_TYPES.CREATE_GROUP,
-      data
-    );
+  const createGroup = useCallback(
+    async (data: CreateGroupDTO): Promise<GroupDTO | null> => {
+      setError(null);
+      const response = await sendMessage<CreateGroupDTO, GroupDTO>(
+        MESSAGE_TYPES.CREATE_GROUP,
+        data
+      );
 
-    if (response.success && response.data) {
-      setGroups((prev) => [...prev, response.data!].sort((a, b) => a.order - b.order));
-      return response.data;
-    } else {
-      setError(response.error ?? 'Failed to create group');
-      return null;
-    }
-  }, []);
+      if (response.success && response.data) {
+        setGroups((prev) =>
+          [...prev, response.data!].sort((a, b) => a.order - b.order)
+        );
+        return response.data;
+      } else {
+        setError(response.error ?? 'Failed to create group');
+        return null;
+      }
+    },
+    []
+  );
 
-  const updateGroup = useCallback(async (data: UpdateGroupDTO): Promise<boolean> => {
-    setError(null);
-    const response = await sendMessage<UpdateGroupDTO, GroupDTO>(
-      MESSAGE_TYPES.UPDATE_GROUP,
-      data
-    );
+  const updateGroup = useCallback(
+    async (data: UpdateGroupDTO): Promise<boolean> => {
+      setError(null);
+      const response = await sendMessage<UpdateGroupDTO, GroupDTO>(
+        MESSAGE_TYPES.UPDATE_GROUP,
+        data
+      );
 
-    if (response.success && response.data) {
-      setGroups((prev) => {
-        const index = prev.findIndex((g) => g.id === data.id);
-        if (index === -1) return prev;
-        const updated = [...prev];
-        updated[index] = response.data!;
-        return updated.sort((a, b) => a.order - b.order);
-      });
-      return true;
-    } else {
-      setError(response.error ?? 'Failed to update group');
-      return false;
-    }
-  }, []);
+      if (response.success && response.data) {
+        setGroups((prev) => {
+          const index = prev.findIndex((g) => g.id === data.id);
+          if (index === -1) return prev;
+          const updated = [...prev];
+          updated[index] = response.data!;
+          return updated.sort((a, b) => a.order - b.order);
+        });
+        return true;
+      } else {
+        setError(response.error ?? 'Failed to update group');
+        return false;
+      }
+    },
+    []
+  );
 
   const deleteGroup = useCallback(async (id: string): Promise<boolean> => {
     setError(null);

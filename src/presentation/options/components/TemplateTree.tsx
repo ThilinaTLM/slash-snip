@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+} from 'react';
 import { Search, Inbox, FolderPlus } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
 import type { TemplateDTO, GroupDTO } from '@application/dto';
@@ -59,11 +65,14 @@ export function TemplateTree({
   const resizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
 
   // Handle resize mouse events
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsResizing(true);
-    resizeRef.current = { startX: e.clientX, startWidth: width };
-  }, [width]);
+  const handleResizeStart = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      setIsResizing(true);
+      resizeRef.current = { startX: e.clientX, startWidth: width };
+    },
+    [width]
+  );
 
   useEffect(() => {
     if (!isResizing) return;
@@ -71,7 +80,10 @@ export function TemplateTree({
     const handleMouseMove = (e: MouseEvent) => {
       if (!resizeRef.current) return;
       const delta = e.clientX - resizeRef.current.startX;
-      const newWidth = Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, resizeRef.current.startWidth + delta));
+      const newWidth = Math.min(
+        MAX_PANEL_WIDTH,
+        Math.max(MIN_PANEL_WIDTH, resizeRef.current.startWidth + delta)
+      );
       onWidthChange?.(newWidth);
     };
 
@@ -132,7 +144,10 @@ export function TemplateTree({
   const isSearchEmpty = filteredTemplates.length === 0 && searchQuery.trim();
 
   return (
-    <div className={`tree-panel ${isResizing ? 'tree-panel-resizing' : ''}`} style={{ width }}>
+    <div
+      className={`tree-panel ${isResizing ? 'tree-panel-resizing' : ''}`}
+      style={{ width }}
+    >
       {/* Search */}
       <div className="tree-search">
         <Search size={14} className="tree-search-icon" />
@@ -151,12 +166,16 @@ export function TemplateTree({
           <div className="tree-empty">
             <Inbox size={32} className="tree-empty-icon" />
             <p className="tree-empty-title">No snippets yet</p>
-            <p className="tree-empty-subtitle">Create your first snippet to get started</p>
+            <p className="tree-empty-subtitle">
+              Create your first snippet to get started
+            </p>
           </div>
         ) : isSearchEmpty ? (
           <div className="tree-empty">
             <Search size={24} className="tree-empty-icon" />
-            <p className="tree-empty-subtitle">No results for &ldquo;{searchQuery}&rdquo;</p>
+            <p className="tree-empty-subtitle">
+              No results for &ldquo;{searchQuery}&rdquo;
+            </p>
           </div>
         ) : (
           <DndTreeContext templates={templates} onMoveTemplate={onMoveTemplate}>
@@ -210,8 +229,12 @@ export function TemplateTree({
       {/* Footer with stats and new group button */}
       <div className="tree-footer">
         <div className="tree-footer-stats">
-          <span>{templates.length} snippet{templates.length !== 1 ? 's' : ''}</span>
-          <span>{groups.length} group{groups.length !== 1 ? 's' : ''}</span>
+          <span>
+            {templates.length} snippet{templates.length !== 1 ? 's' : ''}
+          </span>
+          <span>
+            {groups.length} group{groups.length !== 1 ? 's' : ''}
+          </span>
         </div>
         <button className="tree-footer-add-group" onClick={onNewGroup}>
           <FolderPlus size={14} />

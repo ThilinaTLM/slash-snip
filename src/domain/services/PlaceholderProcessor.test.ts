@@ -35,7 +35,9 @@ describe('PlaceholderProcessor', () => {
 
     describe('select placeholders', () => {
       it('should parse <select:Label:options>', () => {
-        const placeholders = processor.parse('Color: <select:Pick:red,green,blue>');
+        const placeholders = processor.parse(
+          'Color: <select:Pick:red,green,blue>'
+        );
         expect(placeholders).toHaveLength(1);
         expect(placeholders[0].type).toBe('select');
         expect(placeholders[0].label).toBe('Pick');
@@ -43,7 +45,9 @@ describe('PlaceholderProcessor', () => {
       });
 
       it('should handle options with whitespace', () => {
-        const placeholders = processor.parse('<select:Size:small, medium, large>');
+        const placeholders = processor.parse(
+          '<select:Size:small, medium, large>'
+        );
         expect(placeholders[0].options).toEqual(['small', 'medium', 'large']);
       });
     });
@@ -91,7 +95,9 @@ describe('PlaceholderProcessor', () => {
 
   describe('analyzeInteractive', () => {
     it('should return undefined for templates without interactive placeholders', () => {
-      expect(processor.analyzeInteractive('Hello <clipboard>!')).toBeUndefined();
+      expect(
+        processor.analyzeInteractive('Hello <clipboard>!')
+      ).toBeUndefined();
       expect(processor.analyzeInteractive('Today: <date>')).toBeUndefined();
     });
 
@@ -103,14 +109,18 @@ describe('PlaceholderProcessor', () => {
     });
 
     it('should return select fields for <select> placeholders', () => {
-      const fields = processor.analyzeInteractive('<select:Color:red,green,blue>');
+      const fields = processor.analyzeInteractive(
+        '<select:Color:red,green,blue>'
+      );
       expect(fields).toHaveLength(1);
       expect(fields![0].type).toBe('select');
       expect(fields![0].options).toEqual(['red', 'green', 'blue']);
     });
 
     it('should return multiple fields in order', () => {
-      const fields = processor.analyzeInteractive('<input:Name>, <select:Color:red,blue>, <input:Email>');
+      const fields = processor.analyzeInteractive(
+        '<input:Name>, <select:Color:red,blue>, <input:Email>'
+      );
       expect(fields).toHaveLength(3);
       expect(fields![0].label).toBe('Name');
       expect(fields![1].label).toBe('Color');
@@ -153,7 +163,10 @@ describe('PlaceholderProcessor', () => {
   describe('process with tab stops', () => {
     it('should process tab stops and return definitions', () => {
       const context: PlaceholderContext = {};
-      const result = processor.process('Name: <tab:1>\nEmail: <tab:2>', context);
+      const result = processor.process(
+        'Name: <tab:1>\nEmail: <tab:2>',
+        context
+      );
       expect(result.tabStops).toHaveLength(2);
       expect(result.tabStops![0].index).toBe(1);
       expect(result.tabStops![1].index).toBe(2);
@@ -190,7 +203,12 @@ describe('PlaceholderProcessor', () => {
       const fields = processor.analyzeInteractive('Hello <input:Name>!')!;
       const inputValues = { [fields[0].id]: 'World' };
 
-      const result = processor.processWithInputs('Hello <input:Name>!', context, inputValues, fields);
+      const result = processor.processWithInputs(
+        'Hello <input:Name>!',
+        context,
+        inputValues,
+        fields
+      );
       expect(result.text).toBe('Hello World!');
     });
 
@@ -203,7 +221,12 @@ describe('PlaceholderProcessor', () => {
         [fields[1].id]: 'Doe',
       };
 
-      const result = processor.processWithInputs(content, context, inputValues, fields);
+      const result = processor.processWithInputs(
+        content,
+        context,
+        inputValues,
+        fields
+      );
       expect(result.text).toBe('John Doe');
     });
 
@@ -222,7 +245,12 @@ describe('PlaceholderProcessor', () => {
       const fields = processor.analyzeInteractive(content)!;
       const inputValues = { [fields[0].id]: 'green' };
 
-      const result = processor.processWithInputs(content, context, inputValues, fields);
+      const result = processor.processWithInputs(
+        content,
+        context,
+        inputValues,
+        fields
+      );
       expect(result.text).toBe('Color: green');
     });
 
@@ -232,7 +260,12 @@ describe('PlaceholderProcessor', () => {
       const fields = processor.analyzeInteractive(content)!;
       const inputValues = { [fields[0].id]: 'John' };
 
-      const result = processor.processWithInputs(content, context, inputValues, fields);
+      const result = processor.processWithInputs(
+        content,
+        context,
+        inputValues,
+        fields
+      );
       expect(result.text).toBe('Name: John, Clip: clipboard-text');
     });
 
@@ -242,7 +275,12 @@ describe('PlaceholderProcessor', () => {
       const fields = processor.analyzeInteractive(content)!;
       const inputValues = { [fields[0].id]: 'John' };
 
-      const result = processor.processWithInputs(content, context, inputValues, fields);
+      const result = processor.processWithInputs(
+        content,
+        context,
+        inputValues,
+        fields
+      );
       expect(result.text).toBe('John: TODO');
       expect(result.tabStops).toHaveLength(1);
       expect(result.tabStops![0].startOffset).toBe(6); // "John: " = 6 chars
@@ -255,7 +293,9 @@ describe('PlaceholderProcessor', () => {
     });
 
     it('should return true for select placeholders', () => {
-      expect(processor.hasInteractivePlaceholders('<select:Color:red,blue>')).toBe(true);
+      expect(
+        processor.hasInteractivePlaceholders('<select:Color:red,blue>')
+      ).toBe(true);
     });
 
     it('should return false for non-interactive placeholders', () => {

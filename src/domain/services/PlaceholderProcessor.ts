@@ -50,7 +50,10 @@ export class PlaceholderProcessor {
   /**
    * Parse the format part of a placeholder based on its type
    */
-  private parseFormatPart(placeholder: ParsedPlaceholder, formatPart?: string): void {
+  private parseFormatPart(
+    placeholder: ParsedPlaceholder,
+    formatPart?: string
+  ): void {
     if (!formatPart) {
       return;
     }
@@ -81,7 +84,10 @@ export class PlaceholderProcessor {
         const colonIndex = formatPart.indexOf(':');
         if (colonIndex !== -1) {
           placeholder.label = formatPart.slice(0, colonIndex);
-          placeholder.options = formatPart.slice(colonIndex + 1).split(',').map((s) => s.trim());
+          placeholder.options = formatPart
+            .slice(colonIndex + 1)
+            .split(',')
+            .map((s) => s.trim());
         } else {
           placeholder.label = formatPart;
           placeholder.options = [];
@@ -170,7 +176,9 @@ export class PlaceholderProcessor {
     const tabStops: TabStopDefinition[] = [];
 
     // Process placeholders in reverse order to preserve indices
-    const sortedPlaceholders = [...placeholders].sort((a, b) => b.startIndex - a.startIndex);
+    const sortedPlaceholders = [...placeholders].sort(
+      (a, b) => b.startIndex - a.startIndex
+    );
 
     for (const placeholder of sortedPlaceholders) {
       let replacement: string;
@@ -196,16 +204,25 @@ export class PlaceholderProcessor {
 
       // Track cursor position (use first <cursor> only)
       if (placeholder.type === 'cursor' && cursorOffset === undefined) {
-        cursorOffset = this.calculateCursorOffset(content, placeholders, placeholder, context);
+        cursorOffset = this.calculateCursorOffset(
+          content,
+          placeholders,
+          placeholder,
+          context
+        );
       }
 
       result =
-        result.slice(0, placeholder.startIndex) + replacement + result.slice(placeholder.endIndex);
+        result.slice(0, placeholder.startIndex) +
+        replacement +
+        result.slice(placeholder.endIndex);
     }
 
     // Recalculate tab stop offsets based on final positions
     // Process in forward order to adjust for previous replacements
-    const forwardPlaceholders = [...placeholders].sort((a, b) => a.startIndex - b.startIndex);
+    const forwardPlaceholders = [...placeholders].sort(
+      (a, b) => a.startIndex - b.startIndex
+    );
     const finalTabStops: TabStopDefinition[] = [];
 
     for (const placeholder of forwardPlaceholders) {
@@ -264,22 +281,33 @@ export class PlaceholderProcessor {
     const tabStops: TabStopDefinition[] = [];
 
     // Process placeholders in reverse order to preserve indices
-    const sortedPlaceholders = [...placeholders].sort((a, b) => b.startIndex - a.startIndex);
+    const sortedPlaceholders = [...placeholders].sort(
+      (a, b) => b.startIndex - a.startIndex
+    );
 
     for (const placeholder of sortedPlaceholders) {
       const replacement = this.resolvePlaceholder(placeholder, context);
 
       // Track cursor position (use first <cursor> only)
       if (placeholder.type === 'cursor' && cursorOffset === undefined) {
-        cursorOffset = this.calculateCursorOffset(content, placeholders, placeholder, context);
+        cursorOffset = this.calculateCursorOffset(
+          content,
+          placeholders,
+          placeholder,
+          context
+        );
       }
 
       result =
-        result.slice(0, placeholder.startIndex) + replacement + result.slice(placeholder.endIndex);
+        result.slice(0, placeholder.startIndex) +
+        replacement +
+        result.slice(placeholder.endIndex);
     }
 
     // Calculate tab stop offsets (process in forward order)
-    const forwardPlaceholders = [...placeholders].sort((a, b) => a.startIndex - b.startIndex);
+    const forwardPlaceholders = [...placeholders].sort(
+      (a, b) => a.startIndex - b.startIndex
+    );
 
     for (const placeholder of forwardPlaceholders) {
       if (placeholder.type === 'tab' && placeholder.tabIndex !== undefined) {
@@ -316,7 +344,10 @@ export class PlaceholderProcessor {
   /**
    * Resolve a single placeholder to its replacement value
    */
-  private resolvePlaceholder(placeholder: ParsedPlaceholder, context: PlaceholderContext): string {
+  private resolvePlaceholder(
+    placeholder: ParsedPlaceholder,
+    context: PlaceholderContext
+  ): string {
     const now = new Date();
     let value: string;
 
@@ -405,7 +436,9 @@ export class PlaceholderProcessor {
    */
   hasInteractivePlaceholders(content: string): boolean {
     const placeholders = this.parse(content);
-    return placeholders.some((ph) => ph.type === 'input' || ph.type === 'select');
+    return placeholders.some(
+      (ph) => ph.type === 'input' || ph.type === 'select'
+    );
   }
 
   /**

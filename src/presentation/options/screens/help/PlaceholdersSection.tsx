@@ -97,8 +97,8 @@ export function PlaceholdersSection(): React.ReactElement {
         <CardContent>
           <div className="help-content-section">
             <p className="help-intro">
-              Placeholders add dynamic content to your templates. They&apos;re replaced with actual
-              values when the template expands.
+              Placeholders add dynamic content to your templates. They&apos;re
+              replaced with actual values when the template expands.
             </p>
 
             <div className="help-table-container">
@@ -134,7 +134,8 @@ export function PlaceholdersSection(): React.ReactElement {
 
             <h4 className="help-subsection-title">Text Transforms</h4>
             <p className="help-text">
-              Apply transforms to clipboard or selection content by adding a suffix:
+              Apply transforms to clipboard or selection content by adding a
+              suffix:
             </p>
             <div className="help-transforms">
               {transforms.map((t) => (
@@ -145,7 +146,8 @@ export function PlaceholdersSection(): React.ReactElement {
               ))}
             </div>
             <p className="help-text help-text-muted">
-              Example: <code>{'<clipboard:upper>'}</code> inserts clipboard content in uppercase.
+              Example: <code>{'<clipboard:upper>'}</code> inserts clipboard
+              content in uppercase.
             </p>
           </div>
         </CardContent>

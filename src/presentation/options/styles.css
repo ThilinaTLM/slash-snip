@@ -398,7 +398,7 @@ svg {
   transition: transform 0.2s ease;
 }
 
-.select-trigger[data-state="open"] .select-icon {
+.select-trigger[data-state='open'] .select-icon {
   transform: rotate(180deg);
 }
 
@@ -442,7 +442,7 @@ svg {
   background-color: var(--bg-secondary);
 }
 
-.select-item[data-state="checked"] {
+.select-item[data-state='checked'] {
   background-color: var(--accent-bg);
   color: var(--accent);
 }
@@ -480,8 +480,12 @@ svg {
 }
 
 @keyframes backdropFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .dialog-content {
@@ -696,7 +700,9 @@ svg {
   background-color: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .card:hover {
@@ -1742,7 +1748,9 @@ svg {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .import-export-section:hover {
@@ -2287,7 +2295,9 @@ svg {
 
 /* Smooth transitions for theme changes */
 html:not(.no-transitions) {
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Reduced motion preference */
@@ -2577,7 +2587,9 @@ html:not(.no-transitions) {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .help-example-card:hover {

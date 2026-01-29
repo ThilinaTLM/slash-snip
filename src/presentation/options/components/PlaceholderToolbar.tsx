@@ -44,14 +44,20 @@ const TIME_FORMATS = [
 export function PlaceholderToolbar({
   onInsert,
 }: PlaceholderToolbarProps): React.ReactElement {
-  const [dropdown, setDropdown] = useState<DropdownState>({ isOpen: false, type: null });
+  const [dropdown, setDropdown] = useState<DropdownState>({
+    isOpen: false,
+    type: null,
+  });
   const [inputLabel, setInputLabel] = useState('');
   const [showInputPrompt, setShowInputPrompt] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdown({ isOpen: false, type: null });
       }
     };
@@ -154,8 +160,12 @@ export function PlaceholderToolbar({
                   className="placeholder-dropdown-item"
                   onClick={() => handleDateFormatSelect(item.format)}
                 >
-                  <span className="placeholder-dropdown-format">{item.format}</span>
-                  <span className="placeholder-dropdown-example">{item.example}</span>
+                  <span className="placeholder-dropdown-format">
+                    {item.format}
+                  </span>
+                  <span className="placeholder-dropdown-example">
+                    {item.example}
+                  </span>
                 </button>
               ))}
             </div>
@@ -183,8 +193,12 @@ export function PlaceholderToolbar({
                   className="placeholder-dropdown-item"
                   onClick={() => handleTimeFormatSelect(item.format)}
                 >
-                  <span className="placeholder-dropdown-format">{item.format}</span>
-                  <span className="placeholder-dropdown-example">{item.example}</span>
+                  <span className="placeholder-dropdown-format">
+                    {item.format}
+                  </span>
+                  <span className="placeholder-dropdown-example">
+                    {item.example}
+                  </span>
                 </button>
               ))}
             </div>

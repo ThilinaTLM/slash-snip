@@ -1,6 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { Inbox, Plus } from 'lucide-react';
-import type { TemplateDTO, CreateTemplateDTO, UpdateTemplateDTO, GroupDTO, CreateGroupDTO, UpdateGroupDTO } from '@application/dto';
+import type {
+  TemplateDTO,
+  CreateTemplateDTO,
+  UpdateTemplateDTO,
+  GroupDTO,
+  CreateGroupDTO,
+  UpdateGroupDTO,
+} from '@application/dto';
 import { TemplateTree } from '../components/TemplateTree';
 import { TemplateEditor } from '../components/TemplateEditor';
 import { GroupDialog } from '../components/GroupDialog';
@@ -49,12 +56,17 @@ export function SnippetsScreen({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
-  const [groupDialogState, setGroupDialogState] = useState<{ isOpen: boolean; group: GroupDTO | null }>({
+  const [groupDialogState, setGroupDialogState] = useState<{
+    isOpen: boolean;
+    group: GroupDTO | null;
+  }>({
     isOpen: false,
     group: null,
   });
 
-  const selectedTemplate = selectedId ? templates.find((t) => t.id === selectedId) ?? null : null;
+  const selectedTemplate = selectedId
+    ? (templates.find((t) => t.id === selectedId) ?? null)
+    : null;
 
   const handleSelectTemplate = (id: string) => {
     setSelectedId(id);
@@ -165,7 +177,6 @@ export function SnippetsScreen({
     setDeleteTarget(null);
   };
 
-
   const handleSaveGroup = useCallback(
     async (data: CreateGroupDTO | UpdateGroupDTO) => {
       if ('id' in data) {
@@ -190,7 +201,9 @@ export function SnippetsScreen({
       return `Are you sure you want to delete "${template.name}"? This action cannot be undone.`;
     }
     const group = deleteTarget.data as GroupDTO;
-    const templateCount = templates.filter((t) => t.groupId === group.id).length;
+    const templateCount = templates.filter(
+      (t) => t.groupId === group.id
+    ).length;
     if (templateCount > 0) {
       return `Are you sure you want to delete "${group.name}"? The ${templateCount} template${templateCount !== 1 ? 's' : ''} in this group will become ungrouped.`;
     }
@@ -198,11 +211,7 @@ export function SnippetsScreen({
   };
 
   if (loading) {
-    return (
-      <div className="snippets-loading">
-        Loading...
-      </div>
-    );
+    return <div className="snippets-loading">Loading...</div>;
   }
 
   return (

@@ -66,7 +66,9 @@ export class TextExpander {
     element.dispatchEvent(new Event('input', { bubbles: true }));
 
     // Store undo data on the element
-    (element as HTMLElement & { __slashsnipUndo?: typeof undoData }).__slashsnipUndo = undoData;
+    (
+      element as HTMLElement & { __slashsnipUndo?: typeof undoData }
+    ).__slashsnipUndo = undoData;
 
     return {
       success: true,
@@ -94,8 +96,12 @@ export class TextExpander {
 
     // Store for potential undo
     const undoData = storeContenteditableUndo(element);
-    (element as HTMLElement & { __slashsnipUndo?: ContenteditableUndoData }).__slashsnipUndo = undoData;
-    (element as HTMLElement & { __slashsnipIsContenteditable?: boolean }).__slashsnipIsContenteditable = true;
+    (
+      element as HTMLElement & { __slashsnipUndo?: ContenteditableUndoData }
+    ).__slashsnipUndo = undoData;
+    (
+      element as HTMLElement & { __slashsnipIsContenteditable?: boolean }
+    ).__slashsnipIsContenteditable = true;
 
     // Replace the trigger with expanded content
     replaceContenteditableText(ctx, match.startIndex, match.endIndex, content);
@@ -120,32 +126,43 @@ export class TextExpander {
    */
   undo(element: HTMLInputElement | HTMLTextAreaElement | HTMLElement): boolean {
     // Check if this is a contenteditable element
-    const isContenteditable = (element as HTMLElement & { __slashsnipIsContenteditable?: boolean }).__slashsnipIsContenteditable;
+    const isContenteditable = (
+      element as HTMLElement & { __slashsnipIsContenteditable?: boolean }
+    ).__slashsnipIsContenteditable;
 
     if (isContenteditable) {
       return this.undoContenteditable(element);
     }
 
-    const undoData = (element as HTMLElement & { __slashsnipUndo?: {
-      originalValue: string;
-      selectionStart: number | null;
-      selectionEnd: number | null;
-    } }).__slashsnipUndo;
+    const undoData = (
+      element as HTMLElement & {
+        __slashsnipUndo?: {
+          originalValue: string;
+          selectionStart: number | null;
+          selectionEnd: number | null;
+        };
+      }
+    ).__slashsnipUndo;
 
     if (!undoData) {
       return false;
     }
 
-    (element as HTMLInputElement | HTMLTextAreaElement).value = undoData.originalValue;
+    (element as HTMLInputElement | HTMLTextAreaElement).value =
+      undoData.originalValue;
     if (undoData.selectionStart !== null && undoData.selectionEnd !== null) {
-      (element as HTMLInputElement | HTMLTextAreaElement).setSelectionRange(undoData.selectionStart, undoData.selectionEnd);
+      (element as HTMLInputElement | HTMLTextAreaElement).setSelectionRange(
+        undoData.selectionStart,
+        undoData.selectionEnd
+      );
     }
 
     // Dispatch input event
     element.dispatchEvent(new Event('input', { bubbles: true }));
 
     // Clear undo data
-    delete (element as HTMLElement & { __slashsnipUndo?: unknown }).__slashsnipUndo;
+    delete (element as HTMLElement & { __slashsnipUndo?: unknown })
+      .__slashsnipUndo;
 
     return true;
   }
@@ -154,7 +171,9 @@ export class TextExpander {
    * Undo the last expansion on a contenteditable element
    */
   private undoContenteditable(element: HTMLElement): boolean {
-    const undoData = (element as HTMLElement & { __slashsnipUndo?: ContenteditableUndoData }).__slashsnipUndo;
+    const undoData = (
+      element as HTMLElement & { __slashsnipUndo?: ContenteditableUndoData }
+    ).__slashsnipUndo;
 
     if (!undoData) {
       return false;
@@ -163,8 +182,10 @@ export class TextExpander {
     restoreContenteditableUndo(element, undoData);
 
     // Clear undo data
-    delete (element as HTMLElement & { __slashsnipUndo?: unknown }).__slashsnipUndo;
-    delete (element as HTMLElement & { __slashsnipIsContenteditable?: boolean }).__slashsnipIsContenteditable;
+    delete (element as HTMLElement & { __slashsnipUndo?: unknown })
+      .__slashsnipUndo;
+    delete (element as HTMLElement & { __slashsnipIsContenteditable?: boolean })
+      .__slashsnipIsContenteditable;
 
     return true;
   }

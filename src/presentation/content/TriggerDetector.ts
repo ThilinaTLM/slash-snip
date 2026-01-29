@@ -1,5 +1,8 @@
 import { DEFAULT_TRIGGER_DELIMITERS } from '@shared/constants';
-import { getContenteditableContext, type ContenteditableContext } from './ContenteditableAdapter';
+import {
+  getContenteditableContext,
+  type ContenteditableContext,
+} from './ContenteditableAdapter';
 
 export interface TriggerMatch {
   trigger: string;
@@ -18,7 +21,10 @@ export class TriggerDetector {
   private knownTriggers: Set<string> = new Set();
   private caseSensitive: boolean = true;
 
-  constructor(delimiters: string[] = DEFAULT_TRIGGER_DELIMITERS, mode: TriggerMode = 'delimiter') {
+  constructor(
+    delimiters: string[] = DEFAULT_TRIGGER_DELIMITERS,
+    mode: TriggerMode = 'delimiter'
+  ) {
     this.delimiters = delimiters;
     this.mode = mode;
   }
@@ -131,10 +137,14 @@ export class TriggerDetector {
     }
 
     // Check if current word matches a known trigger
-    const normalizedWord = this.caseSensitive ? currentWord : currentWord.toLowerCase();
+    const normalizedWord = this.caseSensitive
+      ? currentWord
+      : currentWord.toLowerCase();
 
     for (const trigger of this.knownTriggers) {
-      const normalizedTrigger = this.caseSensitive ? trigger : trigger.toLowerCase();
+      const normalizedTrigger = this.caseSensitive
+        ? trigger
+        : trigger.toLowerCase();
       if (normalizedWord === normalizedTrigger) {
         return {
           trigger: currentWord,
@@ -150,7 +160,10 @@ export class TriggerDetector {
   /**
    * Extract potential trigger from current input value and cursor position
    */
-  detectTriggerAtCursor(value: string, cursorPosition: number): TriggerMatch | null {
+  detectTriggerAtCursor(
+    value: string,
+    cursorPosition: number
+  ): TriggerMatch | null {
     // Get text up to cursor
     const textToCursor = value.slice(0, cursorPosition);
     return this.detectTrigger(textToCursor);
@@ -159,7 +172,9 @@ export class TriggerDetector {
   /**
    * Detect trigger in a contenteditable element using Selection API
    */
-  detectTriggerInContenteditable(element: HTMLElement): { match: TriggerMatch; ctx: ContenteditableContext } | null {
+  detectTriggerInContenteditable(
+    element: HTMLElement
+  ): { match: TriggerMatch; ctx: ContenteditableContext } | null {
     const ctx = getContenteditableContext(element);
     if (!ctx) return null;
 

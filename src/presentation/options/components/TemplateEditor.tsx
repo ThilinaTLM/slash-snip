@@ -34,7 +34,9 @@ export function TemplateEditor({
     getInitialFormData(template)
   );
   const [error, setError] = useState<string | null>(null);
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>(
+    'idle'
+  );
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const templateIdRef = useRef(template.id);
@@ -51,51 +53,62 @@ export function TemplateEditor({
   }, [template]);
 
   // Auto-save with debounce
-  const performSave = useCallback((data: FormData) => {
-    const trigger = data.trigger.trim();
-    const name = data.name.trim();
+  const performSave = useCallback(
+    (data: FormData) => {
+      const trigger = data.trigger.trim();
+      const name = data.name.trim();
 
-    // Validate before saving
-    if (!trigger || trigger.length < 2 || trigger.length > 32 || /\s/.test(trigger)) {
-      return;
-    }
-    if (!name || name.length > 100) {
-      return;
-    }
-    if (data.content.length > 10000) {
-      return;
-    }
+      // Validate before saving
+      if (
+        !trigger ||
+        trigger.length < 2 ||
+        trigger.length > 32 ||
+        /\s/.test(trigger)
+      ) {
+        return;
+      }
+      if (!name || name.length > 100) {
+        return;
+      }
+      if (data.content.length > 10000) {
+        return;
+      }
 
-    const tags = data.tags
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
+      const tags = data.tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
 
-    const updates: UpdateTemplateDTO = {
-      id: template.id,
-      trigger,
-      name,
-      content: data.content,
-      groupId: template.groupId,
-      tags,
-    };
+      const updates: UpdateTemplateDTO = {
+        id: template.id,
+        trigger,
+        name,
+        content: data.content,
+        groupId: template.groupId,
+        tags,
+      };
 
-    setSaveStatus('saving');
-    onSave(updates);
+      setSaveStatus('saving');
+      onSave(updates);
 
-    // Show "Saved" status briefly
-    setTimeout(() => setSaveStatus('saved'), 100);
-    setTimeout(() => setSaveStatus('idle'), 2000);
-  }, [template.id, template.groupId, onSave]);
+      // Show "Saved" status briefly
+      setTimeout(() => setSaveStatus('saved'), 100);
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    },
+    [template.id, template.groupId, onSave]
+  );
 
-  const debouncedSave = useCallback((data: FormData) => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    saveTimeoutRef.current = setTimeout(() => {
-      performSave(data);
-    }, 500);
-  }, [performSave]);
+  const debouncedSave = useCallback(
+    (data: FormData) => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+      saveTimeoutRef.current = setTimeout(() => {
+        performSave(data);
+      }, 500);
+    },
+    [performSave]
+  );
 
   // Cleanup timeout on unmount
   useEffect(() => {
@@ -117,25 +130,29 @@ export function TemplateEditor({
     [formData, debouncedSave]
   );
 
-  const handleInsertPlaceholder = useCallback((placeholder: string) => {
-    const textarea = contentRef.current;
-    if (!textarea) return;
+  const handleInsertPlaceholder = useCallback(
+    (placeholder: string) => {
+      const textarea = contentRef.current;
+      if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const content = formData.content;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const content = formData.content;
 
-    const newContent = content.slice(0, start) + placeholder + content.slice(end);
-    const newData = { ...formData, content: newContent };
-    setFormData(newData);
-    debouncedSave(newData);
+      const newContent =
+        content.slice(0, start) + placeholder + content.slice(end);
+      const newData = { ...formData, content: newContent };
+      setFormData(newData);
+      debouncedSave(newData);
 
-    requestAnimationFrame(() => {
-      textarea.focus();
-      const newPosition = start + placeholder.length;
-      textarea.setSelectionRange(newPosition, newPosition);
-    });
-  }, [formData, debouncedSave]);
+      requestAnimationFrame(() => {
+        textarea.focus();
+        const newPosition = start + placeholder.length;
+        textarea.setSelectionRange(newPosition, newPosition);
+      });
+    },
+    [formData, debouncedSave]
+  );
 
   return (
     <div className="editor-form">
@@ -160,7 +177,9 @@ export function TemplateEditor({
       {/* Trigger & Name row */}
       <div className="editor-row">
         <div className="editor-field">
-          <label htmlFor="trigger" className="editor-label">Trigger *</label>
+          <label htmlFor="trigger" className="editor-label">
+            Trigger *
+          </label>
           <Input
             id="trigger"
             type="text"
@@ -172,7 +191,9 @@ export function TemplateEditor({
         </div>
 
         <div className="editor-field">
-          <label htmlFor="name" className="editor-label">Name *</label>
+          <label htmlFor="name" className="editor-label">
+            Name *
+          </label>
           <Input
             id="name"
             type="text"
@@ -185,7 +206,9 @@ export function TemplateEditor({
 
       {/* Content */}
       <div className="editor-field editor-field-grow">
-        <label htmlFor="content" className="editor-label">Content</label>
+        <label htmlFor="content" className="editor-label">
+          Content
+        </label>
         <PlaceholderToolbar onInsert={handleInsertPlaceholder} />
         <Textarea
           id="content"
@@ -201,7 +224,9 @@ export function TemplateEditor({
 
       {/* Tags */}
       <div className="editor-field">
-        <label htmlFor="tags" className="editor-label">Tags</label>
+        <label htmlFor="tags" className="editor-label">
+          Tags
+        </label>
         <Input
           id="tags"
           type="text"

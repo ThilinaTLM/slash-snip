@@ -7,7 +7,9 @@ import { ok, err } from '@shared/utils/result';
 export class DeleteGroupUseCase {
   constructor(private groupRepository: IGroupRepository) {}
 
-  async execute(id: string): Promise<Result<void, GroupNotFoundError | InvalidGroupError>> {
+  async execute(
+    id: string
+  ): Promise<Result<void, GroupNotFoundError | InvalidGroupError>> {
     // Cannot delete the default group
     if (id === DEFAULT_GROUP_ID) {
       return err(new InvalidGroupError('Cannot delete the default group'));

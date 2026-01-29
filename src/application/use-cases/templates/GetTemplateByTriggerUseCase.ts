@@ -9,7 +9,10 @@ export interface GetTemplateByTriggerOptions {
 export class GetTemplateByTriggerUseCase {
   constructor(private templateRepository: ITemplateRepository) {}
 
-  async execute(trigger: string, options?: GetTemplateByTriggerOptions): Promise<TemplateDTO | null> {
+  async execute(
+    trigger: string,
+    options?: GetTemplateByTriggerOptions
+  ): Promise<TemplateDTO | null> {
     const template = await this.templateRepository.findByTrigger(trigger, {
       caseSensitive: options?.caseSensitive,
     });

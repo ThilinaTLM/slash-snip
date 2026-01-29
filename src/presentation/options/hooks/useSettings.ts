@@ -21,15 +21,23 @@ export function useSettings(): UseSettingsResult {
     const loadSettings = async () => {
       try {
         const result = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
-        const stored = result[STORAGE_KEYS.SETTINGS] as Partial<AppSettings> | undefined;
+        const stored = result[STORAGE_KEYS.SETTINGS] as
+          | Partial<AppSettings>
+          | undefined;
 
         if (stored) {
           // Migrate legacy trigger key values (tab, enter) to 'space'
           let migratedSettings = { ...DEFAULT_SETTINGS, ...stored };
-          if (stored.triggerKey && stored.triggerKey !== 'space' && stored.triggerKey !== 'none') {
+          if (
+            stored.triggerKey &&
+            stored.triggerKey !== 'space' &&
+            stored.triggerKey !== 'none'
+          ) {
             migratedSettings = { ...migratedSettings, triggerKey: 'space' };
             // Persist the migration
-            await chrome.storage.local.set({ [STORAGE_KEYS.SETTINGS]: migratedSettings });
+            await chrome.storage.local.set({
+              [STORAGE_KEYS.SETTINGS]: migratedSettings,
+            });
             console.log('[SlashSnip] Migrated legacy triggerKey to space');
           }
           setSettings(migratedSettings);
@@ -45,17 +53,22 @@ export function useSettings(): UseSettingsResult {
   }, []);
 
   // Update settings and persist to storage
-  const updateSettings = useCallback(async (updates: Partial<AppSettings>) => {
-    const newSettings = { ...settings, ...updates };
-    setSettings(newSettings);
+  const updateSettings = useCallback(
+    async (updates: Partial<AppSettings>) => {
+      const newSettings = { ...settings, ...updates };
+      setSettings(newSettings);
 
-    try {
-      await chrome.storage.local.set({ [STORAGE_KEYS.SETTINGS]: newSettings });
-    } catch (error) {
-      console.error('[SlashSnip] Failed to save settings:', error);
-      throw error;
-    }
-  }, [settings]);
+      try {
+        await chrome.storage.local.set({
+          [STORAGE_KEYS.SETTINGS]: newSettings,
+        });
+      } catch (error) {
+        console.error('[SlashSnip] Failed to save settings:', error);
+        throw error;
+      }
+    },
+    [settings]
+  );
 
   return { settings, loading, updateSettings };
 }

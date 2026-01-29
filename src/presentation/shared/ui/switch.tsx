@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Switch as BaseSwitch } from "@base-ui/react/switch";
-import { cn } from "@lib/utils";
+import * as React from 'react';
+import { Switch as BaseSwitch } from '@base-ui/react/switch';
+import { cn } from '@lib/utils';
 
 interface SwitchProps {
   checked: boolean;
@@ -8,7 +8,7 @@ interface SwitchProps {
   disabled?: boolean;
   className?: string;
   id?: string;
-  "aria-label"?: string;
+  'aria-label'?: string;
 }
 
 const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
@@ -20,22 +20,22 @@ const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
         onCheckedChange={onCheckedChange}
         disabled={disabled}
         className={cn(
-          "switch",
-          checked ? "switch-checked" : "switch-unchecked",
+          'switch',
+          checked ? 'switch-checked' : 'switch-unchecked',
           className
         )}
         {...props}
       >
         <BaseSwitch.Thumb
           className={cn(
-            "switch-thumb",
-            checked ? "switch-thumb-checked" : "switch-thumb-unchecked"
+            'switch-thumb',
+            checked ? 'switch-thumb-checked' : 'switch-thumb-unchecked'
           )}
         />
       </BaseSwitch.Root>
     );
   }
 );
-Switch.displayName = "Switch";
+Switch.displayName = 'Switch';
 
 export { Switch };

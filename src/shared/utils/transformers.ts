@@ -3,7 +3,10 @@ import type { TransformModifier } from '@shared/types';
 /**
  * Apply a text transformation modifier
  */
-export function applyTransform(text: string, transform: TransformModifier): string {
+export function applyTransform(
+  text: string,
+  transform: TransformModifier
+): string {
   switch (transform) {
     case 'upper':
       return text.toUpperCase();
@@ -20,7 +23,10 @@ export function applyTransform(text: string, transform: TransformModifier): stri
  * Convert text to Title Case
  */
 function toTitleCase(text: string): string {
-  return text.replace(/\w\S*/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+  return text.replace(
+    /\w\S*/g,
+    (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+  );
 }
 
 /**
@@ -33,4 +39,9 @@ export function isTransformModifier(value: string): value is TransformModifier {
 /**
  * All available transform modifiers
  */
-export const TRANSFORM_MODIFIERS: readonly TransformModifier[] = ['upper', 'lower', 'title', 'trim'];
+export const TRANSFORM_MODIFIERS: readonly TransformModifier[] = [
+  'upper',
+  'lower',
+  'title',
+  'trim',
+];

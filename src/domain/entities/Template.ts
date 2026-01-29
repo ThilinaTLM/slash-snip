@@ -1,5 +1,10 @@
 import { generateUUID } from '@shared/utils';
-import { MIN_TRIGGER_LENGTH, MAX_TRIGGER_LENGTH, MAX_CONTENT_LENGTH, MAX_NAME_LENGTH } from '@shared/constants';
+import {
+  MIN_TRIGGER_LENGTH,
+  MAX_TRIGGER_LENGTH,
+  MAX_CONTENT_LENGTH,
+  MAX_NAME_LENGTH,
+} from '@shared/constants';
 import { InvalidTriggerError, InvalidTemplateError } from '../errors';
 import type { Result } from '@shared/utils/result';
 import { ok, err } from '@shared/utils/result';
@@ -79,7 +84,9 @@ export class Template {
   /**
    * Factory method to create a new template
    */
-  static create(input: CreateTemplateInput): Result<Template, InvalidTriggerError | InvalidTemplateError> {
+  static create(
+    input: CreateTemplateInput
+  ): Result<Template, InvalidTriggerError | InvalidTemplateError> {
     // Validate trigger
     const triggerValidation = Template.validateTrigger(input.trigger);
     if (triggerValidation.isErr()) {
@@ -91,12 +98,20 @@ export class Template {
       return err(new InvalidTemplateError('Template name is required'));
     }
     if (input.name.length > MAX_NAME_LENGTH) {
-      return err(new InvalidTemplateError(`Template name must be ${MAX_NAME_LENGTH} characters or less`));
+      return err(
+        new InvalidTemplateError(
+          `Template name must be ${MAX_NAME_LENGTH} characters or less`
+        )
+      );
     }
 
     // Validate content
     if (input.content.length > MAX_CONTENT_LENGTH) {
-      return err(new InvalidTemplateError(`Template content must be ${MAX_CONTENT_LENGTH} characters or less`));
+      return err(
+        new InvalidTemplateError(
+          `Template content must be ${MAX_CONTENT_LENGTH} characters or less`
+        )
+      );
     }
 
     const now = Date.now();
@@ -129,11 +144,19 @@ export class Template {
     const trimmed = trigger.trim();
 
     if (trimmed.length < MIN_TRIGGER_LENGTH) {
-      return err(new InvalidTriggerError(`Trigger must be at least ${MIN_TRIGGER_LENGTH} characters`));
+      return err(
+        new InvalidTriggerError(
+          `Trigger must be at least ${MIN_TRIGGER_LENGTH} characters`
+        )
+      );
     }
 
     if (trimmed.length > MAX_TRIGGER_LENGTH) {
-      return err(new InvalidTriggerError(`Trigger must be ${MAX_TRIGGER_LENGTH} characters or less`));
+      return err(
+        new InvalidTriggerError(
+          `Trigger must be ${MAX_TRIGGER_LENGTH} characters or less`
+        )
+      );
     }
 
     // Triggers cannot contain whitespace
@@ -147,7 +170,9 @@ export class Template {
   /**
    * Update template properties
    */
-  update(input: UpdateTemplateInput): Result<Template, InvalidTriggerError | InvalidTemplateError> {
+  update(
+    input: UpdateTemplateInput
+  ): Result<Template, InvalidTriggerError | InvalidTemplateError> {
     let newTrigger = this.props.trigger;
     let newName = this.props.name;
     let newContent = this.props.content;
@@ -165,14 +190,22 @@ export class Template {
         return err(new InvalidTemplateError('Template name is required'));
       }
       if (input.name.length > MAX_NAME_LENGTH) {
-        return err(new InvalidTemplateError(`Template name must be ${MAX_NAME_LENGTH} characters or less`));
+        return err(
+          new InvalidTemplateError(
+            `Template name must be ${MAX_NAME_LENGTH} characters or less`
+          )
+        );
       }
       newName = input.name.trim();
     }
 
     if (input.content !== undefined) {
       if (input.content.length > MAX_CONTENT_LENGTH) {
-        return err(new InvalidTemplateError(`Template content must be ${MAX_CONTENT_LENGTH} characters or less`));
+        return err(
+          new InvalidTemplateError(
+            `Template content must be ${MAX_CONTENT_LENGTH} characters or less`
+          )
+        );
       }
       newContent = input.content;
     }
@@ -182,7 +215,10 @@ export class Template {
       trigger: newTrigger,
       name: newName,
       content: newContent,
-      groupId: input.groupId === null ? undefined : (input.groupId ?? this.props.groupId),
+      groupId:
+        input.groupId === null
+          ? undefined
+          : (input.groupId ?? this.props.groupId),
       tags: input.tags ?? this.props.tags,
       updatedAt: Date.now(),
     });

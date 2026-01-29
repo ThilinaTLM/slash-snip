@@ -36,7 +36,8 @@ export class TabStopManager {
     }
 
     const isContenteditable = !(
-      element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement
+      element instanceof HTMLInputElement ||
+      element instanceof HTMLTextAreaElement
     );
 
     this.state = {
@@ -64,7 +65,11 @@ export class TabStopManager {
   deactivate(): void {
     if (this.state) {
       if (this.keydownHandler) {
-        this.state.element.removeEventListener('keydown', this.keydownHandler, true);
+        this.state.element.removeEventListener(
+          'keydown',
+          this.keydownHandler,
+          true
+        );
       }
       if (this.blurHandler) {
         this.state.element.removeEventListener('blur', this.blurHandler);
@@ -231,7 +236,11 @@ export class TabStopManager {
     element: HTMLElement,
     targetOffset: number
   ): { node: Node; offset: number } | null {
-    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+    const walker = document.createTreeWalker(
+      element,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
 
     let currentOffset = 0;
     let node: Text | null;
@@ -279,7 +288,9 @@ export class TabStopManager {
         selection.addRange(range);
       }
     } else {
-      const element = this.state.element as HTMLInputElement | HTMLTextAreaElement;
+      const element = this.state.element as
+        | HTMLInputElement
+        | HTMLTextAreaElement;
       element.focus();
       element.setSelectionRange(position, position);
     }

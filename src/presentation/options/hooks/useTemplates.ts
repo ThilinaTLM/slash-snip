@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { sendMessage } from '@infrastructure/chrome/messaging';
 import { MESSAGE_TYPES } from '@shared/constants';
-import type { TemplateDTO, CreateTemplateDTO, UpdateTemplateDTO } from '@application/dto';
+import type {
+  TemplateDTO,
+  CreateTemplateDTO,
+  UpdateTemplateDTO,
+} from '@application/dto';
 
 interface UseTemplatesReturn {
   templates: TemplateDTO[];
@@ -28,7 +32,9 @@ export function useTemplates(): UseTemplatesReturn {
 
     if (response.success && response.data) {
       // Sort by updatedAt descending (most recent first)
-      const sorted = [...response.data].sort((a, b) => b.updatedAt - a.updatedAt);
+      const sorted = [...response.data].sort(
+        (a, b) => b.updatedAt - a.updatedAt
+      );
       setTemplates(sorted);
     } else {
       setError(response.error ?? 'Failed to fetch templates');
@@ -37,44 +43,50 @@ export function useTemplates(): UseTemplatesReturn {
     setLoading(false);
   }, []);
 
-  const createTemplate = useCallback(async (data: CreateTemplateDTO): Promise<TemplateDTO | null> => {
-    setError(null);
-    const response = await sendMessage<CreateTemplateDTO, TemplateDTO>(
-      MESSAGE_TYPES.CREATE_TEMPLATE,
-      data
-    );
+  const createTemplate = useCallback(
+    async (data: CreateTemplateDTO): Promise<TemplateDTO | null> => {
+      setError(null);
+      const response = await sendMessage<CreateTemplateDTO, TemplateDTO>(
+        MESSAGE_TYPES.CREATE_TEMPLATE,
+        data
+      );
 
-    if (response.success && response.data) {
-      setTemplates((prev) => [response.data!, ...prev]);
-      return response.data;
-    } else {
-      setError(response.error ?? 'Failed to create template');
-      return null;
-    }
-  }, []);
+      if (response.success && response.data) {
+        setTemplates((prev) => [response.data!, ...prev]);
+        return response.data;
+      } else {
+        setError(response.error ?? 'Failed to create template');
+        return null;
+      }
+    },
+    []
+  );
 
-  const updateTemplate = useCallback(async (data: UpdateTemplateDTO): Promise<boolean> => {
-    setError(null);
-    const response = await sendMessage<UpdateTemplateDTO, TemplateDTO>(
-      MESSAGE_TYPES.UPDATE_TEMPLATE,
-      data
-    );
+  const updateTemplate = useCallback(
+    async (data: UpdateTemplateDTO): Promise<boolean> => {
+      setError(null);
+      const response = await sendMessage<UpdateTemplateDTO, TemplateDTO>(
+        MESSAGE_TYPES.UPDATE_TEMPLATE,
+        data
+      );
 
-    if (response.success && response.data) {
-      setTemplates((prev) => {
-        const index = prev.findIndex((t) => t.id === data.id);
-        if (index === -1) return prev;
-        const updated = [...prev];
-        updated[index] = response.data!;
-        // Re-sort by updatedAt
-        return updated.sort((a, b) => b.updatedAt - a.updatedAt);
-      });
-      return true;
-    } else {
-      setError(response.error ?? 'Failed to update template');
-      return false;
-    }
-  }, []);
+      if (response.success && response.data) {
+        setTemplates((prev) => {
+          const index = prev.findIndex((t) => t.id === data.id);
+          if (index === -1) return prev;
+          const updated = [...prev];
+          updated[index] = response.data!;
+          // Re-sort by updatedAt
+          return updated.sort((a, b) => b.updatedAt - a.updatedAt);
+        });
+        return true;
+      } else {
+        setError(response.error ?? 'Failed to update template');
+        return false;
+      }
+    },
+    []
+  );
 
   const deleteTemplate = useCallback(async (id: string): Promise<boolean> => {
     setError(null);

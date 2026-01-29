@@ -8,4 +8,7 @@ export type {
 } from './ITemplateRepository';
 export type { ICategoryRepository } from './ICategoryRepository';
 export type { IGroupRepository } from './IGroupRepository';
-export type { IRecentTemplatesRepository, RecentTemplateEntry } from './IRecentTemplatesRepository';
+export type {
+  IRecentTemplatesRepository,
+  RecentTemplateEntry,
+} from './IRecentTemplatesRepository';

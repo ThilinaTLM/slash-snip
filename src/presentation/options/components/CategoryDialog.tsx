@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import type { CategoryDTO, CreateCategoryDTO, UpdateCategoryDTO } from '@application/dto';
+import type {
+  CategoryDTO,
+  CreateCategoryDTO,
+  UpdateCategoryDTO,
+} from '@application/dto';
 
 interface CategoryDialogProps {
   isOpen: boolean;

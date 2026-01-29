@@ -10,7 +10,11 @@ import {
   DialogFooter,
   Button,
 } from '@ui/index';
-import type { PreviewResult, ImportResult, ConflictResolution } from '@application/use-cases/import-export';
+import type {
+  PreviewResult,
+  ImportResult,
+  ConflictResolution,
+} from '@application/use-cases/import-export';
 
 type DialogState = 'preview' | 'importing' | 'complete' | 'error';
 
@@ -103,7 +107,8 @@ export function ImportDialog({
 
   // Complete state
   if (state === 'complete' && importResult) {
-    const totalImported = importResult.templatesImported + importResult.templatesReplaced;
+    const totalImported =
+      importResult.templatesImported + importResult.templatesReplaced;
     return (
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent>
@@ -116,7 +121,10 @@ export function ImportDialog({
               <p className="import-dialog-success-title">Import successful!</p>
               <div className="import-dialog-stats">
                 {totalImported > 0 && (
-                  <p>{totalImported} template{totalImported !== 1 ? 's' : ''} imported</p>
+                  <p>
+                    {totalImported} template{totalImported !== 1 ? 's' : ''}{' '}
+                    imported
+                  </p>
                 )}
                 {importResult.templatesReplaced > 0 && (
                   <p className="import-dialog-stat-detail">
@@ -124,18 +132,27 @@ export function ImportDialog({
                   </p>
                 )}
                 {importResult.templatesSkipped > 0 && (
-                  <p>{importResult.templatesSkipped} template{importResult.templatesSkipped !== 1 ? 's' : ''} skipped</p>
+                  <p>
+                    {importResult.templatesSkipped} template
+                    {importResult.templatesSkipped !== 1 ? 's' : ''} skipped
+                  </p>
                 )}
                 {importResult.groupsImported > 0 && (
-                  <p>{importResult.groupsImported} group{importResult.groupsImported !== 1 ? 's' : ''} imported</p>
+                  <p>
+                    {importResult.groupsImported} group
+                    {importResult.groupsImported !== 1 ? 's' : ''} imported
+                  </p>
                 )}
                 {importResult.errors.length > 0 && (
                   <div className="import-dialog-result-errors">
                     <p className="import-dialog-result-errors-title">
-                      {importResult.errors.length} error{importResult.errors.length !== 1 ? 's' : ''}:
+                      {importResult.errors.length} error
+                      {importResult.errors.length !== 1 ? 's' : ''}:
                     </p>
                     {importResult.errors.map((err, i) => (
-                      <p key={i} className="import-dialog-result-error">{err}</p>
+                      <p key={i} className="import-dialog-result-error">
+                        {err}
+                      </p>
                     ))}
                   </div>
                 )}
@@ -164,13 +181,17 @@ export function ImportDialog({
           <div className="import-dialog-preview">
             <div className="import-dialog-counts">
               <div className="import-dialog-count">
-                <span className="import-dialog-count-value">{preview.templateCount}</span>
+                <span className="import-dialog-count-value">
+                  {preview.templateCount}
+                </span>
                 <span className="import-dialog-count-label">
                   Template{preview.templateCount !== 1 ? 's' : ''}
                 </span>
               </div>
               <div className="import-dialog-count">
-                <span className="import-dialog-count-value">{preview.groupCount}</span>
+                <span className="import-dialog-count-value">
+                  {preview.groupCount}
+                </span>
                 <span className="import-dialog-count-label">
                   Group{preview.groupCount !== 1 ? 's' : ''}
                 </span>
@@ -180,7 +201,9 @@ export function ImportDialog({
             {preview.warnings.length > 0 && (
               <div className="import-dialog-warnings">
                 {preview.warnings.map((warning, i) => (
-                  <p key={i} className="import-dialog-warning">{warning}</p>
+                  <p key={i} className="import-dialog-warning">
+                    {warning}
+                  </p>
                 ))}
               </div>
             )}
@@ -189,13 +212,19 @@ export function ImportDialog({
               <div className="import-dialog-conflicts">
                 <div className="import-dialog-conflicts-header">
                   <AlertTriangle size={16} />
-                  <span>{preview.conflicts.length} trigger conflict{preview.conflicts.length !== 1 ? 's' : ''} found</span>
+                  <span>
+                    {preview.conflicts.length} trigger conflict
+                    {preview.conflicts.length !== 1 ? 's' : ''} found
+                  </span>
                 </div>
                 <div className="import-dialog-conflicts-list">
                   {preview.conflicts.slice(0, 5).map((conflict, i) => (
                     <div key={i} className="import-dialog-conflict-item">
                       <code>{conflict.importedTrigger}</code>
-                      <span>&quot;{conflict.importedName}&quot; conflicts with &quot;{conflict.existingName}&quot;</span>
+                      <span>
+                        &quot;{conflict.importedName}&quot; conflicts with
+                        &quot;{conflict.existingName}&quot;
+                      </span>
                     </div>
                   ))}
                   {preview.conflicts.length > 5 && (
@@ -206,7 +235,9 @@ export function ImportDialog({
                 </div>
 
                 <div className="import-dialog-resolution">
-                  <p className="import-dialog-resolution-title">How to handle conflicts:</p>
+                  <p className="import-dialog-resolution-title">
+                    How to handle conflicts:
+                  </p>
                   <label className="import-dialog-resolution-option">
                     <input
                       type="radio"
@@ -216,7 +247,9 @@ export function ImportDialog({
                       onChange={() => setResolution('skip')}
                     />
                     <div>
-                      <span className="import-dialog-resolution-label">Skip conflicts</span>
+                      <span className="import-dialog-resolution-label">
+                        Skip conflicts
+                      </span>
                       <span className="import-dialog-resolution-desc">
                         Keep existing templates, only import non-conflicting
                       </span>
@@ -231,7 +264,9 @@ export function ImportDialog({
                       onChange={() => setResolution('replace')}
                     />
                     <div>
-                      <span className="import-dialog-resolution-label">Replace existing</span>
+                      <span className="import-dialog-resolution-label">
+                        Replace existing
+                      </span>
                       <span className="import-dialog-resolution-desc">
                         Overwrite existing templates with imported ones
                       </span>
@@ -246,7 +281,9 @@ export function ImportDialog({
                       onChange={() => setResolution('keep_both')}
                     />
                     <div>
-                      <span className="import-dialog-resolution-label">Keep both</span>
+                      <span className="import-dialog-resolution-label">
+                        Keep both
+                      </span>
                       <span className="import-dialog-resolution-desc">
                         Import with modified triggers (e.g., /trigger_2)
                       </span>
@@ -269,7 +306,8 @@ export function ImportDialog({
             Cancel
           </Button>
           <Button onClick={handleImport}>
-            Import {preview.templateCount} Template{preview.templateCount !== 1 ? 's' : ''}
+            Import {preview.templateCount} Template
+            {preview.templateCount !== 1 ? 's' : ''}
           </Button>
         </DialogFooter>
       </DialogContent>

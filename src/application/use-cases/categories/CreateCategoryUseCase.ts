@@ -1,6 +1,9 @@
 import { Category } from '@domain/entities';
 import type { ICategoryRepository } from '@domain/repositories';
-import { DuplicateCategoryNameError, InvalidCategoryError } from '@domain/errors';
+import {
+  DuplicateCategoryNameError,
+  InvalidCategoryError,
+} from '@domain/errors';
 import type { CreateCategoryDTO, CategoryDTO } from '@application/dto';
 import { toCategoryDTO } from '@application/dto';
 import type { Result } from '@shared/utils/result';
@@ -11,7 +14,9 @@ export class CreateCategoryUseCase {
 
   async execute(
     dto: CreateCategoryDTO
-  ): Promise<Result<CategoryDTO, InvalidCategoryError | DuplicateCategoryNameError>> {
+  ): Promise<
+    Result<CategoryDTO, InvalidCategoryError | DuplicateCategoryNameError>
+  > {
     // Check if name already exists
     const nameExists = await this.categoryRepository.existsByName(dto.name);
     if (nameExists) {

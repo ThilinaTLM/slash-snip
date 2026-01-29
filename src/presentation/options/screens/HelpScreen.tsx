@@ -18,7 +18,9 @@ export function HelpScreen(): React.ReactElement {
           </div>
           <div>
             <h1 className="settings-title">Help</h1>
-            <p className="settings-subtitle">Learn how to use SlashSnip effectively</p>
+            <p className="settings-subtitle">
+              Learn how to use SlashSnip effectively
+            </p>
           </div>
         </div>
 

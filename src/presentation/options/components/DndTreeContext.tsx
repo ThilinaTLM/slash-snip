@@ -76,7 +76,9 @@ export function DndTreeContext({
           <div className="drag-overlay">
             <FileText size={14} />
             <span>{activeTemplate.trigger}</span>
-            <span style={{ color: 'var(--text-muted)' }}>{activeTemplate.name}</span>
+            <span style={{ color: 'var(--text-muted)' }}>
+              {activeTemplate.name}
+            </span>
           </div>
         )}
       </DragOverlay>

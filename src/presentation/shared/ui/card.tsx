@@ -1,21 +1,21 @@
-import * as React from "react";
-import { cn } from "@lib/utils";
+import * as React from 'react';
+import { cn } from '@lib/utils';
 
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("card", className)} {...props} />
+  <div ref={ref} className={cn('card', className)} {...props} />
 ));
-Card.displayName = "Card";
+Card.displayName = 'Card';
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("card-header", className)} {...props} />
+  <div ref={ref} className={cn('card-header', className)} {...props} />
 ));
-CardHeader.displayName = "CardHeader";
+CardHeader.displayName = 'CardHeader';
 
 interface CardIconProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -23,36 +23,36 @@ interface CardIconProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const CardIcon = React.forwardRef<HTMLDivElement, CardIconProps>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn("card-icon", className)} {...props}>
+    <div ref={ref} className={cn('card-icon', className)} {...props}>
       {children}
     </div>
   )
 );
-CardIcon.displayName = "CardIcon";
+CardIcon.displayName = 'CardIcon';
 
 const CardTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <h3 ref={ref} className={cn("card-title", className)} {...props} />
+  <h3 ref={ref} className={cn('card-title', className)} {...props} />
 ));
-CardTitle.displayName = "CardTitle";
+CardTitle.displayName = 'CardTitle';
 
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("card-description", className)} {...props} />
+  <p ref={ref} className={cn('card-description', className)} {...props} />
 ));
-CardDescription.displayName = "CardDescription";
+CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("card-content", className)} {...props} />
+  <div ref={ref} className={cn('card-content', className)} {...props} />
 ));
-CardContent.displayName = "CardContent";
+CardContent.displayName = 'CardContent';
 
 interface CardRowProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -60,34 +60,34 @@ interface CardRowProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const CardRow = React.forwardRef<HTMLDivElement, CardRowProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("card-row", className)} {...props} />
+    <div ref={ref} className={cn('card-row', className)} {...props} />
   )
 );
-CardRow.displayName = "CardRow";
+CardRow.displayName = 'CardRow';
 
 const CardRowLabel = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("card-row-label", className)} {...props} />
+  <div ref={ref} className={cn('card-row-label', className)} {...props} />
 ));
-CardRowLabel.displayName = "CardRowLabel";
+CardRowLabel.displayName = 'CardRowLabel';
 
 const CardRowTitle = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("card-row-title", className)} {...props} />
+  <div ref={ref} className={cn('card-row-title', className)} {...props} />
 ));
-CardRowTitle.displayName = "CardRowTitle";
+CardRowTitle.displayName = 'CardRowTitle';
 
 const CardRowDescription = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("card-row-description", className)} {...props} />
+  <div ref={ref} className={cn('card-row-description', className)} {...props} />
 ));
-CardRowDescription.displayName = "CardRowDescription";
+CardRowDescription.displayName = 'CardRowDescription';
 
 export {
   Card,

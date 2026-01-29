@@ -12,7 +12,11 @@ export {
 } from './date';
 
 // Text transformers
-export { applyTransform, isTransformModifier, TRANSFORM_MODIFIERS } from './transformers';
+export {
+  applyTransform,
+  isTransformModifier,
+  TRANSFORM_MODIFIERS,
+} from './transformers';
 
 // Fuzzy search
 export { fuzzyMatch, fuzzySearch } from './fuzzySearch';

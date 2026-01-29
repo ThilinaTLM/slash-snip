@@ -2,7 +2,10 @@ import { Template } from '@domain/entities';
 import type { ITemplateRepository } from '@domain/repositories';
 import { DuplicateTriggerError, TriggerConflictError } from '@domain/errors';
 import type { ISettingsPort } from '@application/ports';
-import type { CreateTemplateDTO, TemplateDTO } from '@application/dto/template.dto';
+import type {
+  CreateTemplateDTO,
+  TemplateDTO,
+} from '@application/dto/template.dto';
 import { toTemplateDTO } from '@application/dto/template.dto';
 import type { Result } from '@shared/utils/result';
 import { ok, err } from '@shared/utils/result';
@@ -13,9 +16,7 @@ export class CreateTemplateUseCase {
     private settingsPort?: ISettingsPort
   ) {}
 
-  async execute(
-    dto: CreateTemplateDTO
-  ): Promise<Result<TemplateDTO, Error>> {
+  async execute(dto: CreateTemplateDTO): Promise<Result<TemplateDTO, Error>> {
     // Load settings to check trigger mode and case sensitivity
     const settings = await this.settingsPort?.getSettings();
     const caseSensitive = settings?.caseSensitive ?? true;
@@ -30,12 +31,21 @@ export class CreateTemplateUseCase {
 
     // In "none" mode, check for prefix conflicts
     if (settings?.triggerKey === 'none') {
-      const conflicts = await this.templateRepository.findTriggerConflicts(dto.trigger, {
-        caseSensitive,
-      });
+      const conflicts = await this.templateRepository.findTriggerConflicts(
+        dto.trigger,
+        {
+          caseSensitive,
+        }
+      );
       if (conflicts.length > 0) {
         const conflict = conflicts[0];
-        return err(new TriggerConflictError(dto.trigger, conflict.trigger, conflict.isPrefix));
+        return err(
+          new TriggerConflictError(
+            dto.trigger,
+            conflict.trigger,
+            conflict.isPrefix
+          )
+        );
       }
     }
 

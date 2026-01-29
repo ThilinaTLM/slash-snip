@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { applyTransform, isTransformModifier, TRANSFORM_MODIFIERS } from './transformers';
+import {
+  applyTransform,
+  isTransformModifier,
+  TRANSFORM_MODIFIERS,
+} from './transformers';
 
 describe('transformers', () => {
   describe('applyTransform', () => {
@@ -30,8 +34,12 @@ describe('transformers', () => {
     });
 
     it('should handle strings with special characters', () => {
-      expect(applyTransform('hello-world_123', 'upper')).toBe('HELLO-WORLD_123');
-      expect(applyTransform('HELLO@WORLD.COM', 'lower')).toBe('hello@world.com');
+      expect(applyTransform('hello-world_123', 'upper')).toBe(
+        'HELLO-WORLD_123'
+      );
+      expect(applyTransform('HELLO@WORLD.COM', 'lower')).toBe(
+        'hello@world.com'
+      );
     });
   });
 

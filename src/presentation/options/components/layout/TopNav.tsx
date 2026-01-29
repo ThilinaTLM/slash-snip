@@ -68,7 +68,9 @@ export function TopNav({
             {item.badge !== undefined && item.badge > 0 && (
               <span
                 className={`top-nav-badge ${
-                  currentView === item.id ? 'top-nav-badge-active' : 'top-nav-badge-inactive'
+                  currentView === item.id
+                    ? 'top-nav-badge-active'
+                    : 'top-nav-badge-inactive'
                 }`}
               >
                 {item.badge}

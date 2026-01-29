@@ -15,25 +15,26 @@ export function GettingStartedSection(): React.ReactElement {
         <CardContent>
           <div className="help-content-section">
             <p className="help-intro">
-              SlashSnip lets you create text templates that expand when you type a trigger shortcut.
-              Here&apos;s how to get started:
+              SlashSnip lets you create text templates that expand when you type
+              a trigger shortcut. Here&apos;s how to get started:
             </p>
             <ol className="help-steps">
               <li>
-                <strong>Create a template</strong> — Click the &ldquo;New&rdquo; button in the Snippets tab to
-                create your first template.
+                <strong>Create a template</strong> — Click the &ldquo;New&rdquo;
+                button in the Snippets tab to create your first template.
               </li>
               <li>
-                <strong>Set a trigger</strong> — Choose a unique shortcut like <code>/sig</code> or{' '}
-                <code>::email</code> that you&apos;ll type to trigger the expansion.
+                <strong>Set a trigger</strong> — Choose a unique shortcut like{' '}
+                <code>/sig</code> or <code>::email</code> that you&apos;ll type
+                to trigger the expansion.
               </li>
               <li>
-                <strong>Write your content</strong> — Enter the text you want to expand. You can use
-                placeholders for dynamic content.
+                <strong>Write your content</strong> — Enter the text you want to
+                expand. You can use placeholders for dynamic content.
               </li>
               <li>
-                <strong>Use it anywhere</strong> — Type your trigger in any text field, and it will
-                expand into your template content.
+                <strong>Use it anywhere</strong> — Type your trigger in any text
+                field, and it will expand into your template content.
               </li>
             </ol>
           </div>

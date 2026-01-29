@@ -58,7 +58,10 @@ export interface ITemplateRepository {
    * @param trigger The trigger string to search for
    * @param options Optional query options (e.g., case sensitivity)
    */
-  findByTrigger(trigger: string, options?: TriggerQueryOptions): Promise<Template | null>;
+  findByTrigger(
+    trigger: string,
+    options?: TriggerQueryOptions
+  ): Promise<Template | null>;
 
   /**
    * Get all templates
@@ -75,7 +78,10 @@ export interface ITemplateRepository {
    * @param trigger The trigger string to check
    * @param options Optional check options (excludeId, caseSensitive)
    */
-  existsByTrigger(trigger: string, options?: ExistsByTriggerOptions): Promise<boolean>;
+  existsByTrigger(
+    trigger: string,
+    options?: ExistsByTriggerOptions
+  ): Promise<boolean>;
 
   /**
    * Find triggers that conflict with the given trigger (prefix overlaps)
@@ -83,7 +89,10 @@ export interface ITemplateRepository {
    * @param trigger The trigger to check for conflicts
    * @param options Optional check options (excludeId, caseSensitive)
    */
-  findTriggerConflicts(trigger: string, options?: ConflictCheckOptions): Promise<TriggerConflict[]>;
+  findTriggerConflicts(
+    trigger: string,
+    options?: ConflictCheckOptions
+  ): Promise<TriggerConflict[]>;
 
   /**
    * Ensure default templates exist (seeds on first install)

@@ -8,7 +8,10 @@ interface ThemeToggleProps {
   onThemeChange: (theme: Theme) => void;
 }
 
-export function ThemeToggle({ theme, onThemeChange }: ThemeToggleProps): React.ReactElement {
+export function ThemeToggle({
+  theme,
+  onThemeChange,
+}: ThemeToggleProps): React.ReactElement {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('slashsnip-theme', theme);
@@ -35,5 +38,7 @@ export function getInitialTheme(): Theme {
   if (saved === 'light' || saved === 'dark') {
     return saved;
   }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 }

@@ -1,5 +1,9 @@
 import type { IGroupRepository } from '@domain/repositories';
-import { GroupNotFoundError, DuplicateGroupNameError, InvalidGroupError } from '@domain/errors';
+import {
+  GroupNotFoundError,
+  DuplicateGroupNameError,
+  InvalidGroupError,
+} from '@domain/errors';
 import type { UpdateGroupDTO, GroupDTO } from '@application/dto';
 import { toGroupDTO } from '@application/dto';
 import type { Result } from '@shared/utils/result';
@@ -10,7 +14,12 @@ export class UpdateGroupUseCase {
 
   async execute(
     dto: UpdateGroupDTO
-  ): Promise<Result<GroupDTO, GroupNotFoundError | InvalidGroupError | DuplicateGroupNameError>> {
+  ): Promise<
+    Result<
+      GroupDTO,
+      GroupNotFoundError | InvalidGroupError | DuplicateGroupNameError
+    >
+  > {
     // Find the existing group
     const existingGroup = await this.groupRepository.findById(dto.id);
     if (!existingGroup) {
@@ -19,7 +28,10 @@ export class UpdateGroupUseCase {
 
     // Check for duplicate name if name is being changed
     if (dto.name !== undefined && dto.name !== existingGroup.name) {
-      const nameExists = await this.groupRepository.existsByName(dto.name, dto.id);
+      const nameExists = await this.groupRepository.existsByName(
+        dto.name,
+        dto.id
+      );
       if (nameExists) {
         return err(new DuplicateGroupNameError(dto.name));
       }

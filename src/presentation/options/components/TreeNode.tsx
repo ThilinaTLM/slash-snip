@@ -96,11 +96,16 @@ export function TreeNode({
             className={`tree-node-chevron ${isExpanded ? 'tree-node-chevron-expanded' : ''}`}
           />
           {isExpanded ? (
-            <FolderOpen size={14} className="tree-node-icon tree-node-icon-accent" />
+            <FolderOpen
+              size={14}
+              className="tree-node-icon tree-node-icon-accent"
+            />
           ) : (
             <Folder size={14} className="tree-node-icon" />
           )}
-          <span className="tree-node-label">{group.name} ({templateCount})</span>
+          <span className="tree-node-label">
+            {group.name} ({templateCount})
+          </span>
           <div className="tree-node-actions">
             {onAddTemplate && (
               <button
@@ -128,7 +133,9 @@ export function TreeNode({
             )}
           </div>
         </div>
-        {isExpanded && children && <div className="tree-children">{children}</div>}
+        {isExpanded && children && (
+          <div className="tree-children">{children}</div>
+        )}
       </div>
     );
   }
@@ -153,10 +160,14 @@ export function TreeNode({
           <GripVertical size={12} />
         </div>
       )}
-      <span className={`tree-node-name ${isSelected ? 'tree-node-name-selected' : ''}`}>
+      <span
+        className={`tree-node-name ${isSelected ? 'tree-node-name-selected' : ''}`}
+      >
         {template.name}
       </span>
-      <span className={`tree-node-trigger ${isSelected ? 'tree-node-trigger-selected' : ''}`}>
+      <span
+        className={`tree-node-trigger ${isSelected ? 'tree-node-trigger-selected' : ''}`}
+      >
         {template.trigger}
       </span>
       <div className="tree-node-actions">
@@ -188,4 +199,3 @@ export function TreeNode({
     </div>
   );
 }
-

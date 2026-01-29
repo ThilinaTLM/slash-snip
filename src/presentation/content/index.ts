@@ -34,7 +34,10 @@ async function handleInput(event: Event): Promise<void> {
     return;
   }
 
-  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+  if (
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement
+  ) {
     // Standard input/textarea handling
     const cursorPosition = target.selectionStart ?? target.value.length;
     const match = detector.detectTriggerAtCursor(target.value, cursorPosition);
@@ -58,7 +61,9 @@ async function handleInput(event: Event): Promise<void> {
     const context = await gatherPlaceholderContext(target);
 
     // Check for interactive placeholders that require user input
-    const interactiveFields = placeholderProcessor.analyzeInteractive(template.content);
+    const interactiveFields = placeholderProcessor.analyzeInteractive(
+      template.content
+    );
 
     let inputValues: Record<string, string> = {};
 
@@ -73,7 +78,12 @@ async function handleInput(event: Event): Promise<void> {
 
     // Process with context and any user inputs
     const processed = interactiveFields
-      ? placeholderProcessor.processWithInputs(template.content, context, inputValues, interactiveFields)
+      ? placeholderProcessor.processWithInputs(
+          template.content,
+          context,
+          inputValues,
+          interactiveFields
+        )
       : placeholderProcessor.process(template.content, context);
 
     console.log('[SlashSnip] Processed content:', processed);
@@ -113,7 +123,9 @@ async function handleInput(event: Event): Promise<void> {
     const context = await gatherPlaceholderContext(target);
 
     // Check for interactive placeholders that require user input
-    const interactiveFields = placeholderProcessor.analyzeInteractive(template.content);
+    const interactiveFields = placeholderProcessor.analyzeInteractive(
+      template.content
+    );
 
     let inputValues: Record<string, string> = {};
 
@@ -128,7 +140,12 @@ async function handleInput(event: Event): Promise<void> {
 
     // Process with context and any user inputs
     const processed = interactiveFields
-      ? placeholderProcessor.processWithInputs(template.content, context, inputValues, interactiveFields)
+      ? placeholderProcessor.processWithInputs(
+          template.content,
+          context,
+          inputValues,
+          interactiveFields
+        )
       : placeholderProcessor.process(template.content, context);
 
     console.log('[SlashSnip] Processed content:', processed);
@@ -204,13 +221,21 @@ function handleKeydown(event: KeyboardEvent): void {
   }
 
   // Check for Ctrl+Z or Cmd+Z
-  if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.key === 'z' &&
+    !event.shiftKey
+  ) {
     // Check if we have undo data
-    const hasUndoData = !!(target as HTMLElement & { __slashsnipUndo?: unknown }).__slashsnipUndo;
+    const hasUndoData = !!(
+      target as HTMLElement & { __slashsnipUndo?: unknown }
+    ).__slashsnipUndo;
 
     if (hasUndoData) {
       event.preventDefault();
-      expander.undo(target as HTMLInputElement | HTMLTextAreaElement | HTMLElement);
+      expander.undo(
+        target as HTMLInputElement | HTMLTextAreaElement | HTMLElement
+      );
     }
   }
 }
@@ -218,7 +243,9 @@ function handleKeydown(event: KeyboardEvent): void {
 /**
  * Check if element is a valid text input (input, textarea, or contenteditable)
  */
-function isTextInput(element: EventTarget | null): element is HTMLInputElement | HTMLTextAreaElement | HTMLElement {
+function isTextInput(
+  element: EventTarget | null
+): element is HTMLInputElement | HTMLTextAreaElement | HTMLElement {
   if (!element || !(element instanceof HTMLElement)) {
     return false;
   }
@@ -230,7 +257,13 @@ function isTextInput(element: EventTarget | null): element is HTMLInputElement |
   if (element instanceof HTMLInputElement) {
     const type = element.type.toLowerCase();
     // Include inputs without explicit type (defaults to text) and common text input types
-    return type === '' || type === 'text' || type === 'search' || type === 'url' || type === 'email';
+    return (
+      type === '' ||
+      type === 'text' ||
+      type === 'search' ||
+      type === 'url' ||
+      type === 'email'
+    );
   }
 
   // Support contenteditable elements (used by ChatGPT, Gemini, etc.)
@@ -245,11 +278,11 @@ function isTextInput(element: EventTarget | null): element is HTMLInputElement |
  * Increment usage count for a template (fire and forget)
  */
 function incrementUsage(templateId: string): void {
-  sendMessage<{ id: string }, void>(MESSAGE_TYPES.INCREMENT_USAGE, { id: templateId }).catch(
-    (error) => {
-      console.error('[SlashSnip] Failed to increment usage:', error);
-    }
-  );
+  sendMessage<{ id: string }, void>(MESSAGE_TYPES.INCREMENT_USAGE, {
+    id: templateId,
+  }).catch((error) => {
+    console.error('[SlashSnip] Failed to increment usage:', error);
+  });
 }
 
 /**
@@ -258,7 +291,9 @@ function incrementUsage(templateId: string): void {
 async function loadSettings(): Promise<void> {
   try {
     const result = await chrome.storage.local.get(STORAGE_KEYS.SETTINGS);
-    const stored = result[STORAGE_KEYS.SETTINGS] as Partial<AppSettings> | undefined;
+    const stored = result[STORAGE_KEYS.SETTINGS] as
+      | Partial<AppSettings>
+      | undefined;
     currentSettings = { ...DEFAULT_SETTINGS, ...stored };
     applySettings(currentSettings);
   } catch (error) {
@@ -270,7 +305,8 @@ async function loadSettings(): Promise<void> {
  * Apply settings to the trigger detector
  */
 function applySettings(settings: AppSettings): void {
-  const mode: TriggerMode = settings.triggerKey === 'none' ? 'none' : 'delimiter';
+  const mode: TriggerMode =
+    settings.triggerKey === 'none' ? 'none' : 'delimiter';
   detector.setMode(mode);
   detector.setCaseSensitive(settings.caseSensitive);
 
@@ -297,7 +333,11 @@ async function loadKnownTriggers(): Promise<void> {
     if (response.success && response.data) {
       const triggers = response.data.map((t) => t.trigger);
       detector.setKnownTriggers(triggers);
-      console.log('[SlashSnip] Loaded', triggers.length, 'known triggers for immediate mode');
+      console.log(
+        '[SlashSnip] Loaded',
+        triggers.length,
+        'known triggers for immediate mode'
+      );
     }
   } catch (error) {
     console.error('[SlashSnip] Failed to load known triggers:', error);
@@ -314,7 +354,9 @@ function handleSettingsChange(
   if (areaName !== 'local') return;
 
   if (changes[STORAGE_KEYS.SETTINGS]) {
-    const newSettings = changes[STORAGE_KEYS.SETTINGS].newValue as Partial<AppSettings> | undefined;
+    const newSettings = changes[STORAGE_KEYS.SETTINGS].newValue as
+      | Partial<AppSettings>
+      | undefined;
     currentSettings = { ...DEFAULT_SETTINGS, ...newSettings };
     applySettings(currentSettings);
     console.log('[SlashSnip] Settings changed:', currentSettings);

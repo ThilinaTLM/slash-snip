@@ -37,7 +37,10 @@ export class TemplateRepository implements ITemplateRepository {
     return props ? Template.fromProps(props) : null;
   }
 
-  async findByTrigger(trigger: string, options?: TriggerQueryOptions): Promise<Template | null> {
+  async findByTrigger(
+    trigger: string,
+    options?: TriggerQueryOptions
+  ): Promise<Template | null> {
     const templates = await this.getAllProps();
     const caseSensitive = options?.caseSensitive ?? true;
 
@@ -62,7 +65,10 @@ export class TemplateRepository implements ITemplateRepository {
     await this.storage.set(STORAGE_KEYS.TEMPLATES, filtered);
   }
 
-  async existsByTrigger(trigger: string, options?: ExistsByTriggerOptions): Promise<boolean> {
+  async existsByTrigger(
+    trigger: string,
+    options?: ExistsByTriggerOptions
+  ): Promise<boolean> {
     const templates = await this.getAllProps();
     const caseSensitive = options?.caseSensitive ?? true;
     const excludeId = options?.excludeId;
@@ -90,17 +96,25 @@ export class TemplateRepository implements ITemplateRepository {
     for (const t of templates) {
       if (t.id === excludeId) continue;
 
-      const normalizedExisting = caseSensitive ? t.trigger : t.trigger.toLowerCase();
+      const normalizedExisting = caseSensitive
+        ? t.trigger
+        : t.trigger.toLowerCase();
 
       // Check if new trigger is a prefix of existing trigger
-      if (normalizedExisting.startsWith(normalizedTrigger) && normalizedExisting !== normalizedTrigger) {
+      if (
+        normalizedExisting.startsWith(normalizedTrigger) &&
+        normalizedExisting !== normalizedTrigger
+      ) {
         conflicts.push({
           trigger: t.trigger,
           isPrefix: true,
         });
       }
       // Check if existing trigger is a prefix of new trigger
-      else if (normalizedTrigger.startsWith(normalizedExisting) && normalizedExisting !== normalizedTrigger) {
+      else if (
+        normalizedTrigger.startsWith(normalizedExisting) &&
+        normalizedExisting !== normalizedTrigger
+      ) {
         conflicts.push({
           trigger: t.trigger,
           isPrefix: false,
@@ -130,7 +144,9 @@ export class TemplateRepository implements ITemplateRepository {
    * Get raw template props from storage
    */
   private async getAllProps(): Promise<TemplateProps[]> {
-    const templates = await this.storage.get<TemplateProps[]>(STORAGE_KEYS.TEMPLATES);
+    const templates = await this.storage.get<TemplateProps[]>(
+      STORAGE_KEYS.TEMPLATES
+    );
     return templates ?? [];
   }
 }

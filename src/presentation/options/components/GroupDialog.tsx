@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import type { GroupDTO, CreateGroupDTO, UpdateGroupDTO } from '@application/dto';
+import type {
+  GroupDTO,
+  CreateGroupDTO,
+  UpdateGroupDTO,
+} from '@application/dto';
 import {
   Dialog,
   DialogContent,
@@ -77,11 +81,7 @@ export function GroupDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <DialogBody>
-            {error && (
-              <div className="group-dialog-error">
-                {error}
-              </div>
-            )}
+            {error && <div className="group-dialog-error">{error}</div>}
 
             <div className="editor-field">
               <label htmlFor="group-name" className="editor-label">
@@ -101,9 +101,7 @@ export function GroupDialog({
             <Button type="button" variant="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">
-              {isEditMode ? 'Save' : 'Create'}
-            </Button>
+            <Button type="submit">{isEditMode ? 'Save' : 'Create'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -51,7 +51,9 @@ export class Category {
   /**
    * Factory method to create a new category
    */
-  static create(input: CreateCategoryInput): Result<Category, InvalidCategoryError> {
+  static create(
+    input: CreateCategoryInput
+  ): Result<Category, InvalidCategoryError> {
     // Validate name
     const nameValidation = Category.validateName(input.name);
     if (nameValidation.isErr()) {
@@ -86,7 +88,11 @@ export class Category {
     }
 
     if (trimmed.length > MAX_CATEGORY_NAME_LENGTH) {
-      return err(new InvalidCategoryError(`Category name must be ${MAX_CATEGORY_NAME_LENGTH} characters or less`));
+      return err(
+        new InvalidCategoryError(
+          `Category name must be ${MAX_CATEGORY_NAME_LENGTH} characters or less`
+        )
+      );
     }
 
     return ok(trimmed);
@@ -109,7 +115,10 @@ export class Category {
     const updatedCategory = new Category({
       ...this.props,
       name: newName,
-      parentId: input.parentId === null ? undefined : (input.parentId ?? this.props.parentId),
+      parentId:
+        input.parentId === null
+          ? undefined
+          : (input.parentId ?? this.props.parentId),
       order: input.order ?? this.props.order,
     });
 

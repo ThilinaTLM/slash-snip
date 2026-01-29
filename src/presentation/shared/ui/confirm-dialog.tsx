@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,8 +7,8 @@ import {
   DialogDescription,
   DialogBody,
   DialogFooter,
-} from "./dialog";
-import { Button } from "./button";
+} from './dialog';
+import { Button } from './button';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -16,7 +16,7 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel?: string;
-  variant?: "default" | "destructive";
+  variant?: 'default' | 'destructive';
   onConfirm: () => void;
 }
 
@@ -25,8 +25,8 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
-  variant = "default",
+  confirmLabel = 'Confirm',
+  variant = 'default',
   onConfirm,
 }: ConfirmDialogProps): React.ReactElement {
   const handleConfirm = () => {
@@ -48,7 +48,7 @@ export function ConfirmDialog({
             Cancel
           </Button>
           <Button
-            variant={variant === "destructive" ? "destructive" : "default"}
+            variant={variant === 'destructive' ? 'destructive' : 'default'}
             onClick={handleConfirm}
           >
             {confirmLabel}

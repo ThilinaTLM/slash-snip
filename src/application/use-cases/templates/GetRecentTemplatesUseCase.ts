@@ -1,4 +1,7 @@
-import type { ITemplateRepository, IRecentTemplatesRepository } from '@domain/repositories';
+import type {
+  ITemplateRepository,
+  IRecentTemplatesRepository,
+} from '@domain/repositories';
 import type { TemplateDTO } from '@application/dto/template.dto';
 import { toTemplateDTO } from '@application/dto/template.dto';
 

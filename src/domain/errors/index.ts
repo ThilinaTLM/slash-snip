@@ -115,6 +115,8 @@ export class TriggerConflictError extends DomainError {
     const direction = isPrefix
       ? `"${newTrigger}" is a prefix of existing trigger "${conflictingTrigger}"`
       : `existing trigger "${conflictingTrigger}" is a prefix of "${newTrigger}"`;
-    super(`Trigger conflict: ${direction}. In immediate mode, prefix overlaps prevent reliable matching.`);
+    super(
+      `Trigger conflict: ${direction}. In immediate mode, prefix overlaps prevent reliable matching.`
+    );
   }
 }

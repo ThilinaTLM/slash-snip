@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Dialog as BaseDialog } from "@base-ui/react/dialog";
-import { X } from "lucide-react";
-import { cn } from "@lib/utils";
+import * as React from 'react';
+import { Dialog as BaseDialog } from '@base-ui/react/dialog';
+import { X } from 'lucide-react';
+import { cn } from '@lib/utils';
 
 interface DialogProps {
   open: boolean;
@@ -29,11 +29,11 @@ const DialogBackdrop = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <BaseDialog.Backdrop
     ref={ref}
-    className={cn("dialog-backdrop", className)}
+    className={cn('dialog-backdrop', className)}
     {...props}
   />
 ));
-DialogBackdrop.displayName = "DialogBackdrop";
+DialogBackdrop.displayName = 'DialogBackdrop';
 
 interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -45,7 +45,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
       <DialogBackdrop />
       <BaseDialog.Popup
         ref={ref}
-        className={cn("dialog-content", className)}
+        className={cn('dialog-content', className)}
         {...props}
       >
         {children}
@@ -53,7 +53,7 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
     </DialogPortal>
   )
 );
-DialogContent.displayName = "DialogContent";
+DialogContent.displayName = 'DialogContent';
 
 interface DialogHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -66,7 +66,7 @@ const DialogHeader = ({
   onClose,
   ...props
 }: DialogHeaderProps) => (
-  <div className={cn("dialog-header", className)} {...props}>
+  <div className={cn('dialog-header', className)} {...props}>
     {children}
     {onClose && (
       <button className="dialog-close-btn" onClick={onClose}>
@@ -75,7 +75,7 @@ const DialogHeader = ({
     )}
   </div>
 );
-DialogHeader.displayName = "DialogHeader";
+DialogHeader.displayName = 'DialogHeader';
 
 const DialogTitle = React.forwardRef<
   HTMLHeadingElement,
@@ -83,11 +83,11 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <BaseDialog.Title
     ref={ref}
-    className={cn("dialog-title", className)}
+    className={cn('dialog-title', className)}
     {...props}
   />
 ));
-DialogTitle.displayName = "DialogTitle";
+DialogTitle.displayName = 'DialogTitle';
 
 const DialogDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -95,38 +95,38 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <BaseDialog.Description
     ref={ref}
-    className={cn("dialog-description", className)}
+    className={cn('dialog-description', className)}
     {...props}
   />
 ));
-DialogDescription.displayName = "DialogDescription";
+DialogDescription.displayName = 'DialogDescription';
 
 const DialogBody = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("dialog-body", className)} {...props} />
+  <div ref={ref} className={cn('dialog-body', className)} {...props} />
 ));
-DialogBody.displayName = "DialogBody";
+DialogBody.displayName = 'DialogBody';
 
 interface DialogFooterProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "highlighted";
+  variant?: 'default' | 'highlighted';
 }
 
 const DialogFooter = React.forwardRef<HTMLDivElement, DialogFooterProps>(
-  ({ className, variant = "default", ...props }, ref) => (
+  ({ className, variant = 'default', ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "dialog-footer",
-        variant === "highlighted" && "dialog-footer-highlighted",
+        'dialog-footer',
+        variant === 'highlighted' && 'dialog-footer-highlighted',
         className
       )}
       {...props}
     />
   )
 );
-DialogFooter.displayName = "DialogFooter";
+DialogFooter.displayName = 'DialogFooter';
 
 export {
   Dialog,

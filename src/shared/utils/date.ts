@@ -46,7 +46,9 @@ const TOKEN_REPLACERS: Record<string, TokenReplacer> = {
 };
 
 // Sort tokens by length (longest first) to avoid partial matches
-const SORTED_TOKENS = Object.keys(TOKEN_REPLACERS).sort((a, b) => b.length - a.length);
+const SORTED_TOKENS = Object.keys(TOKEN_REPLACERS).sort(
+  (a, b) => b.length - a.length
+);
 
 /**
  * Format a date using the specified format string

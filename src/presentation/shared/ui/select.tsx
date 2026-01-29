@@ -1,7 +1,7 @@
-import * as React from "react";
-import { Select as BaseSelect } from "@base-ui/react/select";
-import { Check, ChevronDown } from "lucide-react";
-import { cn } from "@lib/utils";
+import * as React from 'react';
+import { Select as BaseSelect } from '@base-ui/react/select';
+import { Check, ChevronDown } from 'lucide-react';
+import { cn } from '@lib/utils';
 
 interface SelectProps {
   value: string;
@@ -13,7 +13,10 @@ interface SelectProps {
 }
 
 const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
-  ({ value, onValueChange, children, placeholder, className, disabled }, ref) => {
+  (
+    { value, onValueChange, children, placeholder, className, disabled },
+    ref
+  ) => {
     const handleChange = (newValue: string | null) => {
       if (newValue !== null) {
         onValueChange(newValue);
@@ -21,10 +24,14 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
     };
 
     return (
-      <BaseSelect.Root value={value} onValueChange={handleChange} disabled={disabled}>
+      <BaseSelect.Root
+        value={value}
+        onValueChange={handleChange}
+        disabled={disabled}
+      >
         <BaseSelect.Trigger
           ref={ref}
-          className={cn("select-trigger", className)}
+          className={cn('select-trigger', className)}
         >
           <BaseSelect.Value placeholder={placeholder} />
           <BaseSelect.Icon className="select-icon">
@@ -42,7 +49,7 @@ const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
     );
   }
 );
-Select.displayName = "Select";
+Select.displayName = 'Select';
 
 interface SelectItemProps {
   value: string;
@@ -67,7 +74,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     );
   }
 );
-SelectItem.displayName = "SelectItem";
+SelectItem.displayName = 'SelectItem';
 
 const SelectSeparator = () => <div className="select-separator" />;
 
