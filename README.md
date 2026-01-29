@@ -1,5 +1,7 @@
 # SlashSnip
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/dfkgkphjpoaehkdpfbnmngbeoaaikjll)](https://chromewebstore.google.com/detail/slashsnip/dfkgkphjpoaehkdpfbnmngbeoaaikjll)
+
 A Chromium browser extension for text template expansion. Define templates with trigger shortcuts (e.g., `/fg`, `::email`) that expand into full text with support for dynamic placeholders.
 
 ## Features
@@ -40,7 +42,7 @@ Text transforms available: `:upper`, `:lower`, `:capitalize`, `:title`
 
 ### From Chrome Web Store
 
-Coming soon.
+[Install SlashSnip](https://chromewebstore.google.com/detail/slashsnip/dfkgkphjpoaehkdpfbnmngbeoaaikjll) from the Chrome Web Store.
 
 ## Usage
 
