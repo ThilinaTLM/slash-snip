@@ -1,8 +1,8 @@
 import React from 'react';
-import { Bug, Github, Scissors, Settings } from 'lucide-react';
+import { Bug, Github, HelpCircle, Scissors, Settings } from 'lucide-react';
 import { ThemeToggle, type Theme } from '../ThemeToggle';
 
-export type View = 'snippets' | 'settings';
+export type View = 'snippets' | 'settings' | 'help';
 
 interface TopNavProps {
   currentView: View;
@@ -37,6 +37,11 @@ export function TopNav({
       id: 'settings',
       label: 'Settings',
       icon: <Settings size={16} />,
+    },
+    {
+      id: 'help',
+      label: 'Help',
+      icon: <HelpCircle size={16} />,
     },
   ];
 

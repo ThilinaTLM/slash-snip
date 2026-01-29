@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { AppShell, type View } from './components/layout';
 import { SnippetsScreen } from './screens/SnippetsScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { HelpScreen } from './screens/HelpScreen';
 import { useTemplates } from './hooks/useTemplates';
 import { useGroups } from './hooks/useGroups';
 import { useSettings } from './hooks/useSettings';
@@ -121,6 +122,8 @@ export function App(): React.ReactElement {
             onRefresh={refreshTemplates}
           />
         );
+      case 'help':
+        return <HelpScreen />;
       default:
         return null;
     }
