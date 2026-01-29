@@ -20,6 +20,7 @@ pnpm test             # Run Vitest in watch mode
 pnpm test:ui          # Vitest with browser UI
 pnpm test:coverage    # Single run with coverage report
 pnpm test path/to/file.test.ts  # Run specific test file
+pnpm build:zip         # Build and create release zip
 ```
 
 To load the extension in Chrome: build the project, then load `dist/` as an unpacked extension.
@@ -63,8 +64,17 @@ src/
 ### Key Extension Components
 
 - **Background Service Worker** (`presentation/background/`): Central message hub, handles storage operations via use cases. Uses `MessageRouter` for typed message handling.
-- **Content Script** (`presentation/content/`): Vanilla TypeScript, monitors input fields for triggers, handles expansion. Key classes: `TriggerDetector`, `TextExpander`, `PlaceholderProcessor`, `TabStopManager`.
+- **Content Script** (`presentation/content/`): Vanilla TypeScript, monitors input fields for triggers, handles expansion. Key classes: `TriggerDetector`, `TextExpander`, `TabStopManager`, `InputDialog`, `ContenteditableAdapter`.
 - **Options Page** (`presentation/options/`): React app for full template management with Base UI components.
+- **Popup** (`presentation/popup/`): Minimal React popup that redirects to options page.
+
+### Error Handling Pattern
+
+The codebase uses a Result monad pattern for typed error handling:
+```typescript
+import { Result, ok, err } from '@shared/utils/result';
+// Returns Result<T, E> - use .isOk(), .isErr(), .value, .error
+```
 
 ### Message Flow
 
@@ -103,7 +113,7 @@ Settings (`src/shared/types/settings.ts`):
 
 - **Manifest V3** with service worker architecture
 - **Permissions**: storage, clipboardWrite, activeTab
-- **Default shortcut**: Alt+S to open popup
+- **Default shortcut**: Alt+S to open options page
 - Internationalization support via `_locales/` and `__MSG_*` placeholders
 
 ## Testing
